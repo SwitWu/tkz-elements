@@ -132,7 +132,7 @@ Here's the list of methods for the \tkzNameObj{line} object. The results can be 
 \midrule
 
 \textbf{Constructor} & \\
-\tkzMeth{line}{new(pt, pt)} &Note\footnote{line(pt, pt) (short form, recommended)}; [\ref{sub:creating_a_line}; \ref{ssub:method_line_new_pt_pt}; \ref{sub:altshiller}] \\
+\tkzMeth{line}{new(pt, pt)} &Note\footnote{line(pt, pt) (short form, recommended)}; [\ref{sub:creating_a_line}; \ref{ssub:method_line_new_pt_pt}] \\
 
 \midrule
 
@@ -156,21 +156,18 @@ Here's the list of methods for the \tkzNameObj{line} object. The results can be 
 \midrule
 \tkzMeth{line}{get(n)}     & [\ref{ssub:method_line_get}] \\
 \tkzMeth{line}{random()}     & [  \ref{ssub:method_line_random}] \\
-\tkzMeth{line}{gold\_ratio()}  &  [\ref{ssub:methode_imeth_line_gold__ratio}; \ref{sub:gold_ratio_with_segment} ; \ref{sub:the_figure_pappus_circle} ; \ref{sub:bankoff_circle} ]  \\
+\tkzMeth{line}{gold\_ratio()}  &  [\ref{ssub:methode_imeth_line_gold__ratio}; \ref{sub:the_figure_pappus_circle}  ]  \\
 
 \tkzMeth{line}{normalize()}  &  [ \ref{ssub:normalize}]  \\
 \tkzMeth{line}{normalize\_inv()}  & [\ref{ssub:normalize}]\\
 \tkzMeth{line}{barycenter(r,r)}    &   [\ref{ssub:barycenter_with_a_line}] \\
-\tkzMeth{line}{point(r)}   &   [\ref{sub:ellipse} ; \ref{ssub:method_point}] \\
+\tkzMeth{line}{point(r)}   &   [\ref{ssub:method_point}] \\
 \tkzMeth{line}{midpoint()}    & [\ref{ssub:method_line_midpoint}]  \\
-\tkzMeth{line}{harmonic\_int(pt)}   &  [\ref{ssub:method_line_harmonic_int};  \ref{sub:bankoff_circle}] \\
-\tkzMeth{line}{harmonic\_ext(pt)}  & [ \ref{sub:bankoff_circle}] \\
-\tkzMeth{line}{harmonic\_both(r)}  & [\ref{ssub:harmonic_both}; \ref{sub:harmonic_division_with_tkzphi}] \\
+\tkzMeth{line}{harmonic\_int(pt)}   &  [\ref{ssub:method_line_harmonic_int}] \\
+\tkzMeth{line}{harmonic\_ext(pt)}  & [\ref{ssub:method_line_harmonic_ext}] \\
+\tkzMeth{line}{harmonic\_both(r)}  & [\ref{ssub:harmonic_both}] \\
 \tkzMeth{line}{harmonic(mode, pt)}  & [\ref{ssub:harmonic}] \\
-
-
 \tkzMeth{line}{report(d,pt)}    &[\ref{ssub:method_report}]\\
-
 \tkzMeth{line}{collinear\_at(pt,k)}  & [ex. \ref{ssub:method_line_collinear__at}]\\
   \midrule
 
@@ -702,7 +699,7 @@ This construction is particularly useful in projective geometry and when working
 \end{tkzexample}
 
 \subsubsection{Method \tkzMeth{line}{harmonic\_ext(pt)}}
-\label{ssub:method_imeth_line_harmonic__ext_pt}
+\label{ssub:method_line_harmonic_ext}
 This method returns a point located outside the segment $[AB]$ that satisfies a harmonic relation with a given point on the segment.
 
 \medskip
@@ -1898,22 +1895,103 @@ Remark: |\tkzUseLua{tkz.length(z.P,z.A)/tkz.length(z.P,z.B)}| = \tkzUseLua{tkz.l
 \subsubsection{Method \tkzMeth{line}{LPP}(p, p)}
 \label{ssub:c_l_pp}
 
-This method is presented in the section \tkzname{Apollonius' problem} [\ref{sub:LPP}]
+This method is presented in the document \tkzname{Euclidean Geometry} presented in \href{http://altermundus.fr}{altermundus.fr}.
 
+\begin{tkzexample}[latex=.4\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(6, 0)
+  z.M = point(1, 1)
+  z.N = point(2, 5)
+  L.AB = line(z.A, z.B)
+  PA.center,
+  PA.through, n = L.AB:LPP(z.M, z.N)
+  tkz.nodes_from_paths(PA.center,
+                       PA.through, "O", "T")
+}
+
+\begin{tikzpicture}[scale = .4]
+  \tkzGetNodes
+  \tkzDrawLines(A,B M,N)
+  \tkzDrawCircles(O1,T1 O2,T2)
+  \tkzDrawPoints(A,B,M,N)
+  \tkzLabelPoints(A,B,M,N)
+\end{tikzpicture}
+\end{tkzexample}
 
 \subsubsection{Method \tkzMeth{line}{LLP}(L, p)}
 \label{ssub:method_c__ll__p}
 
-This method is presented in the section \tkzname{Apollonius' problem} [\ref{sub:LLP}]
+This method is presented in the document \tkzname{Euclidean Geometry} presented in \href{http://altermundus.fr}{altermundus.fr}.
+
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(-1, 2)
+  z.B = point(2, -3)
+  z.C = point(-1, -3)
+  z.D = point(2, 1)
+  L.AB = line(z.A, z.B)
+  L.CD = line(z.C, z.D)
+  z.S = intersection(L.AB, L.CD)
+  L.SI = tkz.bisector(z.S, z.A, z.D)
+  z.P = L.SI:point(-1)
+  local centers,
+   throughs, n = L.AB:LLP(L.CD, z.P)
+  tkz.nodes_from_paths(centers, throughs)
+}
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawLines[red](A,B C,D)
+  \tkzDrawCircles[blue](w1,t1 w2,t2)
+  \tkzDrawPoints(A,B,C,D,P,w1,t1,w2,t2)
+  \tkzLabelPoints(A,B,C,D,P)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
 
 %====================================================================
 \subsubsection{Method \tkzMeth{line}{LLL}(L1,L2[,which])}
 %====================================================================
 \label{ssub:method_LLL}
 
-This method is presented in the section \tkzname{Apollonius' problem} [\ref{sub:LLL}]
+This method is presented in the document \tkzname{Euclidean Geometry} presented in \href{http://altermundus.fr}{altermundus.fr}.
 
-
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(6, 0)
+  z.C = point(4.5, 6)
+  T.ABC = triangle(z.A, z.B, z.C)
+  L.AB = line(z.A,z.B)
+  L.AC = line(z.A,z.C)
+  L.med = L.AB : mediator ()
+  z.M = L.AB.mid
+  z.x, z.y = get_points(L.med)
+  z.H = L.AB:projection(z.C)
+  L.ortho = L.AB:orthogonal_from(z.C)
+  PA.center,
+  PA.through = L.AC:LLL(L.med, L.ortho)
+  z.w = PA.center:get(1)
+  z.t = PA.through:get(1)
+  PA.center,
+  PA.through = L.AB:LLL(L.AC, T.ABC.bc)
+  z.o = PA.center:get(1)
+  z.h = PA.through:get(1)}
+\begin{center}
+  \begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawLines(A,B A,C B,C)
+\tkzDrawCircles(w,t o,h)
+\tkzDrawPoints(A,B,C)
+\tkzLabelPoints(A,B,C)
+\end{tikzpicture}
+  \end{center}
+\end{tkzexample}
 
 \subsection{The result is a square}
 

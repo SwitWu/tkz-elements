@@ -39,9 +39,16 @@ On the right, you will find a minimal template.
 
 The code is divided into two main parts:  the Lua code (executed using \tkzMacro{lualatex}{directlua} or placed inside a \tkzEnv{tkz-elements}{tkzelements} environment), and the  \tkzEnv{tikz}{tikzpicture} environment, where drawing commands — typically from \tkzNamePack{tkz-euclide} — are issued.
 
-When using \tkzNamePack{tkz-euclide}, the mini option is recommended to load only the macros needed for drawing.
-Within the \tkzname{Lua} section, it is best practice to systematically call the \tkzFct{package}{init\_elements()} function. This function resets internal tables.
-Important: From this point on, all scaling operations must be avoided in the \tkzname{Lua} code.
+When using \tkzNamePack{tkz-euclide}, the \code{mini} option is recommended, as it loads only the macros
+required for drawing.
+However, at the current stage, some drawing macros are not yet completely independent of computation macros;
+if a compilation problem occurs, simply load \tkzNamePack{tkz-euclide} without this option.
+
+Within the \tkzname{Lua} section, it is best practice to systematically call the
+\tkzFct{package}{init\_elements()} function.
+This function resets internal tables and clears internal data structures.
+\textbf{Important:} from this point on, all scaling operations must be avoided in the \tkzname{Lua} code.
+
 
 \vspace*{4.1 cm}%
 \end{minipage}\hspace*{\fill}

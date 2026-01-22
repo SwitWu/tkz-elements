@@ -152,7 +152,7 @@ The circle class offers a wide range of methods, which can be grouped according 
    \textbf{Reals} &\\
   \midrule
 
-  \tkzMeth{circle}{power(pt)}& \ref{sub:apollonius_circle_v1_with_inversion}; \ref{ssub:power} ] \\
+  \tkzMeth{circle}{power(pt)}& \ref{ssub:power} ] \\
   \midrule
   \textbf{Strings} &\\
   \midrule
@@ -191,12 +191,12 @@ The circle class offers a wide range of methods, which can be grouped according 
  \midrule
    \textbf{Lines}  & \\
   \midrule
-  \tkzMeth{circle}{radical\_axis(C)} &   [ \ref{ssub:method_circle_radical__axis_c} ; \ref{sub:d_alembert_2}; \ref{par:radical_axis_v1}; \ref{par:radical_axis_v2}; \ref{par:radical_axis_v3}; \ref{par:radical_axis_v4} ]  \\
+  \tkzMeth{circle}{radical\_axis(C)} &   [ \ref{ssub:method_circle_radical__axis_c} ; \ref{par:radical_axis_v1}; \ref{par:radical_axis_v2}; \ref{par:radical_axis_v3}; \ref{par:radical_axis_v4} ]  \\
   \tkzMeth{circle}{tangent\_at(pt)} &  [\ref{ssub:method_circle_tangent__at_pt}] \\
   \tkzMeth{circle}{tangent\_from(pt)}&  [\ref{ssub:method_circle_tangent__from_pt}] \\
  \tkzMeth{circle}{tangent\_parallel(L)}&  [\ref{ssub:method_circle_tangent_parallel}] \\
 
-  \tkzMeth{circle}{common\_tangent(C)}&  [\ref{ssub:common_tangent} ; \ref{sub:common_tangent_orthogonality}] \\
+  \tkzMeth{circle}{common\_tangent(C)}&  [\ref{ssub:common_tangent} ] \\
   \tkzMeth{circle}{polar()} & [\ref{ssub:method_circle_polar_pt}] \\
    \bottomrule
     \end{tabular}
@@ -210,7 +210,7 @@ The circle class offers a wide range of methods, which can be grouped according 
   \toprule
    \textbf{Circles}&\\
   \midrule
-  \tkzMeth{circle}{orthogonal\_from(pt)}   & [\ref{ssub:method_circle_orthogonal_from_pt} ;\ref{sub:altshiller} ; \ref{sub:pencil_v1}]  \\
+  \tkzMeth{circle}{orthogonal\_from(pt)}   & [\ref{ssub:method_circle_orthogonal_from_pt}]  \\
   \tkzMeth{circle}{orthogonal\_through(pta,ptb)}&  [\ref{ssub:method_circle_orthogonal_through}]\\
   \tkzMeth{circle}{midcircle(C)}  & [\ref{ssub:midcircle}; \ref{midcircle_diameter}] \\
   \tkzMeth{circle}{radical\_circle(C1<,C2>)} &  [\ref{ssub:radical_circle}] \\
@@ -218,9 +218,9 @@ The circle class offers a wide range of methods, which can be grouped according 
   \tkzMeth{circle}{CCP(C,pt)} &[\ref{ssub:method_c_cc_p}]  \\
   \tkzMeth{circle}{CLP(L,pt,<'inside'>)} & [\ref{ssub:method_c_lc_p}]  \\
   \tkzMeth{circle}{CLL}& \ref{ssub:method_c_cll}\\
-  \tkzMeth{circle}{CCL}(C2, L) & \ref{sub:CCL}\\
-  \tkzMeth{circle}{CCC(C2, C3[, opts])} &  \ref{sub:CCC}\\
-  \tkzMeth{circle}{CCC\_gergonne}(C2, C3) &  \ref{sub:CCC_gergonne}\\
+  \tkzMeth{circle}{CCL}(C2, L) & \ref{ssub:CCL}\\
+  \tkzMeth{circle}{CCC(C2, C3[, opts])} &  \ref{ssub:CCC}\\
+  \tkzMeth{circle}{CCC\_gergonne}(C2, C3) &  \ref{ssub:CCC_gergonne}\\
  \textbf{Path} & \textbf{Reference}     \\
    \tkzMeth{circle}{path(pt,pt,nb)} &[\ref{ssub:circle_path}]  \\
    \bottomrule
@@ -1235,64 +1235,73 @@ The radical axes of any three circles (no two of which have the same center) int
 
 \medskip
 
-In this implementation, the method \code{radical\_center(C1, C2)} also returns a point with special meaning when applied to just two circles: it gives the intersection point of the \textbf{radical axis} of the two circles and the line connecting their centers.
+In this implementation, the method \code{radical\_center(C1, C2)} also has a
+well-defined meaning when applied to only two circles.
+The point returned by
+\[
+\code{z.P = C1:radical\_center(C2)}
+\]
+is the intersection of the \emph{radical axis} of the two circles with the line
+joining their centres.
+
+This point may be regarded as an \emph{extended radical center}.
+It is the centre of a distinguished circle orthogonal to both given circles.
+This circle belongs to the coaxial pencil of circles orthogonal to
+\code{C1} and \code{C2}; its intersections with the line joining the centres
+coincide with the two fixed base points of this pencil.
+
+The construction naturally extends to the case of a circle and a point.
+A point $P$ is interpreted as a \emph{circle-point}, that is, a circle of zero
+radius:
+\[
+\code{z.P = point(a,b)}, \qquad \code{C.P = circle(z.P,z.P)}.
+\]
+In this setting, the radical center is the centre of the unique circle
+orthogonal to the given circle and passing through the point $P$.
+
 
 \medskip
 
 This point is useful for constructions involving inversion, coaxal systems, and special configurations such as the Apollonius circle.
 
-\texttt{Example}
+\texttt{Example, with three circles, two circles and one circle and a point}
 
-
+\begin{tkzexample}[vbox]
 \directlua{
-   z.A = point(0, 0)
-   z.a = z.A + point (1, 0)
-   z.B = point (4, 1)
-   z.b = z.B + point (2, 0)
-   z.C = point (2, 6)
-   z.c = z.C + point (3, 0)
-   C.Aa = circle(z.A, z.a)
-   C.Bb = circle(z.B, z.b)
-   C.Cc = circle(z.C,z.c)
-   L.rAB = C.Aa: radical_axis (C.Bb)
-   L.rAC = C.Aa: radical_axis (C.Cc)
-   L.rBC = C.Bb: radical_axis (C.Cc)
-   z.w = C.Aa :radical_center(C.Bb, C.Cc)
-   z.x1, z.y1 = L.rAB:get()
-   z.x2, z.y2 = L.rAC:get()
-   z.x3, z.y3 = L.rBC:get()
-   _,z.t = C.Aa:radical_circle(C.Bb,C.Cc).through}
+ z.A = point(0, 0)
+ z.a = z.A + point (1, 0)
+ z.B = point (4, 1)
+ z.b = z.B + point (2, 0)
+ z.C = point (2, 6)
+ z.c = z.C + point (3, 0)
+ C.Aa = circle(z.A, z.a)
+ C.Bb = circle(z.B, z.b)
+ C.Cc = circle(z.C, z.c)
+ L.rAB = C.Aa:radical_axis(C.Bb)
+ L.rAC = C.Aa:radical_axis(C.Cc)
+ L.rBC = C.Bb:radical_axis(C.Cc)
+ z.w = C.Aa :radical_center(C.Bb, C.Cc)
+ z.x1, z.y1 = L.rAB:get()
+ z.x2, z.y2 = L.rAC:get()
+ z.x3, z.y3 = L.rBC:get()
+ z.t = C.Aa:radical_circle(C.Bb, C.Cc).through
+ z.w1, z.t1 = C.Aa:radical_circle(C.Bb):get()
+ C.B = circle(z.B, z.B)
+ z.w2, z.t2 = C.Aa:radical_circle(C.B):get()}
 \begin{center}
 \begin{tikzpicture}
    \tkzGetNodes
    \tkzDrawCircles[blue](A,a B,b C,c)
    \tkzDrawCircles[red](w,t)
+   \tkzDrawCircles[orange](w1,t1)
+   \tkzDrawCircles[purple](w2,t2)
    \tkzDrawLines[red](x1,y1 x2,y2 x3,y3)
-   \tkzDrawPoints(A,B,C,w)
-   \tkzLabelPoints[below right](A,B,C,w)
+   \tkzDrawPoints(A,B,C,w,w1,w2)
+   \tkzLabelPoints[below right](A,B,C,w,w1,w2)
 \end{tikzpicture}
 \end{center}
-
-\begin{tkzexample}[code only]
-   \directlua{
-    z.A = point(0, 0)
-    z.a = z.A + point (1, 0)
-    z.B = point (4, 1)
-    z.b = z.B + point (2, 0)
-    z.C = point (2, 6)
-    z.c = z.C + point (3, 0)
-    C.Aa = circle(z.A, z.a)
-    C.Bb = circle(z.B, z.b)
-    C.Cc = circle(z.C,z.c)
-    L.rAB = C.Aa: radical_axis (C.Bb)
-    L.rAC = C.Aa: radical_axis (C.Cc)
-    L.rBC = C.Bb: radical_axis (C.Cc)
-    z.w = C.Aa :radical_center(C.Bb, C.Cc)
-    z.x1, z.y1 = L.rAB:get()
-    z.x2, z.y2 = L.rAC:get()
-    z.x3, z.y3 = L.rBC:get()
-    _,z.t = C.Aa:radical_circle(C.Bb,C.Cc).through}
 \end{tkzexample}
+
 
 \subsubsection{Method \tkzMeth{circle}{pole(L)}}
 \label{ssub:method_circle_pole}
@@ -2173,26 +2182,262 @@ This construction plays a key role in advanced configurations such as coaxal sys
 \subsubsection{Method \tkzMeth{circle}{CPP}}
 \label{ssub:method_c__c__pp}
 
-This method is presented in the section \tkzname{Apollonius' problem} [\ref{sub:CCP}]
+This method is presented in the document \tkzname{Euclidean Geometry} presented in \href{http://altermundus.fr}{altermundus.fr}.
+
+
+\vspace{1em}
+\begin{minipage}{.6\textwidth}
+\directlua{
+  init_elements()
+  z.A = point(5,4)
+  z.B = point(3,0)
+  z.O = point(0,0)
+  z.C = point(1,0)
+  C.OC = circle(z.O, z.C)
+  PA.center, PA.through,
+  n = C.OC:CPP(z.A, z.B)
+}
+\begin{center}
+\begin{tikzpicture}[scale=.6]
+  \tkzGetNodes
+  \tkzDrawCircle[blue](O,C)
+  \tkzDrawPoints(A,B,C,O)
+  \tkzDrawCirclesFromPaths[draw,
+  red](PA.center,PA.through)
+  \tkzLabelPoints(O,C,A,B)
+\end{tikzpicture}
+\end{center}
+\end{minipage}
+\begin{minipage}{.4\textwidth}
+\begin{tkzexample}[code only]
+\directlua{
+  init_elements()
+  z.A = point(5,4)
+  z.B = point(3,0)
+  z.O = point(0,0)
+  z.C = point(1,0)
+  C.OC = circle(z.O, z.C)
+  PA.center,
+  PA.through,
+  n = C.OC:CPP(z.A, z.B)
+}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCircle[blue](O,C)
+  \tkzDrawPoints(A,B,C,O)
+  \tkzDrawCirclesFromPaths[draw,
+      red](PA.center,PA.through)
+\end{tikzpicture}
+\end{tkzexample}
+\end{minipage}
+
 
 \subsubsection{Method \tkzMeth{circle}{CCP(C,p[,mode])}}
 \label{ssub:method_c_cc_p}
 
-This method is presented in the section \tkzname{Apollonius' problem} [\ref{sub:CCP}]
+This method is presented in the document \tkzname{Euclidean Geometry} presented in \href{http://altermundus.fr}{altermundus.fr}.
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.TA = point(3, 0)
+  z.B = point(6, 2)
+  z.TB = point(6, 1)
+  z.P = point(3, 6)
+  C.A = circle(z.A, z.TA)
+  C.B = circle(z.B, z.TB)
+  PA.center, PA.through  = C.A:CCP(C.B,
+    z.P,"external")
+  z.O1 = PA.center:get(1)
+  z.O2 = PA.center:get(2)
+  z.T1 = PA.through:get(1)
+  z.T2 = PA.through:get(2)
+  PA.center, PA.through = C.A:CCP(C.B,
+    z.P,"internal")
+  z.O3 = PA.center:get(1)
+  z.O4 = PA.center:get(2)
+  z.T3 = PA.through:get(1)
+  z.T4 = PA.through:get(2)}
+\begin{center}
+  \begin{tikzpicture}[scale =.5]
+ \tkzGetNodes
+ \tkzDrawCircles[thick](A,TA B,TB)
+ \tkzDrawCircles[red](O1,T1 O2,T2)
+ \tkzDrawCircles[blue](O3,T3 O4,T4)
+ \tkzDrawPoints[size=3](P)
+ \tkzLabelPoints[above](P)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+
 
 
 \subsubsection{Method \tkzMeth{circle}{CLP}(L,p)}
 \label{ssub:method_c_lc_p}
 
-This method is presented in the section \tkzname{Apollonius' problem} [\ref{sub:CLP}]
+This method is presented in the document \tkzname{Euclidean Geometry} presented in \href{http://altermundus.fr}{altermundus.fr}.
 
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(4, 0)
+  L.AB = line (z.A, z.B)
+  z.O = point(3, 3)
+  z.T = point(3, 2)
+  z.P = point(2, .25)
+  C.OT = circle(z.O, z.T)
+  PA.center, PA.through = C.OT:CLP(L.AB, z.P)
+  z.O1 =  PA.center:get(1)
+  z.O2 =  PA.center:get(2)
+  PA.center,
+  PA.through = C.OT:CLP(L.AB, z.P,'internal')
+  z.O3 = PA.center:get(1)
+  z.O4 = PA.center:get(2)}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawCircles[thick](O,T)
+  \tkzDrawCircles[red](O1,P O2,P)
+  \tkzDrawCircles[cyan](O3,P O4,P)
+  \tkzDrawLines[thick](A,B)
+  \tkzDrawPoints[size = 2](P)
+  \tkzDrawPoints(A,B,O,O1,O2,O3,O4)
+\end{tikzpicture}
+\end{tkzexample}
 
 
 \subsubsection{Method \tkzMeth{circle}{CLL}(L,L,<choice,inside>)}
 \label{ssub:method_c_cll}
 
-This method is presented in the section \tkzname{Apollonius' problem} [\ref{sub:CLL}]
+This method is presented in the document \tkzname{Euclidean Geometry} presented in \href{http://altermundus.fr}{altermundus.fr}.
 
+\vspace{1em}
+\begin{tkzexample}[vbox]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(6, -2)
+  L.AB  = line(z.A, z.B)
+  z.C = point(-3, -4)
+  z.D = point(3, 1)
+  L.CD  = line(z.C, z.D)
+  z.O = z.D + point(-3,1)
+  z.X = z.O + point(0,1)
+  C.OX = circle(z.O, z.X)
+  PA.center, PA.through = C.OX:CLL(L.AB, L.CD,"all")
+  tkz.nodes_from_paths(PA.center, PA.through)}
+\begin{center}
+\begin{tikzpicture}[scale=.75]
+ \tkzGetNodes
+ \tkzInit[xmin=-5,xmax=10,ymin=-1,ymax=5]
+ \tkzClip
+ \tkzDrawLines[blue,add =1 and .25](A,B)
+ \tkzDrawLines[blue,add =.25 and 1](C,D)
+ \tkzDrawPoints[blue,size=3](O)
+ \tkzDrawCirclesFromPaths[draw,red,thick](PA.center,PA.through)
+ \tkzDrawCircles[thick,blue](O,X)
+ \tkzDrawPoints[red,size=3](w1)
+ \tkzLabelPoints[red](O)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\subsection{Case: \tkzMeth{circle}{CCL}(C2, L)}
+\label{ssub:CCL}
+
+This method is presented in the document \tkzname{Euclidean Geometry} presented in \href{http://altermundus.fr}{altermundus.fr}.
+
+\vspace{1em}
+
+\begin{tkzexample}[vbox]
+\directlua{
+  init_elements()
+  z.A = point(-4, 4)
+  z.B = z.A + point(3, 0)
+  C.AB  = circle(z.A, z.B)
+  z.C = point(3,2)
+  z.D = z.C + point(1,0)
+  C.CD = circle(z.C, z.D)
+  z.E = point(-3, 0)
+  z.F = point(5, 0)
+  L.EF  = line(z.E, z.F)
+  PA.center, PA.through,n = C.AB:CCL(C.CD, L.EF)
+  tkz.nodes_from_paths(PA.center, PA.through)
+  }
+\begin{center}
+  \begin{tikzpicture}[scale=.5]
+\tkzGetNodes
+ \tkzInit[xmin=-8,xmax=8,ymin=-8,ymax=8]
+ \tkzClip
+ \tkzDrawLines[thick,blue](E,F)
+ \tkzDrawCircles[thick,blue](A,B C,D)
+ \tkzDrawCirclesFromPaths[draw,purple,thick](PA.center, PA.through)
+\end{tikzpicture}
+  \end{center}
+\end{tkzexample}
+
+\subsubsection{Case: \tkzMeth{circle}{CCC}(C2, C3 [, opts])}
+\label{ssub:CCC}
+
+This method is presented in the document \tkzname{Euclidean Geometry} presented in \href{http://altermundus.fr}{altermundus.fr}.
+
+\vspace{1em}
+
+\begin{tkzexample}[vbox]
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(6, 0)
+z.C = point(2, 5)
+z.a = z.A + point(3, 0)
+z.b = z.B + point(2, 0)
+z.c = z.C + point(1, 0)
+C.Aa = circle(z.A, z.a)
+C.Bb = circle(z.B, z.b)
+C.Cc = circle(z.C, z.c)
+PA.center, PA.through, n = C.Aa:CCC(C.Bb, C.Cc)
+}
+\begin{center}
+\begin{tikzpicture}[ scale = .5,gridded]
+  \tkzInit[xmin=-8,xmax=12,ymin=-8,ymax=10]
+  \tkzClip
+  \tkzGetNodes
+  \tkzDrawCircles[thick,blue](A,a B,b C,c)
+  \tkzDrawCirclesFromPaths[draw,
+    purple,thick](PA.center, PA.through)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\subsubsection{Case: \tkzMeth{circle}{CCC\_gergonne}(C\_2, C\_3)}
+\label{ssub:CCC_gergonne}
+
+
+\begin{tkzexample}[vbox]
+\directlua{
+   z.A = point(0, 0)
+   z.a = z.A + point (1, 0)
+   z.B = point (4, 1)
+   z.b = z.B + point (2, 0)
+   z.C = point (2, 6)
+   z.c = z.C + point (3, 0)
+   C.Aa = circle(z.A, z.a)
+   C.Bb = circle(z.B, z.b)
+   C.Cc = circle(z.C,z.c)
+   PA.center, PA.through = C.Aa:CCC_gergonne(C.Bb, C.Cc)
+}
+\begin{center}
+\begin{tikzpicture}[scale = 0.7]
+  \tkzInit[xmin=-8,xmax=12,ymin=-8,ymax=10]
+  \tkzClip
+  \tkzGetNodes
+  \tkzDrawCircles[fill=blue!15](A,a B,b C,c)
+  \tkzDrawCirclesFromPaths[draw,purple,thick](PA.center, PA.through)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
 
 \subsubsection{Method \tkzMeth{circle}{midcircle}}
 \label{ssub:midcircle}

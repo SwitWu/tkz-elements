@@ -1,8 +1,20 @@
 \section{Getting started}
 
 \subsection{The first code}
-A quick introduction to get you started. We assume that the following packages are installed:  \tkzNamePack{tkz-euclide}, and \tkzNamePack{tkz-elements}.
-Compile the following code using the \tkzEngine{lualatex} engine; you should obtain a line passing through points $A$ and $B$.
+
+A quick introduction to get you started.
+We assume that the packages \tkzNamePack{tkz-euclide} and \tkzNamePack{tkz-elements} are installed.
+Compile the following code using the \tkzEngine{lualatex} engine; you should obtain a straight line
+passing through points $A$ and $B$.
+
+\medskip
+\noindent
+\textbf{Note.}
+The package \tkzNamePack{tkz-elements} performs all geometric definitions and computations in Lua,
+while \tkzNamePack{tkz-euclide} is mainly used for drawing.
+For this reason, the \texttt{mini} option of \tkzNamePack{tkz-euclide} is recommended.
+If a compilation problem occurs, simply load \tkzNamePack{tkz-euclide} without this option.
+
 
 \begin{mybox}{}
 \begin{minipage}{.6\textwidth}
@@ -43,17 +55,34 @@ Compile the following code using the \tkzEngine{lualatex} engine; you should obt
 
 \subsection{Key points}
 
-These points will be essential for most of the codes in this documentation.
+The following points are essential for most of the codes in this documentation.
 
 \begin{itemize}
 \item \verb|% !TEX TS-program = lualatex|.
-It is essential to compile with \code{lualatex}. This line is not necessary if your configuration is suitable for compilation with \code{lualatex}.
-\item \verb|\usepackage[mini]{tkz-euclide}|. You can do without my \tkzNamePack{tkz-euclide} package, but if you use it, it is best to use it with the \code{mini} option. This option avoids loading all the macros used to perform calculations. These will be handled by \code{lua}.
-\item \verb|\usepackage{tkz-elements}|. Mandatory! This package must be loaded in order to use it. It provides several macros to support \tkzNamePack{tkz-euclide}, as well as a multitude of mathematical functions written using \code{lua}.
-\item \verb| \directlua{ ... }|. Mandatory! The functions of the package will be placed in the body of this macro.
-\item \verb|init_elements()|. First function of the package that we will define as mandatory. It allows you to clear all global variables that you may have used in previous code.
-\item \verb|\tkzGetNodes|. Mandatory!! First macro to be placed in the \code{tikzpicture} environment. Without this macro, the points defined in the \code{lua} section will not be recognised as \code{nodes}.
+Compilation must be done with \code{lualatex}. This line is optional if your editor is already configured accordingly.
+
+\item \verb|\usepackage[mini]{tkz-euclide}|.
+The use of \tkzNamePack{tkz-euclide} is optional; however, if it is loaded, the \code{mini} option is recommended.
+It loads only the drawing macros, while all computations are handled by \code{lua}.
+\textbf{Important:} at the current stage, some drawing macros are not yet fully independent of computation macros.
+If a compilation problem occurs, simply load \tkzNamePack{tkz-euclide} without the \code{mini} option.
+
+\item \verb|\usepackage{tkz-elements}|.
+This package is required. It provides the Lua-based geometry engine and support macros used together with \tkzNamePack{tkz-euclide}.
+
+\item \verb|\directlua{...}|.
+All geometric definitions and computations are placed inside this macro (or within a \texttt{tkzelements} environment).
+
+\item \verb|init_elements()|.
+This function should be called at the beginning of each Lua section.
+It resets internal tables and clears global variables used by \tkzNamePack{tkz-elements}.
+
+\item \verb|\tkzGetNodes|.
+This macro must be placed at the beginning of the \code{tikzpicture} environment.
+It transfers the points defined in Lua to TikZ as usable nodes.
 \end{itemize}
+
+
 
 \subsection{Testing}
 

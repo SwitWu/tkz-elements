@@ -69,7 +69,7 @@ This macro draws circles defined by two paths: one for the centers and one for t
 \end{verbatim}
 \end{mybox}
 
-See Apollonius section [\ref{sec:apollonius}] for other examples
+See the document \tkzname{Euclidean Geometry} presented in \href{http://altermundus.fr}{altermundus.fr}for other examples.
 
 \subsection{Macro \tkzMacro{tkz-elements}{tkzDrawSegmentsFromPaths}}
 \label{sub:macro_tkzDrawSegmentsFromPaths}
@@ -254,7 +254,7 @@ This example is built with the help of some of the macros presented in this sect
       z["r"..i] = point(polar(5, angle))
       ray = line(z.O, z["r"..i])
       circ = circle(z.O, z["P"..i])
-      z["X"..i], _ = intersection(ray, circ)
+      z["X"..i], _ = intersection(ray, circ, { near = z["r"..i] })
       PA.spiral:add_point(z["X"..i])
       PA.center:add_point(z.O)
       PA.through:add_point(z["P"..i])

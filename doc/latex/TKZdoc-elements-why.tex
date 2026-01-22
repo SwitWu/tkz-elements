@@ -241,22 +241,25 @@ The subsequent section exclusively deals with drawings, and is managed by \tkzNa
 }
 \begin{minipage}{\textwidth}
 
+\vspace{1em}
 \begin{center}
-\begin{tikzpicture}[ scale  = .4]
+\begin{tikzpicture}[ scale  = .6]
    \tkzGetNodes
-   \tkzFillCircles[green!30](O,xa)
-   \tkzFillCircles[teal!30](Ja,Ea Jb,Eb Jc,Ec)
-   \tkzFillCircles[lightgray](S,a)
-   \tkzFillCircles[green!30](N,Ea)
+   \tkzFillCircles[purple!50](O,xa)
+   \tkzFillCircles[orange!50](Ja,Ea Jb,Eb Jc,Ec)
+   \tkzFillCircles[yellow](S,a)
+   \tkzFillCircles[purple!30](N,Ea)
    \tkzDrawPoints(xa,xb,xc)
    \tkzDrawCircles(Ja,Ea Jb,Eb Jc,Ec S,a O,xa N,Ea)
    \tkzClipCircle(O,xa)
    \tkzDrawLines[add=3 and 3](A,B A,C B,C)
-   \tkzDrawPoints(O,A,B,C,S,Ea,Eb,Ec,N)
+   \tkzDrawPoints[red](O,A,B,C,S,Ea,Eb,Ec,N)
    \tkzDrawSegments[dashed](S,xa S,xb S,xc)
    \tkzLabelPoints(O,N,A,B)
    \tkzLabelPoints[right](S,C)
 \end{tikzpicture}
 \end{center}
 \end{minipage}
+
+
 \endinput

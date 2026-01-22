@@ -1,3 +1,22 @@
+## [2026/01/22 — version 4.45c]
+
+### Changed
+- **tkz-elements.sty**
+  - Replaced `luatexluaescapestring` with `luaescapestring`.
+
+- **line**
+  -  Simplification of the method `LLL`
+
+### Documentation
+- Corrected the example related to the radical center.
+- Improved the documentation of the `radical center` and the `radical circle`.
+- Added clarifications concerning the `mini` option of `tkz-euclide`, in particular its interaction with
+  the `\tkzCompass` macro and the `show` option.
+- Removed several sections (`examples`, `theorems`, and `apollonius`) in order to streamline the documentation.
+  These materials are now gathered in a separate document entitled *Euclidean Geometry*, available on
+  my website: `https://altermundus.fr`.
+- Correction of Archimedes Spiral example.
+
 ## [2025/12/09 — version 4.44c]
 
 ### Added

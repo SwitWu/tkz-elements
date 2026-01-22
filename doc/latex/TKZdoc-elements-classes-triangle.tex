@@ -41,7 +41,7 @@ The triangle object is created using the method \tkzMeth{triangle}{new}, for exa
 \code{T.ABC = triangle(z.A, z.B, z.C)}
 \end{center}
 
-(see examples: \ref{sub:alternate}, \ref{sub:apollonius_circle}, \ref{sub:excircles}). Several attributes are automatically computed and stored:
+Several attributes are automatically computed and stored:
 
 \begin{itemize}
   \item \textbf{Vertices:} The three vertices are accessible via:
@@ -379,9 +379,9 @@ This approach saves time and space in scripts involving medians, altitudes, bise
 
   \tkzMeth{triangle}{feuerbach\_point()} & [\ref{ssub:method_point_feuerbach}]\\
 
-  \tkzMeth{triangle}{spieker\_center()} & [\ref{ssub:method_triangle_spieker_center}; \ref{sub:apollonius_circle_v1_with_inversion}]\\
+  \tkzMeth{triangle}{spieker\_center()} & [\ref{ssub:method_triangle_spieker_center}]\\
 
-  \tkzMeth{triangle}{projection(p)}  & [\ref{sub:euler_relation}; \ref{ssub:method_triangle_projection_pt}]\\
+  \tkzMeth{triangle}{projection(p)}  & [\ref{ssub:method_triangle_projection_pt}]\\
 
   \tkzMeth{triangle}{euler\_points()} &  [\ref{ssub:method_triangle_euler__points}] \\
 
@@ -450,7 +450,7 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 
   \tkzMeth{triangle}{bisector(arg) }  & Note  \footnote{|_, z.b = L.Bb:get()| recovers the common point of the opposite side and bisector. If you don't need to use the triangle object several times, you can obtain a bisector  with the function |tkz.bisector(z.A, z.B, z.C)|  [\ref{misc}]};  [\ref{ssub:method_triangle_bisector}]\\
 
-  \tkzMeth{triangle}{bisector\_ext(arg) } & [\ref{ssub:method_triangle_bisector_ext}; \ref{sub:harmonic_division_and_bisector}]\\
+  \tkzMeth{triangle}{bisector\_ext(arg) } & [\ref{ssub:method_triangle_bisector_ext}]\\
 
 \tkzMeth{triangle}{mediator(arg)} & [\ref{ssub:triangle_mediator}]\\
 
@@ -459,19 +459,15 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 ; \ref{ssub:method_triangle_symmedial} ; \ref{ssub:method_line_isosceles}]\\
 
   \tkzMeth{triangle}{euler\_line() } &Note
-  \footnote{N center of nine points circle, G centroid, H orthocenter , O circum center } ; [\ref{ssub:euler_line}
-; \ref{sub:hexagram}]\\
+  \footnote{N center of nine points circle, G centroid, H orthocenter , O circum center } ; [\ref{ssub:euler_line}]\\
 
   \tkzMeth{triangle}{antiparallel(pt,n)} & [\ref{antiparallel};\ref{sub:antiparallel_through_lemoine_point}]\\
 
-  \tkzMeth{triangle}{steiner\_line(pt)} &[\ref{ssub:method_triangle_steiner__line}
-  ] \\
+  \tkzMeth{triangle}{steiner\_line(pt)} &[\ref{ssub:method_triangle_steiner__line}] \\
 
-  \tkzMeth{triangle}{simson\_line(pt)} &[\ref{ssub:method_triangle_simson__line}; \ref{ssub:kiepert_hyperbola}
-  ] \\
+  \tkzMeth{triangle}{simson\_line(pt)} &[\ref{ssub:method_triangle_simson__line}] \\
 
-  \tkzMeth{triangle}{lemoine\_axis()} &[\ref{ssub:method_triangle_lemoine__line}
-  ] \\
+  \tkzMeth{triangle}{lemoine\_axis()} &[\ref{ssub:method_triangle_lemoine__line}] \\
 
   \tkzMeth{triangle}{brocard\_axis()} &[\ref{ssub:method_triangle_brocard__axis}] \\
 
@@ -507,42 +503,39 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 
   \tkzMeth{triangle}{ex\_circle(n)}  & [\ref{ssub:method_triangle_ex__circle}]\\
 
-  \tkzMeth{triangle}{first\_lemoine\_circle()}    & [\ref{ssub:method_triangle_first_lemoine_circle}
-; \ref{sub:first_and_second_lemoine_circles}
-  ] \\
+\tkzMeth{triangle}{first\_lemoine\_circle()} & [\ref{ssub:method_triangle_first_lemoine_circle}] \\
 
-  \tkzMeth{triangle}{second\_lemoine\_circle()}  &  \ref{sub:first_and_second_lemoine_circles}
-; \ref{sub:antiparallel_through_lemoine_point}] \\
+\tkzMeth{triangle}{second\_lemoine\_circle()}  &  \ref{sub:antiparallel_through_lemoine_point}] \\
 
-  \tkzMeth{triangle}{spieker\_circle()} &  [\ref{ssub:method_triangle_spieker__circle}]\\
+\tkzMeth{triangle}{spieker\_circle()} &  [\ref{ssub:method_triangle_spieker__circle}]\\
 
-  \tkzMeth{triangle}{bevan\_circle()}  & [\ref{ssub:methods_triangle_bevan_circle}]\\
+\tkzMeth{triangle}{bevan\_circle()}  & [\ref{ssub:methods_triangle_bevan_circle}]\\
 
-  \tkzMeth{triangle}{cevian\_circle()} &  [\ref{ssub:_triangle_cevian__circle_pt}
+\tkzMeth{triangle}{cevian\_circle()} &  [\ref{ssub:_triangle_cevian__circle_pt}
 ; \ref{ssub:method_triangle_cevian}]\\
 
-  \tkzMeth{triangle}{symmedial\_circle()}  & [\ref{ssub:method_triangle_symmedial_circ}; \ref{ssub:method_triangle_symmedial}]\\
+\tkzMeth{triangle}{symmedial\_circle()}  & [\ref{ssub:method_triangle_symmedial_circ}; \ref{ssub:method_triangle_symmedial}]\\
 
-  \tkzMeth{triangle}{pedal\_circle()} &  [\ref{ssub:method_triangle_pedal}]\\
+\tkzMeth{triangle}{pedal\_circle()} &  [\ref{ssub:method_triangle_pedal}]\\
 
-  \tkzMeth{triangle}{conway\_circle()} &  [\ref{ssub:method_triangle_conway}]\\
+\tkzMeth{triangle}{conway\_circle()} &  [\ref{ssub:method_triangle_conway}]\\
 
-  \tkzMeth{triangle}{taylor\_circle()} &  [\ref{ssub:method_triangle_taylor__circle}]\\
+\tkzMeth{triangle}{taylor\_circle()} &  [\ref{ssub:method_triangle_taylor__circle}]\\
 
-  \tkzMeth{triangle}{kenmotu\_circle()}  & [\ref{ssub:kenmotu_circle}]\\
+\tkzMeth{triangle}{kenmotu\_circle()}  & [\ref{ssub:kenmotu_circle}]\\
 
 
-  \tkzMeth{triangle}{c\_c(pt)}  &  [\ref{ssub:method_triangle_c_c}]\\
+\tkzMeth{triangle}{c\_c(pt)}  &  [\ref{ssub:method_triangle_c_c}]\\
 
-  \tkzMeth{triangle}{thebault(pt)}  &  [\ref{ssub:method_triangle_c_c}]\\
+\tkzMeth{triangle}{thebault(pt)}  &  [\ref{ssub:method_triangle_c_c}]\\
 
-  \tkzMeth{triangle}{mixtilinear\_incircle(arg)}  &  [\ref{ssub:method_triangle_mixti}]\\
+\tkzMeth{triangle}{mixtilinear\_incircle(arg)}  &  [\ref{ssub:method_triangle_mixti}]\\
 
-  \tkzMeth{triangle}{three\_tangent\_circles} &  [\ref{ssub:method_triangle_three_tgt_c}]\\
+\tkzMeth{triangle}{three\_tangent\_circles} &  [\ref{ssub:method_triangle_three_tgt_c}]\\
 
-  \tkzMeth{triangle}{adams\_circle()}  & [\ref{ssub:method_triangle_adams_circle}]\\
+\tkzMeth{triangle}{adams\_circle()}  & [\ref{ssub:method_triangle_adams_circle}]\\
 
-  \tkzMeth{triangle}{lamoen\_circle()}  &
+\tkzMeth{triangle}{lamoen\_circle()}  &
   See [\ref{ssub:method_triangle_lamoen_points}] \\
 
 \tkzMeth{triangle}{soddy\_circle()}  &
@@ -567,13 +560,13 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 \midrule
   \tkzMeth{triangle}{orthic()}   & [\ref{ssub:method_triangle_altitude}]   \\
 
-\tkzMeth{triangle}{medial()} &  [\ref{ssub:method_triangle_medial} ; \ref{sub:nine_points} ; \ref{ssub:method_triangle_symmedial}]\\
+\tkzMeth{triangle}{medial()} &  [\ref{ssub:method_triangle_medial} ; \ref{ssub:method_triangle_symmedial}]\\
 
 \tkzMeth{triangle}{incentral()}  &[\ref{ssub:method_incentral}] \\
 
 \tkzMeth{triangle}{excentral()}  &[\ref{ssub:method_triangle_excentral}; \ref{ssub:method_triangle_feuerbach} ]  \\
 
-\tkzMeth{triangle}{extouch()}   &[\ref{ssub:method_triangle_extouch}; \ref{sub:excircles} ] \\
+\tkzMeth{triangle}{extouch()}   &[\ref{ssub:method_triangle_extouch}] \\
 
 \tkzMeth{triangle}{intouch() }   &[\ref{ssub:method_triangle_intouch}; \ref{ssub:gergonne_point}]\\
 
@@ -2200,7 +2193,8 @@ For the definition and some properties, please refer to:
 \href{ https://mathworld.wolfram.com/Orthopole.html}{Weisstein, Eric W. "Orthopole." From MathWorld--A Wolfram Web Resource.}
 \end{flushright}
 
-See the following example for the link between orthopole and Simson line: [\ref{sub:orthopole_and_simson_line}]
+See the following example for the link between orthopole and Simson line: (An example x
+can be found  in the document \tkzname{Euclidean Geometry} presented in \href{http://altermundus.fr}{altermundus.fr}.)
 
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
@@ -3847,8 +3841,7 @@ The six projections of the feet of the heights of a triangle onto the adjacent s
 
 \subsubsection{Method \tkzMeth{triangle}{adams\_circle()}}
 \label{ssub:method_triangle_adams_circle}
-See  [\ref{ssub:method_triangle_adams_points}] and [\ref{sub:adams_circle}]
-
+See  [\ref{ssub:method_triangle_adams_points}]
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   z.A = point(0.5, 4)
@@ -3884,7 +3877,7 @@ This method returns the six \emph{Lamoen points} associated with a triangle.
 
 By dividing a triangle using its three medians, six smaller triangles are formed. Remarkably, the \emph{circumcenters} of these six triangles are \emph{concyclic}, meaning they lie on a common circle. This circle is known as the \emph{van Lamoen circle}.
 
-The six circumcenters themselves are called the \emph{Lamoen points}. See  [\ref{sub:van_lamoen_s_circle}] for details on the corresponding circle.
+The six circumcenters themselves are called the \emph{Lamoen points}. See  an example on the document  \tkzname{Euclidean Geometry} presented in \href{http://altermundus.fr}{altermundus.fr}.
 
 \vspace{1em}
 

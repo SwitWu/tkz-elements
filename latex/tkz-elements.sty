@@ -1,11 +1,11 @@
 % File: tkz-elements.sty
-% Copyright (c) 2023–2025 Alain Matthes
+% Copyright (c) 2023–2026 Alain Matthes
 % SPDX-License-Identifier: LPPL-1.3c
 % Maintainer: Alain Matthes
 
-\ProvidesPackage{tkz-elements}[2025/12/09 v4.44c Graphic Object Library]
+\ProvidesPackage{tkz-elements}[2025/01/22 v4.45c Graphic Object Library]
 
-\typeout{Package tkz-elements v4.44c (2025/12/09) loaded.}
+\typeout{Package tkz-elements v4.45c (2025/01/22) loaded.}
 
 \RequirePackage{iftex}
 \ifluatex\else
@@ -88,7 +88,7 @@
     local x2, y2 = #3:get_number_path(i)
     tex.print("\\tkzDefPoint("..x1..","..y1.."){start}")
     tex.print("\\tkzDefPoint("..x2..","..y2.."){end}")
-    tex.print("\\tkzDrawSegment[" .. "\luatexluaescapestring{#1}" .. "](start,end)")
+    tex.print("\\tkzDrawSegment[" .. "\luaescapestring{#1}" .. "](start,end)")
    end
 }%
 \endgroup}%
@@ -120,7 +120,7 @@
     for i = 1, #2:count() do
       local cx, cy = #2:get_number_path(i)
       local tx, ty = #3:get_number_path(i)
-      tex.print("\\node[" .. "\luatexluaescapestring{#1}" .. ",circle through={(" .. tx .. "," .. ty .. ")}] at (" .. cx .. "," .. cy .. ") {};")
+      tex.print("\\node[" .. "\luaescapestring{#1}" .. ",circle through={(" .. tx .. "," .. ty .. ")}] at (" .. cx .. "," .. cy .. ") {};")
     end
   }
   \endgroup
@@ -158,11 +158,11 @@
   \begingroup
   \directlua{%
     local P = #3
-    local A = "\luatexluaescapestring{#2}"
+    local A = "\luaescapestring{#2}"
     for i,x,y in P:iter() do
       tex.print("\\tkzDefPoint("..x..","..y.."){tmp}")
       tex.print("\\tkzDrawSegment["..
-                "\luatexluaescapestring{#1}".."]("..A..",tmp)")
+                "\luaescapestring{#1}".."]("..A..",tmp)")
     end
   }%
   \endgroup
