@@ -1,5 +1,5 @@
--- File: tkz_elements_circles.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- File: tkz_elements_circle.lua
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 ---------------------------------------------------------------------------
@@ -17,7 +17,7 @@ function circle:new(c, t) -- c --> center t --> through
   local north = c + point(0, radius)
   local west = c - point(radius, 0)
   local perimeter = tkz.tau * radius
-  local area = 2 * tkz.tau * radius * radius
+  local area = 0.5 * tkz.tau * radius * radius
   local cir = {
     center = c,
     through = t,
@@ -42,9 +42,19 @@ setmetatable(circle, {
   end,
 })
 
-function circle:get()
-  return self.center, self.through
+function circle:get(i)
+  if i == nil then
+    return self.center, self.through
+  elseif i == 1 then
+    return self.center
+  elseif i == 2 then
+    return self.through
+  else
+    return nil
+  end
 end
+
+
 
 -- other definition
 function circle:radius(center, radius)
@@ -58,34 +68,32 @@ end
 -- Result -> boolean
 -----------------------
 
--- p est SUR le cercle (bande de tolérance)
 function circle:on_circle(p, EPS)
-   EPS = EPS or tkz.epsilon
+  EPS = EPS or tkz.epsilon
   local d = point.abs(p - self.center)
   return math.abs(d - self.radius) <= EPS
 end
 
--- Inclusif : disque fermé (<=)
 function circle:in_disk(p, EPS)
-   EPS = EPS or tkz.epsilon
+  EPS = EPS or tkz.epsilon
   return point.abs(p - self.center) <= self.radius + EPS
 end
 
--- Strict : disque ouvert (<)  — utile pour tes dispatchers
 function circle:in_disk_strict(p, EPS)
-   EPS = EPS or tkz.epsilon
-  return point.abs(p - self.center) < self.radius - EPS
+  EPS = EPS or tkz.epsilon
+  local t = self.radius - EPS
+  if t <= 0 then return false end
+  return point.abs(p - self.center) < t
 end
 
--- Strict : extérieur pur (>)
 function circle:out_disk_strict(p, EPS)
-   EPS = EPS or tkz.epsilon
+  EPS = EPS or tkz.epsilon
   return point.abs(p - self.center) > self.radius + EPS
 end
 
--- (Option) alias pour compatibilité avec ton code existant
-circle.in_out = circle.on_circle -- "SUR"
-circle.in_out_disk = circle.in_disk -- inclusif
+-- Aliases (compat)
+circle.in_out = circle.on_circle
+circle.in_out_disk = circle.in_disk
 circle.in_out_disk_strict = circle.in_disk_strict
 
 -- Tri-état canonique : "IN", "ON", "OUT"
@@ -178,7 +186,6 @@ end
 
 function circle:random(inside)
   inside = (inside == "inside")
-  math.randomseed(os.time())
   if inside then
     local x = self:point(math.random())
     local L = line:new(self.center, x)
@@ -187,6 +194,7 @@ function circle:random(inside)
     return self:point(math.random())
   end
 end
+
 
 function circle:internal_similitude(C)
   return internal_similitude_(self.center, self.radius, C.center, C.radius)
@@ -355,36 +363,66 @@ function circle:orthogonal_from(pt)
   end
 end
 
+-- function circle:orthogonal_through(pta, ptb, EPS)
+  -- EPS = EPS or tkz.epsilon
+  -- -- Case where the three points are collinear
+  -- if is_linear_(self.center, pta, ptb) then
+  --   -- and the two points are inverses of each other
+  --   if are_inverses_(self.center, self.through, pta, ptb, EPS) then
+  --     local c = midpoint_(pta, ptb)
+  --     -- Write a note to the log instead of throwing an error
+  --     texio.write_nl(
+  --       "term and log",
+  --       "[tkz-elements] circle:orthogonal_through: the two points are inverses; "
+  --         .. "the midpoint is used as the centre, but any point on the perpendicular bisector could serve as centre."
+  --     )
+--
+  --     tex.print(
+  --       "\\PackageWarningNoLine{tkz-elements}{The two points are inverses; the midpoint is used as the centre, but any point on the perpendicular bisector could serve as centre.}"
+  --     )
+--
+  --     return circle:new(c, pta)
+  --   else
+  --     -- Error case: collinear but not inverses
+  --     tex.error("circle:orthogonal_through", "The points are aligned but not inverses.")
+  --     return nil
+  --   end
+--
+  -- -- General (non‑collinear) case
+  -- else
+  --   local o = orthogonal_through_(self.center, self.through, pta, ptb, EPS)
+  --   return circle:new(o, pta)
+  -- end
+-- end
+
 function circle:orthogonal_through(pta, ptb, EPS)
+  EPS = EPS or tkz.epsilon
+
   -- Case where the three points are collinear
   if is_linear_(self.center, pta, ptb) then
-    -- and the two points are inverses of each other
+
+    -- the two points are inverses of each other
     if are_inverses_(self.center, self.through, pta, ptb, EPS) then
-      local c = midpoint_(pta, ptb)
-      -- Write a note to the log instead of throwing an error
-      texio.write_nl(
-        "term and log",
-        "[tkz-elements] circle:orthogonal_through: the two points are inverses; "
-          .. "the midpoint is used as the centre, but any point on the perpendicular bisector could serve as centre."
-      )
+      -- There is a FAMILY of solutions; picking midpoint is generally NOT orthogonal.
+      -- Return a clear diagnostic and let caller choose a convention.
+      return nil, "circle:orthogonal_through: collinear inverse points -> infinite family; choose a convention"
 
-      tex.print(
-        "\\PackageWarningNoLine{tkz-elements}{The two points are inverses; the midpoint is used as the centre, but any point on the perpendicular bisector could serve as centre.}"
-      )
-
-      return circle:new(c, pta)
     else
-      -- Error case: collinear but not inverses
-      tex.error("circle:orthogonal_through", "The points are aligned but not inverses.")
+      tex.error("circle:orthogonal_through", {"The points are aligned but not inverses."})
       return nil
     end
 
-  -- General (non‑collinear) case
   else
     local o = orthogonal_through_(self.center, self.through, pta, ptb, EPS)
+    if not o then
+      return nil, "circle:orthogonal_through: orthogonal_through_ failed"
+    end
     return circle:new(o, pta)
   end
 end
+
+circle.orthogonal_circle_through = circle.orthogonal_through
+
 
 -- alias retained
 circle.orthogonal_circle_through = circle.orthogonal_through
@@ -398,9 +436,10 @@ function circle:radical_circle(C1, C2)
   end
 end
 
+
 function circle:midcircle(obj, EPS)
-  -- Retourne le cercle médian entre 'self' et 'C'
   if type(obj) == "table" and obj.type == "circle" then
+  -- Retourne le cercle médian entre 'self' et 'C'
     return midcircle_cc_(self.center, self.through, obj.center, obj.through, EPS)
   elseif type(obj) == "table" and obj.type == "line" then
     return midcircle_cl_(self.center, self.through, obj.pa, obj.pb, EPS)
@@ -1251,7 +1290,7 @@ local function is_degenerate_circle(C, I)
   return false
 end
 
-function circle_outside_strip_(o, r, a, b, c, d)
+local function circle_outside_strip_(o, r, a, b, c, d)
   local d1 = distance_(a, b, o)   -- distance à L1
   local d2 = distance_(c, d, o)   -- distance à L2
   local D  = distance_(a, b, c)   -- distance entre L1 et L2
@@ -1342,8 +1381,8 @@ function circle:CLL(L1, L2, choice, inside)
     if inside then r = -r end
 
     -- Deux droites à distance ±r depuis I vers x/y
-    local LL1 = line(collinear_at_distance_(i, x, -r))
-    local LL2 = line(collinear_at_distance_(i, y,  r))
+    local LL1 = line:new(collinear_at_distance_(i, x, -r))
+    local LL2 = line:new(collinear_at_distance_(i, y,  r))
 
     -- LLP (version paths) : centres sur LL2, tangence sur LL1, passant par o
     local pc, pt, m = LL2:c_ll_p(LL1, o)

@@ -1,5 +1,5 @@
 -- File: tkz_elements_functions_circles.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -162,28 +162,86 @@ function are_inverses_(a, b, x, y, EPS)
 end
 
 function orthogonal_circle_through_(a, b, x, y, EPS)
-   EPS = EPS or tkz.epsilon
-    local r = point.mod(b - a)
-    local d1 = math.abs(point.mod(x - a) - r)
-    local d2 = math.abs(point.mod(y - a) - r)
-    local x_on = (d1 < EPS)
-    local y_on = (d2 < EPS)
+  EPS = EPS or tkz.epsilon
 
-    -- Cas 4 : x et y sont inverses par rapport à C(a,b)
-    if are_inverses_(a, b, x, y) then
-        -- Their perpendicular bisector passes through the center of the orthogonal circle
-        local m1, m2 = mediator_(x, y)
-        local t1, t2, n1, n2
-        if point.abs(x - a) > point.abs(y - a) then
-            t1, t2 = tangent_from_(a, b, x)
-            n1, n2 = mediator_(t1, x)
-        else
-            t1, t2 = tangent_from_(a, b, y)
-            n1, n2 = mediator_(t1, y)
-        end
-        local c = intersection_ll_(n1, n2, m1, m2)
-        return c, x
+  -- rayon du cercle de référence C(a,b)
+  local r0 = point.abs(b - a)
+
+  -- garde-fous
+  if point.abs(x - y) <= EPS then
+    return nil, "orthogonal_circle_through_: x and y must be distinct"
+  end
+
+  -- tests "sur le cercle"
+  local x_on = on_circle_(a, b, x, EPS)
+  local y_on = on_circle_(a, b, y, EPS)
+
+  ----------------------------------------------------------------------
+  -- Cas 1 : x sur C(a,b)  (ou y sur C(a,b))
+  -- Propriété: si deux cercles sont orthogonaux et partagent un point P,
+  -- alors les centres sont alignés avec P et le centre du cercle de référence.
+  -- Donc: centre C recherché est sur la droite (a,x) et aussi sur la médiatrice de [x,y].
+  ----------------------------------------------------------------------
+  if x_on then
+    local m1, m2 = mediator_(x, y)          -- médiatrice de [x,y]
+    local c = intersection_ll_(a, x, m1, m2)
+    if not c then
+      return nil, "orthogonal_circle_through_: degenerate case (x on circle)"
     end
+    return c, x
+  end
+
+  if y_on then
+    local m1, m2 = mediator_(x, y)
+    local c = intersection_ll_(a, y, m1, m2)
+    if not c then
+      return nil, "orthogonal_circle_through_: degenerate case (y on circle)"
+    end
+    return c, y
+  end
+
+  ----------------------------------------------------------------------
+  -- Cas 2 : x et y sont inverses par rapport à C(a,b)
+  -- Dans ce cas, (x,y) forment une paire inverse : il existe des cercles
+  -- orthogonaux passant par x,y ; on fixe une solution géométrique stable.
+  ----------------------------------------------------------------------
+  if are_inverses_(a, b, x, y, EPS) then
+    local m1, m2 = mediator_(x, y)          -- centre sur la médiatrice de [x,y]
+
+    -- On choisit un point "le plus éloigné" du centre a pour une construction plus stable
+    local p = (point.abs(x - a) > point.abs(y - a)) and x or y
+
+    -- tangentes depuis p au cercle C(a,b)
+    local t1, t2 = tangent_from_(a, b, p)
+    if not t1 or not t2 then
+      return nil, "orthogonal_circle_through_: tangents undefined (inverse case)"
+    end
+
+    -- centre aussi sur la médiatrice de [t1,p] (ou [t2,p], au choix)
+    local n1, n2 = mediator_(t1, p)
+    local c = intersection_ll_(m1, m2, n1, n2)
+    if not c then
+      return nil, "orthogonal_circle_through_: cannot determine center (inverse case)"
+    end
+
+    return c, x
+  end
+
+  ----------------------------------------------------------------------
+  -- Cas 3 : cas général (x pas sur le cercle, y pas sur le cercle, non inverses)
+  -- Construction standard : si z = inversion(x), alors le cercle (x,y,z) est orthogonal à C(a,b).
+  ----------------------------------------------------------------------
+  local z = inversion_(a, b, x, EPS)
+  if not z then
+    return nil, "orthogonal_circle_through_: inversion failed"
+  end
+
+  local c = circum_center_(x, y, z)
+  if not c then
+    return nil, "orthogonal_circle_through_: circumcenter undefined (collinear points?)"
+  end
+
+  return c, x
 end
 
 function inversion_(c, p, pt, EPS)
@@ -202,16 +260,18 @@ function inversion_(c, p, pt, EPS)
 end
 
 function line_position_(c, r, a, b, EPS)
-   EPS = EPS or tkz.epsilon
+  EPS = EPS or tkz.epsilon
   local d = distance_(a, b, c)
-  if d > r + 0.0001 then
-    return "disjoint"
-  elseif math.abs(d - r) <= EPS then
+
+  if tkz.approx(d, r, EPS) then
     return "tangent"
-  else
+  elseif d < r then
     return "secant"
+  else
+    return "disjoint"
   end
 end
+
 
 
 function circles_position_(c1, r1, c2, r2, EPS)
@@ -248,12 +308,9 @@ function radical_axis_(c1, p1, c2, p2)
     local r1 = point.abs(c1 - p1)
     local r2 = point.abs(c2 - p2)
     local d = point.abs(c1 - c2)
-    local h = (r1 * r1 - r2 * r2 + d * d) / (2 * d)
-
     local ck = radical_center_(c1, p1, c2, p2)
     local cj = rotation_(ck, -math.pi / 2, c1)
     local ci = symmetry_(ck, cj)
-
     return cj, ci
 end
 
@@ -328,19 +385,19 @@ function midcircle_cc_(o1, t1, o2, t2, EPS)
         c, d = intersection_lc_(o1, o2, o2, t2, EPS)
 
         -- Ensure the smaller radius circle is used first
+        local u, v, rr, ss
         if r1 < r2 then
-            z.u, z.v, z.r, z.s = a, b, c, d
+          u, v, rr, ss = a, b, c, d
         else
-            z.u, z.v, z.r, z.s = c, d, a, b
+          u, v, rr, ss = c, d, a, b
         end
 
-        -- Determine circle orientation and return orthogonal from j
-        if in_segment_(z.s, z.v, z.u) then
-            Cx = circle:diameter(z.r, z.v)
-            Cy = circle:diameter(z.u, z.s)
+        if in_segment_(ss, v, u) then
+          Cx = circle:diameter(rr, v)
+          Cy = circle:diameter(u, ss)
         else
-            Cx = circle:diameter(z.s, z.v)
-            Cy = circle:diameter(z.u, z.r)
+          Cx = circle:diameter(ss, v)
+          Cy = circle:diameter(u, rr)
         end
 
         -- Return the circle with the smaller radius orthogonal from j
@@ -373,7 +430,7 @@ end
 --   - secant  : two circles (centers A and B through an intersection S)
 function midcircle_cl_(O, T, x, y, EPS)
   EPS  = EPS or tkz.epsilon
-  r = length_(T, O)
+  local r = length_(T, O)
 
   -- Foot H of the perpendicular from O to line (x,y)
   local H = projection_(x, y, O)

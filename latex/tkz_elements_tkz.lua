@@ -1,5 +1,5 @@
 -- File: tkz_elements_tkz.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -22,6 +22,12 @@ tkz.max_coord_safe = 0.9 * tkz.max_coord_cm       -- ≈ 518 cm
 
 tkz.has_coord_warning = false
 tkz.coord_warnings    = {}
+
+if not tkz._seeded then
+	math.randomseed(os.time())
+	tkz._seeded = true
+end
+
 
 function tkz.register_coord_warning(name, x, y)
 	tkz.has_coord_warning = true
@@ -129,10 +135,6 @@ function tkz.angle_between_vectors(a, b, c, d)
 	return tkz_angle_between_vectors_(a, b, c, d)
 end
 
-function tkz.round(num, idp)
-	local mult = 10 ^ (idp or 0)
-	return math.floor(num * mult + 0.5) / mult
-end
 
 function tkz.solve_linear_system(M, N)
 	if not M or not N then
@@ -169,7 +171,7 @@ function tkz.solve_linear_system(M, N)
 	end
 
 	-- Résolution par Gauss-Jordan
-	local sol = MA:gauss_jordan_rect()
+	local sol = MA:gauss_jordan()
 
 	--
 	local S = {}
@@ -254,7 +256,7 @@ function tkz.solve_quadratic_(a, b, c)
 			delta = 0
 		end
 		if delta < 0 then
-			root1, root2 = false, false --solve_cx_quadratic(a, b, c)
+			root1, root2 = nil, nil --solve_cx_quadratic(a, b, c)
 		elseif delta == 0 then
 			root1 = -b / (2 * a)
 			root2 = -b / (2 * a)
@@ -318,9 +320,6 @@ function tkz.line_coefficients(xa, ya, xb, yb)
 	return (yb - ya) / (xb - xa), (xb * ya - xa * yb) / (xb - xa)
 end
 
-function tkz.angle_between_vectors(a, b, c, d)
-	return tkz_angle_between_vectors_(a, b, c, d)
-end
 
 function tkz.barycenter(...)
 	return barycenter_(...)
@@ -370,8 +369,11 @@ function tkz.is_integer(x)
 		and is_zero_(x - tkz_round_(x))
 end
 
-function tkz.near_integer(x)
-	return is_zero_(x % 1)
+function tkz.near_integer(x, EPS)
+	EPS = EPS or tkz.epsilon
+	if type(x) ~= "number" then return false end
+	if x ~= x or x == math.huge or x == -math.huge then return false end -- NaN / ±Inf
+	return math.abs(x - math.floor(x + 0.5)) <= EPS
 end
 
 function tkz.orient2d(x1, y1, x2, y2, x3, y3)
@@ -422,9 +424,11 @@ function tkz.poncelet_point(a, b, c, d)
 end
 
 function tkz.orthopole(a, b, c, l)
-	local ap, bp, cp = l:projection(a, b, c)
-	local bpp = self.ca:projection(bp)
-	local app = self.bc:projection(ap)
+	local p, q = l:get()
+  local ap = projection_(p, q, a)
+  local bp = projection_(p, q, b)
+	local app = projection_(b, c, ap)
+	local bpp = projection_(a, c, bp)
 	local la = line:new(ap, app)
 	local lb = line:new(bp, bpp)
 	return intersection(la, lb)

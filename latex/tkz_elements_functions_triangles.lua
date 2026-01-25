@@ -1,5 +1,5 @@
 -- File: tkz_elements_functions_triangles.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -105,16 +105,21 @@ function trilinear_to_d_(x, y, z, a, b, c)
 end
 
 function barycentric_coordinates_(a, b, c, pt)
-	local xA, yA = a.re, a.im
-	local xB, yB = b.re, b.im
-	local xC, yC = c.re, c.im
-	local xP, yP = pt.re, pt.im
-	local orient2d_ABC = oriented_area2_(xA, yA, xB, yB, xC, yC)
-	local l_A = oriented_area2_(xP, yP, xB, yB, xC, yC) / orient2d_ABC
-	local l_B = oriented_area2_(xA, yA, xP, yP, xC, yC) / orient2d_ABC
-	local l_C = oriented_area2_(xA, yA, xB, yB, xP, yP) / orient2d_ABC
+	local xA,yA,xB,yB,xC,yC = a.re,a.im,b.re,b.im,c.re,c.im
+	local xP,yP = pt.re, pt.im
+	local orient2d_ABC = oriented_area2_(xA,yA,xB,yB,xC,yC)
+
+	if is_zero_(orient2d_ABC) then
+		tex.error("Degenerate triangle: vertices aligned (barycentric).")
+		return
+	end
+
+	local l_A = oriented_area2_(xP,yP,xB,yB,xC,yC) / orient2d_ABC
+	local l_B = oriented_area2_(xA,yA,xP,yP,xC,yC) / orient2d_ABC
+	local l_C = oriented_area2_(xA,yA,xB,yB,xP,yP) / orient2d_ABC
 	return l_A, l_B, l_C
 end
+
 
 function trilinear_coordinates_(a, b, c, pt)
 	local la, lb, lc = barycentric_coordinates_(a, b, c, pt)
@@ -304,7 +309,12 @@ end
 --------------------
 -- N,G,H,O
 function euler_line_(a, b, c)
-	check_equilateral_(a, b, c)
+	-- ---- equilateral: all centers coincide, Euler line degenerates to a point
+if check_equilateral_(a, b, c, EPS) then
+	local g = centroid_(a, b, c)
+	return g, g, g, g
+end
+
 	local A = math.tan(get_angle_(a, b, c))
 	local B = math.tan(get_angle_(b, c, a))
 	local C = math.tan(get_angle_(c, a, b))
@@ -326,7 +336,7 @@ function bisector_ext_(a, b, c)
 end
 
 function mediators_(a, b, c)
-	local o = circum_center(a, b, c)
+	local o = circum_center_(a, b, c)
 	return o, projection_(b, c, o), projection_(a, c, o), projection_(a, b, o)
 end
 

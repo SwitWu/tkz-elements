@@ -1,5 +1,5 @@
--- File: tkz_elements_functions_vector.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- File: tkz_elements_functions_vectors.lua
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -10,8 +10,6 @@ end
 
 -- Retourne la nouvelle TÊTE du vecteur, pas le vecteur scalaire
 function scaled_head_(v, d)
-	return v.tail + point(
-			d * v.norm * math.cos(v.slope),
-			d * v.norm * math.sin(v.slope)
-	)
+	return v.tail + d * (v.head - v.tail)
 end
+

@@ -1,3 +1,59 @@
+## [2026/01/25 — version 4.50c]
+### Added
+- **angle**
+  - New class `angle` (experimental):
+     provides a dedicated object for oriented and non-oriented angles.
+     This class is experimental and not yet fully integrated into all
+     parts of the package.
+- **list_point**
+  - New class `list_point` (experimental):
+    container class for ordered collections of points.
+    This class is experimental and not yet fully integrated into the
+     whole tkz-elements ecosystem.
+- **quadrilateral**
+   - Added is_convex and corrected area computation in quadrilateral.
+- **conic**
+   - Added method conic:get(i).
+- **point**
+   - Added new midpoint helper functions in point:
+      - midpoints_chain_(...)
+      - midpoints_cycle_(...)
+- **matrix**
+    -  Added matrix:gauss_jordan and matrix:rank (documentation pending).
+
+### Removed
+- Removed alternative and ambiguous definitions:
+    - circle:radius(center, radius)
+- Deprecated circle constructors in favor of explicit factories:
+    - from_radius
+    - from_diameter
+- Removed obsolete triangle area computation based on circular formulas.
+
+### Fixed
+- Fixed a bug in `conic:common_tangent` (`E2 = CO.E2`).
+- Fixed incorrect area formula in `circle:area`
+  (previously `0.5 * tkz.tau * radius^2`).
+- Fixed several bugs in the `circle`, `line`, and `point` classes.
+- Fixed a bug in `regular_polygon:side`.
+- Fixed `get_points` for ellipses (method no longer applicable).
+- Fixed `line_position_(c, r, a, b, EPS)` behavior.
+- Fixed issues related to orthogonal constructions in `tkz` (orthopole).
+- Improved tkz.parabola.
+### Changed
+- Replaced `matrix:identity` by `matrix.identity`.
+- Rewritten `triangle:get_angle`.
+- Changed `orthogonal_circle_through_` implementation.
+- Renamed projection-based constructions:
+- `proj` → `apothem_foot` in `regular_polygon` and `square`.
+- Defined `apothem` as an alias for `inradius`.
+- Changed `square:side` into `square.from_side`.
+- Changed `square:rotation` into `square.by_rotation`.
+- Updated square construction from a line
+- `iscyclic` now is `is_cyclic` in quadrilateral.
+
+### Todo
+- Clarify and extend common tangent computations for conics.
+
 ## [2026/01/22 — version 4.45c]
 
 ### Changed

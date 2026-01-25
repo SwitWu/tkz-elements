@@ -51,7 +51,7 @@ Creation | RP.IA = regular_polygon(z.I,z.A,6)|
   \tkzAttr{regular}{side}    & |s = RP.IA.side| ; s = length of side\\
   \tkzAttr{regular}{circumradius}&  |S.AB.circumradius| ; radius of the circumscribed circle \\
   \tkzAttr{regular}{inradius}&  |S.AB.inxradius| ; radius of the inscribed circle   \\
-  \tkzAttr{regular}{proj}    &  |RP.IA.proj| ; projection of the center on one side   \\
+  \tkzAttr{regular}{apothem}    &  |RP.IA.apothem| ; projection of the center on one side   \\
   \tkzAttr{regular}{angle}   &  |RP.IA.angle| ; angle formed by the center and 2 consecutive vertices   \\
   \bottomrule %
   \end{tabular}
@@ -73,7 +73,7 @@ RP.five  = regular_polygon(z.I,z.A,5)
 RP.five : name ("P_")
 C.ins  = circle:radius(z.I,
              RP.five.inradius)
-z.H = RP.five.proj
+z.H = RP.five.apothem
 }
 \begin{tikzpicture}[scale = .75]
 \def\nb{\tkzUseLua{RP.five.nb}}
@@ -94,7 +94,7 @@ z.H = RP.five.proj
    RP.five = regular_polygon(z.I,z.A,5)
    RP.five : name ("P_")
    C.ins  = circle:radius( z.I , RP.five.inradius )
-   z.H = RP.five.proj
+   z.H = RP.five.apothem_foot
   }
 
 \begin{center}

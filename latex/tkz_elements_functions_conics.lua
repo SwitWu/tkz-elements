@@ -1,5 +1,5 @@
 -- File: tkz_elements_functions_conics.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -344,7 +344,7 @@ end
 function matrix_conic(coefficients)
 	local A, B, C, D, E, F =
 		coefficients.A, coefficients.B, coefficients.C, coefficients.D, coefficients.E, coefficients.F
-	return matrix:square(3, A, B, D, B, C, E, D, E, F)
+	return matrix.square(3, A, B, D, B, C, E, D, E, F)
 end
 
 function search_ellipse(...)
@@ -359,7 +359,7 @@ function search_ellipse(...)
 	end
 	Names = { ... }
 	points = create_coordinates_table(table.unpack(Names))
-	local ma = matrix:create(5, 6)
+	local ma = matrix.create(5, 6)
 	for i, point in ipairs(points) do
 		local x, y = point[1], point[2]
 		ma.set[i][1] = x * x
@@ -369,7 +369,7 @@ function search_ellipse(...)
 		ma.set[i][5] = y
 		ma.set[i][6] = 1
 	end
-	local mm = ma:gauss_jordan_rect()
+	local mm = ma:gauss_jordan()
 	local coefficients = {}
 	for i = 1, 5 do
 		coefficients[i] = -mm.set[i][6]
@@ -396,7 +396,7 @@ function search_ellipse_(...)
 	end
 	Names = { ... }
 	points = create_coordinates_table_(table.unpack(Names))
-	local ma = matrix:create(5, 6)
+	local ma = matrix.create(5, 6)
 	for i, point in ipairs(points) do
 		local x, y = point[1], point[2]
 		ma.set[i][1] = x * x
@@ -406,7 +406,7 @@ function search_ellipse_(...)
 		ma.set[i][5] = y
 		ma.set[i][6] = 1
 	end
-	local mm = ma:gauss_jordan_rect()
+	local mm = ma:gauss_jordan()
 	local coefficients = {}
 	for i = 1, 5 do
 		coefficients[i] = -mm.set[i][6]

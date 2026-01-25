@@ -1,5 +1,5 @@
 -- File: tkz_elements_functions_regular.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 

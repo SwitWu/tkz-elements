@@ -14,7 +14,7 @@
 ]{tkz-doc}
 %\overfullrule=5pt
 \gdef\tkznameofpack{tkz-elements}
-\gdef\tkzversionofpack{4.45c}
+\gdef\tkzversionofpack{4.50c}
 \gdef\tkzdateofpack{\today}
 \gdef\tkznameofdoc{tkz-elements.pdf}
 \let\tkzversionofdoc\tkzversionofpack
@@ -101,6 +101,11 @@
 \usepackage{fancyvrb}
 \usepackage{enumitem}
 \usepackage{moreenum}
+\usepackage{textcomp}
+\usepackage{mathtools,amsfonts}
+\usepackage{amsthm}
+\usepackage{thmtools}
+
 \usepackage[most]{tcolorbox}
 \newtcolorbox{mybox}{
   enhanced,
@@ -259,6 +264,8 @@ parallelogram & \hyperref[parallelogram:attributes]{see table}\\
 regular & \hyperref[regular:attributes]{see table}   \\
 vector & \hyperref[vector:attributes]{see table}     \\
 matrix & \hyperref[matrix:attributes]{see table}     \\
+angle & \hyperref[angle:attributes]{see table}     \\
+list\_point & \hyperref[list_point:attributes]{see table}     \\
 \end{tabular}
 \section*{Methods Overview}
 \begin{tabular}{ll}
@@ -280,6 +287,8 @@ parallelogram & \hyperref[parallelogram:methods]{see table} \\
 regular & \hyperref[regular:methods]{see table}   \\
 vector & \hyperref[vector:methods]{see table}   \\
 matrix & \hyperref[matrix:methods]{see table} \\
+angle & \hyperref[angle:methods]{see table}     \\
+list\_point & \hyperref[list_point:methods]{see table}     \\
 \end{tabular}
 \section*{Metamethods Overview}
 \begin{tabular}{ll}
@@ -289,6 +298,7 @@ point  & \hyperref[point:methods]{see table}  \\
 occs   & \hyperref[occs:methods]{see table}   \\
 vector & \hyperref[vector:methods]{see table} \\
 matrix & \hyperref[matrix:methods]{see table} \\
+path & \hyperref[path:methods]{see table} \\
 \end{tabular}
 \clearpage
 \tableofcontents
@@ -317,7 +327,8 @@ matrix & \hyperref[matrix:methods]{see table} \\
 \input{TKZdoc-elements-classes-vectors.tex}
 \input{TKZdoc-elements-classes-matrices.tex}
 \input{TKZdoc-elements-classes-path.tex}
-\input{TKZdoc-elements-classes-angles.tex}
+\input{TKZdoc-elements-classes-list-point.tex}
+\input{TKZdoc-elements-classes-angle.tex}
 \input{TKZdoc-elements-intersection.tex}
 \input{TKZdoc-elements-macros.tex}
 \input{TKZdoc-elements-constants.tex}
@@ -327,10 +338,8 @@ matrix & \hyperref[matrix:methods]{see table} \\
 \input{TKZdoc-elements-lua.tex}
 \input{TKZdoc-elements-indepthstudy.tex}
 \input{TKZdoc-elements-transfers.tex}
-% \input{TKZdoc-elements-apollonius.tex}
-% \input{TKZdoc-elements-theorems.tex}
-% \input{TKZdoc-elements-examples.tex}
 \input{TKZdoc-elements-metapost.tex}
+
 \clearpage\newpage
 \small\printindex
 

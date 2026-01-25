@@ -1,16 +1,8 @@
 -- File: tkz_elements_functions_points.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
-function id()
-	for i, k in pairs(z) do
-		if _G[i] == k then
-		else
-			_G[i] = k
-		end
-	end
-end
 
 function polar_(radius, phi)
 	return point(radius * math.cos(phi), radius * math.sin(phi))
@@ -32,12 +24,15 @@ function barycenter_(...)
 		sum = sum + cp[i][1] * cp[i][2]
 		weight = weight + cp[i][2]
 	end
+	if weight == 0 then
+		tex.error("barycenter_: sum of weights is zero")
+	end
 	return sum / weight
 end
 
 function rotation_(c, a, pt)
-	local z = point(math.cos(a), math.sin(a))
-	return z * (pt - c) + c
+	local r = point(math.cos(a), math.sin(a))
+	return r * (pt - c) + c
 end
 
 -- Define the set_rotation_ function
@@ -76,8 +71,8 @@ function set_homothety_(c, coeff, ...)
 	return table.unpack(t)
 end
 
-function translation_(a, p)
-	return a + p
+function translation_(u, p)
+	return u + p
 end
 
 function set_translation_(u, ...)
@@ -90,12 +85,17 @@ function set_translation_(u, ...)
 end
 
 function random_point_(lower, upper)
-	math.randomseed(tonumber(tostring(os.time()):reverse():sub(1, 6)))
-	x = math.random(lower, upper)
-	y = math.random(lower, upper)
+	if not tkz._seeded then
+		math.randomseed(os.time())
+		tkz._seeded = true
+	end
+	local x = math.random(lower, upper)
+	local y = math.random(lower, upper)
 	return point(x, y)
 end
 
+-- midpoints_chain_(...)
+-- midpoints_cycle_(...)
 function midpoints_(...)
 	local arg = table.pack(...)
 	local n = arg.n
@@ -111,13 +111,49 @@ function midpoint_(a, b)
 	return (a + b) / 2
 end
 
+function midpoints_chain_(...)
+	local arg = table.pack(...)
+	local n = arg.n
+	local t = {}
+
+	if n < 2 then
+		return nil
+	end
+
+	for i = 1, n - 1 do
+		t[#t + 1] = (arg[i] + arg[i + 1]) / 2
+	end
+
+	return table.unpack(t)
+end
+
+function midpoints_cycle_(...)
+	local arg = table.pack(...)
+	local n = arg.n
+	local t = {}
+
+	if n < 2 then
+		return nil
+	end
+
+	for i = 1, n - 1 do
+		t[#t + 1] = (arg[i] + arg[i + 1]) / 2
+	end
+
+	-- fermeture du cycle
+	t[#t + 1] = (arg[n] + arg[1]) / 2
+
+	return table.unpack(t)
+end
+
+
+-- depreciated remove ellipse
 function get_points(obj)
 	-- Map of object types to their respective point keys
 	local point_map = {
 		line = { "pa", "pb" }, -- Line has two points
 		triangle = { "pa", "pb", "pc" }, -- Triangle has three points
 		circle = { "center", "through" }, -- Circle has center and a point through its circumference
-		ellipse = { "pc", "pa", "pb" }, -- Ellipse has three key points
 		square = { "pa", "pb", "pc", "pd" }, -- Square has four vertices
 		rectangle = { "pa", "pb", "pc", "pd" }, -- Rectangle has four vertices
 		quadrilateral = { "pa", "pb", "pc", "pd" }, -- Quadrilateral has four vertices

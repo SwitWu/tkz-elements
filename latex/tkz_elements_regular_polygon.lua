@@ -1,12 +1,16 @@
--- File: tkz_elements_regular.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- File: tkz_elements_regular_polygon.lua
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
 
 regular_polygon = {}
 regular_polygon.__index = regular_polygon
-function regular_polygon:new(za, zb, nb) -- za = center zb a vertex
+function regular_polygon:new(za, zb, nb)
+	if nb < 3 then
+		tex.error("Regular polygon: nb must be >= 3")
+		return
+	end -- za = center zb a vertex
 	local type = "regular_polygon"
 	local vertices = regular_(za, zb, nb)
 	local center = za
@@ -15,8 +19,8 @@ function regular_polygon:new(za, zb, nb) -- za = center zb a vertex
 	local circumradius = point.abs(zb - za)
 	local circle = circle:new(za, zb)
 	local inradius = circumradius * math.cos(math.pi / nb)
-	local side = circumradius * math.sin(math.pi / nb)
-	local proj = projection_(vertices[1], vertices[2], za)
+	local side = 2 * circumradius * math.sin(math.pi / nb)
+	local apothem_foot = projection_(vertices[1], vertices[2], za)
 	local perimeter = nb * side
 	local area = (perimeter * inradius) / 2
 	local regular = {
@@ -25,12 +29,13 @@ function regular_polygon:new(za, zb, nb) -- za = center zb a vertex
 		through = through,
 		circumradius = circumradius,
 		inradius = inradius,
+		apothem = inradius,
 		vertices = vertices,
 		circle = circle,
 		nb = nb,
 		angle = angle,
 		side = side,
-		proj = proj,
+		apothem_foot = apothem_foot,
 		perimeter = perimeter,
 		area = area,
 	}

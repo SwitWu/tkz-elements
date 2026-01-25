@@ -1,3 +1,8 @@
+-- File: tkz_elements_angle.lua
+-- Copyright (c) 2026 Alain Matthes
+-- SPDX-License-Identifier: LPPL-1.3c
+-- Maintainer: Alain Matthes
+
 angle = {}
 angle.__index = angle
 

@@ -1,5 +1,5 @@
--- File: tkz_elements_vectors.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- File: tkz_elements_vector.lua
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -14,9 +14,12 @@ function vector:new(za, zb)
 	local dx = z.re
 	local dy = z.im
 	local norm = point.mod(z)
-	local slope = angle_normalize_(point.arg(z))
+	local slope = 0
+	if norm > (tkz.epsilon or 0) then
+		slope = angle_normalize_(point.arg(z))
+	end
 local vect = {
-			type  = "vector",
+			type  = type,
 			tail  = za,
 			head  = zb,
 			z     = z,
@@ -125,10 +128,11 @@ end
 
 
 function vector:normalize()
-	if self.norm == 0 then
-		tex.error("Cannot normalize the zero vector.")
-		return self
-	end
+  local EPS = tkz.epsilon
+  if self.norm <= EPS then
+  	tex.error("Cannot normalize a near-zero vector.")
+  	return self
+  end
 	local u = point(self.z.re / self.norm, self.z.im / self.norm)
 	return vector:new(self.tail, self.tail + u)
 end

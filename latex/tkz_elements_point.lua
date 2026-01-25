@@ -1,5 +1,5 @@
 -- File: tkz_elements_point.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -257,7 +257,7 @@ function point.norm(z)
 end
 
 function point.power(z, n)
-	if type(z) == number then
+	if type(z) == "number" then
 		return z ^ n
 	else
 		local m = z.modulus ^ n
@@ -267,7 +267,7 @@ function point.power(z, n)
 end
 
 function point.arg(z)
-	cx = topoint(z)
+	local cx = topoint(z)
 	return math.atan(cx.im, cx.re)
 end
 
@@ -322,13 +322,21 @@ end
 
 function point:normalize()
 	local d = point.abs(self)
-	return point(self.re / d, self.im / d)
+	if d < tkz.epsilon then
+	 tex.error("division by zero" )
+  else
+		return point(self.re / d, self.im / d)
+		end
 end
 
 function point:normalize_from(p)
 	local u = (self - p)
 	local d = point.abs(u)
+	if d < tkz.epsilon then
+	 tex.error("division by zero" )
+	else
 	return point(u.re / d, u.im / d) + p
+end
 end
 
 function point:identity(pt)
@@ -365,7 +373,7 @@ end
 -- Shift the current point A along the direction (AB)
 -- by a distance "dist"
 function point:shift_collinear_to(B, dist)
-	local v = (B - self):normalized()
+	local v = (B - self):normalize()
 	return self + v*dist
 end
 -- =====================
@@ -418,7 +426,7 @@ function point:symmetry(...)
 		elseif obj.type == "circle" then
 			return circle:new(set_symmetry_(self, obj.center, obj.through)) -- Create a new circle
 		else
-			return triangle:new(set_symmetry(self, obj.pa, obj.pb, obj.pc)) -- Create a new triangle
+			return triangle:new(set_symmetry_(self, obj.pa, obj.pb, obj.pc)) -- Create a new triangle
 		end
 	else -- If there are multiple arguments
 		local results = {} -- Initialize a table to store results

@@ -1,5 +1,5 @@
 -- File: tkz_elements_functions_lines.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -12,7 +12,7 @@ function distance_(a, b, pt)
 end
 
 function line_in_out_(a, b, pt)
-	return math.abs((pt - a) ^ (pt - b)) <= tkz.epsilon
+	return math.abs((b - a) ^ (pt - a)) <= tkz.epsilon
 end
 
 function is_parallel_(pa, pb, pc, pd)

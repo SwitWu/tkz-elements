@@ -1,5 +1,5 @@
 -- File: tkz_elements_main.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -15,6 +15,7 @@ local modules = {
 	"parallelogram",
 	"path",
 	"point",
+	"list_point",
 	"quadrilateral",
 	"rectangle",
 	"regular_polygon",
@@ -43,28 +44,18 @@ require("tkz_elements_functions_regular.lua")
 require("tkz_elements_functions_matrices.lua")
 require("tkz_elements_functions_conics.lua")
 require("tkz_elements_functions_vectors.lua")
+require("tkz_elements_functions_square.lua")
+require("tkz_elements_functions_parallelogram.lua")
 require("tkz_elements_tkz.lua")
 
 -- Initialize elements
 
 function init_elements()
-	local tables_to_clear = {
-		"A",
-		"C",
-		"CO",
-		"L",
-		"M",
-		"O",
-		"P",
-		"PA",
-		"Q",
-		"R",
-		"RP",
-		"S",
-		"T",
-		"V",
-		"z",
-	}
+local tables_to_clear = {
+	"A","C","CO","L","M","O","P","PA","LP",
+	"Q","R","RP","S","T","V","z",
+}
+
 	for _, name in ipairs(tables_to_clear) do
 		_G[name] = {}
 	end

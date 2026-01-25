@@ -1,5 +1,5 @@
--- File: tkz_elements_matrices.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- File: tkz_elements_matrix.lua
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -41,35 +41,62 @@ function matrix.__sub(m1, m2)
 	return add_matrix(m1, k_mul_matrix(-1, m2))
 end
 
-function matrix.__pow(m, num)
-	-- Handle transpose (when num is 'T')
-	if num == "T" then
+
+function matrix.__pow(m, exp)
+	-- --- Transpose shortcut (A^"T")
+	if exp == "T" then
 		return transposeMatrix(m)
 	end
 
-	-- Handle exponentiation by 0 (returns the identity matrix)
-	if num == 0 then
-		return matrix:new(#m, "I") -- Identity matrix
+	-- --- Only integer powers are supported
+	if type(exp) ~= "number" or exp ~= math.floor(exp) then
+		return nil, "matrix.__pow: exponent must be an integer (or 'T' for transpose)"
 	end
 
-	-- Handle negative exponents (invert the matrix)
-	if num < 0 then
-		local inv_matrix, err = inv_matrix(m)
-		if not inv_matrix then
-			return nil, err -- Return nil and the error if matrix is non-invertible
+	-- --- Power defined only for square matrices
+	if getmetatable(m) ~= matrix then
+		return nil, "matrix.__pow: left operand must be a matrix"
+	end
+	if not m:is_square() then
+		return nil, "matrix.__pow: power is defined only for square matrices"
+	end
+
+	local n = m.rows
+
+	-- --- A^0 = I
+	if exp == 0 then
+		return id_matrix(n)
+	end
+
+	-- --- If exp < 0, use inverse
+	local base = m
+	if exp < 0 then
+		local inv, err = inv_matrix(m)  -- IMPORTANT: do not shadow the function name
+		if not inv then
+			return nil, err or "matrix.__pow: matrix is not invertible"
 		end
-		num = -num -- Make exponent positive for easier handling
-		m = inv_matrix -- Now use the inverted matrix
+		base = inv
+		exp = -exp
 	end
 
-	-- Now handle the positive exponentiation
-	local result = m
-	for i = 2, num do
-		result = mul_matrix(result, m) -- Repeated multiplication
+	-- --- Fast exponentiation (binary exponentiation)
+	local result = id_matrix(n)
+	local p = exp
+	local b = base
+
+	while p > 0 do
+		if (p % 2) == 1 then
+			result = mul_matrix(result, b)
+		end
+		p = math.floor(p / 2)
+		if p > 0 then
+			b = mul_matrix(b, b)
+		end
 	end
 
 	return result
 end
+
 
 function matrix.__tostring(A)
 	local mt = (A.type == "matrix" and A.set or A)
@@ -87,9 +114,10 @@ end
 function matrix.__eq(A, B)
 	local mt1 = (A.type == "matrix" and A.set or A)
 	local mt2 = (B.type == "matrix" and B.set or B)
-	if A.type ~= B.type then
+  if getmetatable(A) ~= matrix or getmetatable(B) ~= matrix then
 		return false
 	end
+
 
 	if #mt1 ~= #mt2 or #mt1[1] ~= #mt2[1] then
 		return false
@@ -105,7 +133,7 @@ function matrix.__eq(A, B)
 	return true
 end
 
-function matrix:square(n, ...)
+function matrix.square(n, ...)
 	local m = {}
 	local t = table.pack(...)
 	if n * n == #t then
@@ -121,7 +149,7 @@ function matrix:square(n, ...)
 	end
 end
 
-function matrix:vector(...)
+function matrix.vector(...)
 	local m = {}
 	local t = table.pack(...)
 	for i = 1, #t do
@@ -133,7 +161,7 @@ end
 
 matrix.column = matrix.vector
 
-function matrix:row_vector(...)
+function matrix.row_vector(...)
 	local m = {}
 	local t = table.pack(...)
 	m[1] = {}
@@ -143,7 +171,7 @@ function matrix:row_vector(...)
 	return matrix:new(m)
 end
 
-function matrix:create(rows, cols)
+function matrix.create(rows, cols)
 	local mat = {}
 	for i = 1, rows do
 		mat[i] = {}
@@ -235,159 +263,250 @@ function matrix:print(style, fmt)
 	return print_matrix(self, style, fmt)
 end
 
-function matrix:identity(n)
-	return id_matrix(n)
-end
+
 
 -------------------------
 -- homogeneous transformation matrix
-function matrix:htm(phi, a, b, c, d)
+function matrix.htm(phi, a, b, c, d)
 	local tx = (a or 0)
 	local ty = (b or 0)
 	local sx = (c or 1)
 	local sy = (d or 1)
 	local phi = (phi or 0)
-	return matrix:square(3, sx * math.cos(phi), -math.sin(phi), tx, math.sin(phi), sy * math.cos(phi), ty, 0, 0, 1)
+	return matrix.square(3, sx * math.cos(phi), -math.sin(phi), tx, math.sin(phi), sy * math.cos(phi), ty, 0, 0, 1)
 end
 -------------------------
 
-function matrix:is_orthogonal()
-	return isOrthogonal_(self)
+
+function matrix:swap_rows(i, j)
+	local A = {}
+	for r = 1, self.rows do
+		A[r] = {}
+		for c = 1, self.cols do
+			A[r][c] = self.set[r][c]
+		end
+	end
+	A[i], A[j] = A[j], A[i]
+	return matrix:new(A)
 end
 
-function matrix:swap_rows(row1, row2)
-	self.set[row1], self.set[row2] = self.set[row2], self.set[row1]
-	return self.set
+function matrix:swap_rows_inplace(i, j)
+	self.set[i], self.set[j] = self.set[j], self.set[i]
+	self.det = nil
+	return self
 end
+
 
 function matrix:k_mul_row(row, k)
-	for j = 1, #self.set[row] do
-		self.set[row][j] = self.set[row][j] * k
+	local A = {}
+	for i = 1, self.rows do
+		A[i] = {}
+		for j = 1, self.cols do
+			A[i][j] = self.set[i][j]
+		end
 	end
-	return self.set
+
+	for j = 1, self.cols do
+		A[row][j] = A[row][j] * k
+	end
+
+	return matrix:new(A)
 end
+
 
 -- Ajoute à la ligne target_row la ligne source_row multipliée par k
 function matrix:add_k_mul_row(target_row, source_row, k)
-	for j = 1, #self.set[target_row] do
+	local A = {}
+	for i = 1, self.rows do
+		A[i] = {}
+		for j = 1, self.cols do
+			A[i][j] = self.set[i][j]
+		end
+	end
+
+	for j = 1, self.cols do
+		A[target_row][j] = A[target_row][j] + A[source_row][j] * k
+	end
+
+	return matrix:new(A)
+end
+
+function matrix:k_mul_row_inplace(row, k)
+	for j = 1, self.cols do
+		self.set[row][j] = self.set[row][j] * k
+	end
+	self.det = nil
+	return self
+end
+
+function matrix:add_k_mul_row_inplace(target_row, source_row, k)
+	for j = 1, self.cols do
 		self.set[target_row][j] = self.set[target_row][j] + self.set[source_row][j] * k
 	end
-	return self.set
+	self.det = nil
+	return self
 end
+
+
+
+local function copy2d_(M)
+	local C = {}
+	for i = 1, #M do
+		C[i] = {}
+		for j = 1, #M[i] do
+			C[i][j] = M[i][j]
+		end
+	end
+	return C
+end
+
+
 
 function matrix:gauss_jordan()
-	local rows = self.rows
-	local cols = self.cols
-	if rows == cols then
-		for i = 1, rows do
-			local maxRow = i
-			for k = i + 1, rows do
-				if math.abs(self.set[k][i]) > math.abs(self.set[maxRow][i]) then
-					maxRow = k
-				end
-			end
-
-			if maxRow ~= i then
-				self:swap_rows(i, maxRow)
-			end
-
-			local pivot = self.set[i][i]
-
-			if math.abs(pivot) < tkz.epsilon then
-				return nil, "Matrix is singular or nearly singular"
-			end
-
-			self:k_mul_row(i, 1 / pivot)
-
-			for j = 1, rows do
-				if i ~= j then
-					local scalar = -self.set[j][i]
-					self:add_k_mul_row(j, i, scalar)
-				end
-			end
-		end
-		return matrix:new(self.set)
-	else
-		return nil, "Matrix must be square"
-	end
-end
-
-function matrix:gauss_jordan_rect()
-	local rows = self.rows
-	local cols = self.cols
-
-	for i = 1, rows do
-		local maxRow = i
-		for k = i + 1, rows do
-			if math.abs(self.set[k][i]) > math.abs(self.set[maxRow][i]) then
-				maxRow = k
-			end
-		end
-
-		if maxRow ~= i then
-			local ok = self:swap_rows(i, maxRow)
-			--   if not ok then return nil, err end
-		end
-
-		local pivot = self.set[i][i]
-
-		if math.abs(pivot) < tkz.epsilon then
-			return nil --, "Matrix is singular or nearly singular"
-		end
-
-		local ok = self:k_mul_row(i, 1 / pivot)
-		-- if not ok then return nil, err end
-
-		for j = 1, rows do
-			if i ~= j then
-				local scalar = -self.set[j][i]
-				local ok = self:add_k_mul_row(j, i, scalar)
-				-- if not ok then return nil, err end
-			end
+	local A = {}
+	for i = 1, self.rows do
+		A[i] = {}
+		for j = 1, self.cols do
+			A[i][j] = self.set[i][j]
 		end
 	end
 
-	return matrix:new(self.set)
+	local m, n = self.rows, self.cols
+	local r, lead = 1, 1
+
+	while r <= m and lead <= n do
+		-- find pivot row i >= r with nonzero in column lead
+		local i = r
+		while i <= m and math.abs(A[i][lead]) <= tkz.epsilon do
+			i = i + 1
+		end
+
+		if i > m then
+			lead = lead + 1
+		else
+			-- swap i <-> r
+			A[i], A[r] = A[r], A[i]
+
+			-- normalize pivot row
+			local pivot = A[r][lead]
+			for j = lead, n do
+				A[r][j] = A[r][j] / pivot
+			end
+
+			-- eliminate all other rows
+			for k = 1, m do
+				if k ~= r then
+					local factor = A[k][lead]
+					if math.abs(factor) > tkz.epsilon then
+						for j = lead, n do
+							A[k][j] = A[k][j] - factor * A[r][j]
+						end
+					end
+				end
+			end
+
+			r = r + 1
+			lead = lead + 1
+		end
+	end
+
+	return matrix:new(A)
 end
+
+
+-- function matrix:rank()
+	-- local A = (self.type == "matrix" and self.set or self)
+	-- local m, n = self.rows, self.cols
+	-- local rank = 0
+--
+	-- for col = 1, n do
+	-- 	local pivot_row = rank + 1
+--
+	-- 	-- Finding the pivot
+	-- 	while pivot_row <= m and A[pivot_row][col] == 0 do
+	-- 		pivot_row = pivot_row + 1
+	-- 	end
+--
+	-- 	if pivot_row <= m then
+	-- 		-- Swap lines if necessary
+	-- 		A[rank + 1], A[pivot_row] = A[pivot_row], A[rank + 1]
+--
+	-- 		-- Normaliser le pivot à 1
+	-- 		local pivot = A[rank + 1][col]
+	-- 		for j = 1, n do
+	-- 			A[rank + 1][j] = A[rank + 1][j] / pivot
+	-- 		end
+--
+	-- 		-- Eliminate the column
+	-- 		for i = 1, m do
+	-- 			if i ~= rank + 1 then
+	-- 				local factor = A[i][col]
+	-- 				for j = 1, n do
+	-- 					A[i][j] = A[i][j] - factor * A[rank + 1][j]
+	-- 				end
+	-- 			end
+	-- 		end
+--
+	-- 		rank = rank + 1
+	-- 	end
+	-- end
+--
+	-- return rank
+-- end
 
 function matrix:rank()
-	local A = (self.type == "matrix" and self.set or self)
+	-- --- work on a copy (NON destructive)
+	local A = {}
+	for i = 1, self.rows do
+		A[i] = {}
+		for j = 1, self.cols do
+			A[i][j] = self.set[i][j]
+		end
+	end
+
 	local m, n = self.rows, self.cols
 	local rank = 0
+	local row = 1
 
 	for col = 1, n do
-		local pivot_row = rank + 1
-
-		-- Finding the pivot
-		while pivot_row <= m and A[pivot_row][col] == 0 do
-			pivot_row = pivot_row + 1
+		-- --- search a pivot
+		local pivot_row = nil
+		for i = row, m do
+			if math.abs(A[i][col]) > tkz.epsilon then
+				pivot_row = i
+				break
+			end
 		end
 
-		if pivot_row <= m then
-			-- Swap lines if necessary
-			A[rank + 1], A[pivot_row] = A[pivot_row], A[rank + 1]
+		if pivot_row then
+			-- --- swap rows if needed
+			A[row], A[pivot_row] = A[pivot_row], A[row]
 
-			-- Normaliser le pivot à 1
-			local pivot = A[rank + 1][col]
-			for j = 1, n do
-				A[rank + 1][j] = A[rank + 1][j] / pivot
+			-- --- normalize pivot row
+			local pivot = A[row][col]
+			for j = col, n do
+				A[row][j] = A[row][j] / pivot
 			end
 
-			-- Eliminate the column
-			for i = 1, m do
-				if i ~= rank + 1 then
-					local factor = A[i][col]
-					for j = 1, n do
-						A[i][j] = A[i][j] - factor * A[rank + 1][j]
+			-- --- eliminate below
+			for i = row + 1, m do
+				local factor = A[i][col]
+				if math.abs(factor) > tkz.epsilon then
+					for j = col, n do
+						A[i][j] = A[i][j] - factor * A[row][j]
 					end
 				end
 			end
 
 			rank = rank + 1
+			row  = row + 1
+
+			if row > m then break end
 		end
 	end
 
 	return rank
 end
+
 
 return matrix

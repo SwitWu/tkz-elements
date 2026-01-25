@@ -1,5 +1,5 @@
 -- File: tkz_elements_functions_maths.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -12,12 +12,13 @@ function is_integer_(x)
 		and x == x -- exclude NaN
 		and x < math.huge -- exclude +inf
 		and -x < math.huge -- exclude -inf
-		and is_zero_(x - tkz_round_(x))
+		and is_zero_(x - math.floor(x + 0.5))
 end
 
 function near_integer_(x)
-	return is_zero_(x % 1)
+	return is_zero_(x - tkz_round_(x))
 end
+
 
 function residue_(x)
 	return x % 1
@@ -89,6 +90,10 @@ end
 
 function parabola_(xa, ya, xb, yb, xc, yc) -- added
 	local D = (xa - xb) * (xa - xc) * (xb - xc)
+	if math.abs(D) < tkz.epsilon then
+		return nil
+	end
+
 	local A = (xc * (yb - ya) + xb * (ya - yc) + xa * (yc - yb)) / D
 	local B = (xc * xc * (ya - yb) + xb * xb * (yc - ya) + xa * xa * (yb - yc)) / D
 	local C = (xb * xc * (xb - xc) * ya + xc * xa * (xc - xa) * yb + xa * xb * (xa - xb) * yc) / D
@@ -108,9 +113,8 @@ end
 
 -- Angle orienté ∠BAC en A, dans (-π, π]
 function get_angle_(a, b, c)
-	if (b == a) or (c == a) then
-		tex.error("Points confused in get_angle_")
-	end
+   if point.abs(b - a) < tkz.epsilon or point.abs(c - a) < tkz.epsilon then	 tex.error("Points confused in get_angle_")
+end
 	-- vecteur AB = b - a, AC = c - a
 	-- arg(AC / AB) = angle pour tourner AB vers AC
 	return point.arg((c - a) / (b - a))
@@ -140,10 +144,11 @@ function tkz_angle_between_vectors_(a, b, c, d)
 	local zcd = d - c
 
 	-- Angle between vectors using ratio argument
-	local theta = math.atan(
-		-zab.im * zcd.re + zab.re * zcd.im,
-		 zab.re * zcd.re + zab.im * zcd.im
-	)
+  local y = -zab.im * zcd.re + zab.re * zcd.im
+	local x =  zab.re * zcd.re + zab.im * zcd.im
+	local theta = math.atan(y / x)
+	if x < 0 then theta = theta + math.pi end
+
 
 	return theta -- Angle in radians
 end

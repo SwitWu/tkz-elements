@@ -1,5 +1,5 @@
 -- File: tkz_elements_functions_matrices.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -106,6 +106,11 @@ function k_mul_matrix(n, A)
 	return matrix:new(S)
 end
 
+function matrix.identity(n)
+	return id_matrix(n)
+end
+
+
 function transposeMatrix(A)
 	local mdata = (A.type == "matrix" and A.set or A)
 	local transposedMatrix = {}
@@ -198,7 +203,7 @@ function inv_matrix(A)
 		local augmentedData = {}
 
 		-- Create the augmented matrix [matrix | identity]
-		local identityMatrix = matrix:identity(n)
+		local identityMatrix = matrix.identity(n)
 		for i = 1, n do
 			augmentedData[i] = {}
 			for j = 1, 2 * n do
@@ -214,7 +219,7 @@ function inv_matrix(A)
 
 		-- Apply Gauss-Jordan to the augmented matrix
 		local augmentedMatrix = matrix:new(augmentedData)
-		augmentedMatrix:gauss_jordan_rect()
+		augmentedMatrix:gauss_jordan()
 
 		-- Extract the inverse matrix from the augmented matrix
 		local inverseData = {}
@@ -348,3 +353,68 @@ function htm_apply_Q_(A, obj)
 		return quadrilateral:new(x, y, z, t)
 	end
 end
+
+function matrix:augment_right(B)
+	local m = #self.set
+	local n = #self.set[1]
+	local p = #B.set[1]
+	local R = {}
+
+	for i = 1, m do
+		R[i] = {}
+		-- copie A
+		for j = 1, n do
+			R[i][j] = self.set[i][j]
+		end
+		-- colle B à droite
+		for j = 1, p do
+			R[i][n + j] = B.set[i][j]
+		end
+	end
+
+	return matrix(R)
+end
+
+
+function matrix:right_block(k)
+	local m = #self.set
+	local n = #self.set[1]
+	local R = {}
+	local c0 = n - k + 1
+
+	for i = 1, m do
+		R[i] = {}
+		for j = 1, k do
+			R[i][j] = self.set[i][c0 + j - 1]
+		end
+	end
+
+	return matrix(R)
+end
+
+function matrix:left_block(k)
+	local m = #self.set
+	local R = {}
+	for i = 1, m do
+		R[i] = {}
+		for j = 1, k do
+			R[i][j] = self.set[i][j]
+		end
+	end
+	return matrix(R)
+end
+
+function matrix:submatrix(r1, r2, c1, c2)
+	local R = {}
+	for i = r1, r2 do
+		local row = {}
+		for j = c1, c2 do
+			row[#row+1] = self.set[i][j]
+		end
+		R[#R+1] = row
+	end
+	return matrix(R)
+end
+
+
+

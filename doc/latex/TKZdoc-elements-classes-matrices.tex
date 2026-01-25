@@ -71,13 +71,13 @@ M = matrix(1, 0, 0, 1)
 \item With the function \code{create}, you get a matrix whose coefficients are all zero, with a number of columns and rows of your choice. [\ref{ssub:function_matrix_create_n_m}]
 
   \begin{mybox}
-  |M.cr = matrix:create(4,5)|
+  |M.cr = matrix.create(4,5)|
   \end{mybox}
 
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   init_elements()
-  M.cr = matrix:create(4, 5)
+  M.cr = matrix.create(4, 5)
   tex.print('M = ') M.cr:print()}
 \end{tkzexample}
 
@@ -86,28 +86,28 @@ M = matrix(1, 0, 0, 1)
 {$\displaystyle n$} is the {$\displaystyle n\times n$} square matrix with ones on the main diagonal and zeros elsewhere. See  [\ref{ssub:method_identity}]
 
 \begin{mybox}
-|M.I = matrix:identity(3)|
+|M.I = matrix.identity(3)|
 \end{mybox}
 
 
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   init_elements()
-  M.I = matrix:identity(3)
+  M.I = matrix.identity(3)
   tex.print('$I_3 = $') M.I:print()}
 \end{tkzexample}
 
 
 \item  It is also possible to obtain a square matrix with: [\ref{ssub:method_square}]
   \begin{mybox}
-  |M.sq = matrix : square (2,a,b,c,d)|
+  |M.sq = matrix.square (2,a,b,c,d)|
   \end{mybox}
 
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   init_elements()
    local a, b, c, d = 1, 2, 3, 4
-  M.sq = matrix:square(2, a, b, c, d)
+  M.sq = matrix.square(2, a, b, c, d)
   tex.print('M = ') M.sq:print()}
 \end{tkzexample}
 
@@ -115,15 +115,15 @@ M = matrix(1, 0, 0, 1)
 \item  In the case of a column vector: [\ref{ssub:method_vector}]
 
   \begin{mybox}
-  | M.V = matrix:vector(1, 2, 3)|
-  also possible |M.V = matrix:column_vector(1, 2, 3)|
+  | M.V = matrix.vector(1, 2, 3)|
+  also possible |M.V = matrix.column(1, 2, 3)|
   \end{mybox}
 
 
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   init_elements()
-  M.V = matrix:vector(1, 2, 3)
+  M.V = matrix.vector(1, 2, 3)
   tex.print('V = ') M.V:print()}
 \end{tkzexample}
 
@@ -131,13 +131,13 @@ M = matrix(1, 0, 0, 1)
 \item  In the case of a row vector: [\ref{ssub:function_row_vector}]
 
 \begin{mybox}
-  | M.V = matrix:row_vector(1, 2, 3)|
+  | M.V = matrix.row_vector(1, 2, 3)|
 \end{mybox}
 
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   init_elements()
-  M.V = matrix:row_vector(1, 2, 3)
+  M.V = matrix.row_vector(1, 2, 3)
   tex.print('V = ') M.V:print()}
 \end{tkzexample}
 
@@ -169,7 +169,7 @@ V.u.mtx:print()}
 \begin{tkzexample}[latex=.35\textwidth]
 \directlua{
   init_elements()
-  M.h = matrix : htm (math.pi / 3, 1, 2, 2, 1)
+  M.h = matrix.htm(math.pi / 3, 1, 2, 2, 1)
   tex.print('H = ') M.h:print()}
 \end{tkzexample}
 
@@ -267,7 +267,7 @@ Give the determinant of the matrix if it is square, otherwise it is \code{nil}. 
 \begin{verbatim}
 \directlua{
   init_elements()
-  M.s = matrix:square(3, 1, 1, 0, 2, -1, -2, 1, -1, 2)
+  M.s = matrix.square(3, 1, 1, 0, 2, -1, -2, 1, -1, 2)
   M.s:print()
   tex.print ('\\\\')
   tex.print ("Its determinant is:  " .. M.s.det)
@@ -277,7 +277,7 @@ Give the determinant of the matrix if it is square, otherwise it is \code{nil}. 
 \begin{minipage}{.4\textwidth}
 \directlua{
  init_elements()
- M.s = matrix:square(3, 1, 1, 0, 2, -1, -2, 1, -1, 2)
+ M.s = matrix.square(3, 1, 1, 0, 2, -1, -2, 1, -1, 2)
  M.s:print()
  tex.print('\\\\')
  tex.print("Its determinant is:  "..M.s.det)
@@ -305,11 +305,11 @@ Conditions on matrices must be valid for certain operations to be possible.
     \midrule
     \tkzMeta{matrix}{add(M1,M2)} &  See  [\ref{ssub:addition_of_matrices}] \\
     \tkzMeta{matrix}{sub(M1,M2)} &  See  [\ref{ssub:addition_of_matrices}]  \\
-    \tkzMeta{matrix}{unm(M}       & |- M|  \\
-    \tkzMeta{matrix}{mul(M1,M2)}     & [\ref{ssub:multiplication_of_matrices}]   \\
-    \tkzMeta{matrix}{pow(M,n)}       & [\ref{ssub:multiplication_of_matrices}]  \\
+    \tkzMeta{matrix}{unm(M}      & |- M|  \\
+    \tkzMeta{matrix}{mul(M1,M2)} & [\ref{ssub:multiplication_of_matrices}]   \\
+    \tkzMeta{matrix}{pow(M,n)}   & [\ref{ssub:multiplication_of_matrices}]  \\
     \tkzMeta{matrix}{tostring(M,n)} & displays the matrix   \\
-    \tkzMeta{matrix}{eq(M1,M2)}      &  true or false  \\
+    \tkzMeta{matrix}{eq(M1,M2)}     &  true or false  \\
   \bottomrule
   \end{tabular}
   \egroup
@@ -434,36 +434,61 @@ Tests whether two matrices are equal. The result is \textbf{true} or \textbf{fal
   \bgroup
   \catcode`_=12
   \small
-  \captionof{table}{Matrix methods.}\label{matrix:methods}
+  \captionof{table}{Matrix functions and methods.}\label{matrix:methods}
   \begin{tabular}{lll}
   \toprule
   \textbf{Functions} & \textbf{Reference}   & \\
   \midrule
-  \tkzFct{matrix}{new(...)} & See  [\ref{ssub:method_new}; \ref{sub:matrix_creation}]\\
-  \tkzFct{matrix}{square()} & [\ref{ssub:method_square}]\\
-  \tkzFct{matrix}{vector()} & [\ref{ssub:method_vector}] \\
-  \tkzFct{matrix}{row\_vector()} & [\ref{ssub:function_row_vector}] \\
-  \tkzFct{matrix}{create()} & \\
-  \tkzFct{matrix}{identity()()} & [\ref{ssub:method_identity}] \\
-  \tkzFct{matrix}{htm()}    &  \\
+  \tkzFct{matrix}{new(...)}
+    & See [\ref{ssub:method_new}; \ref{sub:matrix_creation}] & \\
+  \tkzFct{matrix}{matrix.square()}
+    & [\ref{ssub:method_square}] & \\
+  \tkzFct{matrix}{matrix.vector()}
+    & [\ref{ssub:method_vector}] & \\
+  \tkzFct{matrix}{matrix.row\_vector()}
+    & [\ref{ssub:function_row_vector}] & \\
+  \tkzFct{matrix}{matrix.create()}
+    &  & \\
+  \tkzFct{matrix}{matrix.identity()}
+    & [\ref{ssub:method_identity}] & \\
+  \tkzFct{matrix}{matrix.htm()}
+    & [\ref{ssub:method_htm}] & \\
   \midrule
   \textbf{Methods} & \textbf{Reference}   & \\
   \midrule
-  \tkzMeth{matrix}{print(s,n)} &       \\
-  \tkzMeth{matrix}{htm\_apply(...)}&[\ref{ssub:method_code_htm__apply}]\\
-  \tkzMeth{matrix}{htm()}  & [  \ref{ssub:method_htm}] \\
-  \tkzMeth{matrix}{get\_htm\_point}& [\ref{ssub:method_get_htm_point}] \\
-  \tkzMeth{matrix}{get()}  & [\ref{ssub:get_an_element_of_a_matrix}] \\
-  \tkzMeth{matrix}{inverse()}       & [\ref{ssub:inverse_matrix}] \\
-  \tkzMeth{matrix}{adjugate()}      & [\ref{ssub:method_adjugate}] \\
-  \tkzMeth{matrix}{transpose()}     & [\ref{ssub:transpose_matrix}]\\
-  \tkzMeth{matrix}{is\_diagonal()}  & [\ref{ssub:method_is_diagonal}]\\
-  \tkzMeth{matrix}{is\_orthogonal()}&[\ref{ssub:method_is_orthogonal}]\\
-  \tkzMeth{matrix}{homogenization()}&[\ref{ssub:method_homogenization}]\\
+  \tkzMeth{matrix}{print(s,n)}
+    &  & \\
+  \tkzMeth{matrix}{htm\_apply(...)}
+    & [\ref{ssub:method_code_htm__apply}] & \\
+  \tkzMeth{matrix}{get\_htm\_point()}
+    & [\ref{ssub:method_get_htm_point}] & \\
+  \tkzMeth{matrix}{get()}
+    & [\ref{ssub:get_an_element_of_a_matrix}] & \\
+  \tkzMeth{matrix}{inverse()}
+    & [\ref{ssub:inverse_matrix}] & \\
+  \tkzMeth{matrix}{adjugate()}
+    & [\ref{ssub:method_adjugate}] & \\
+  \tkzMeth{matrix}{transpose()}
+    & [\ref{ssub:transpose_matrix}] & \\
+  \tkzMeth{matrix}{is\_diagonal()}
+    & [\ref{ssub:method_is_diagonal}] & \\
+  \tkzMeth{matrix}{is\_orthogonal()}
+    & [\ref{ssub:method_is_orthogonal}] & \\
+  \tkzMeth{matrix}{homogenization()}
+    & [\ref{ssub:method_homogenization}] & \\
+  \tkzMeth{matrix}{gauss\_jordan()}
+    & [\ref{ssub:method_matrix_gauss_jordan}] & \\
+  \tkzMeth{matrix}{rank()}
+    & [\ref{ssub:method_matrix_rank}] & \\
+  \tkzMeth{matrix}{augment\_right(B)}
+    & [\ref{ssub:matrix-augmentation-submatrix}] & \\
+  \tkzMeth{matrix}{submatrix(r1,r2,c1,c2)}
+    & [\ref{ssub:matrix-augmentation-submatrix}] & \\
   \bottomrule
   \end{tabular}
   \egroup
 \end{center}
+
 
 
 
@@ -498,14 +523,14 @@ In the case of a square matrix, it is possible to transmit a list of values whos
 \begin{verbatim}
 \directlua{
 init_elements()
- M.s = matrix:square(2, 1, 0, 0, 2)
+ M.s = matrix.square(2, 1, 0, 0, 2)
  M.s:print()}
   \end{verbatim}
 \end{minipage}
 \begin{minipage}{.5\textwidth}
 \directlua{
   init_elements()
-  M.s = matrix:square(2,1,0,0,2)
+  M.s = matrix.square(2,1,0,0,2)
   M.s:print()}
 \end{minipage}
 
@@ -542,7 +567,7 @@ This is the main method for creating a matrix. Here's an example of a 2x3 matrix
  M.n:print()}
 \end{minipage}
 
-\subsubsection{Function \tkzFct{matrix}{vector}}
+\subsubsection{Function \tkzFct{matrix}{matrix.vector}}
 \label{ssub:method_vector}
 
 The special case of a column matrix, frequently used to represent a vector, can be treated as follows:
@@ -552,36 +577,36 @@ The special case of a column matrix, frequently used to represent a vector, can 
 \begin{verbatim}
 \directlua{
  init_elements()
- M.v = matrix:vector(1, 2, 3)
+ M.v = matrix.vector(1, 2, 3)
  M.v:print()}
   \end{verbatim}
 \end{minipage}
 \begin{minipage}{.5\textwidth}
 \directlua{
  init_elements()
- M.v = matrix:vector(1, 2, 3)
+ M.v = matrix.vector(1, 2, 3)
  M.v:print()}
 \end{minipage}
 
-\subsubsection{Function \tkzFct{matrix}{row\_vector}}
+\subsubsection{Function \tkzFct{matrix}{matrix.row\_vector}}
 \label{ssub:function_row_vector}
 
 \begin{mybox}
-\code{ M.rv = matrix:row\_vector (1, 2, 3)}
+\code{ M.rv = matrix.row\_vector (1, 2, 3)}
 
-m.rv = \directlua{matrix:row_vector (1, 2, 3):print()}
+m.rv = \directlua{matrix.row_vector (1, 2, 3):print()}
 \end{mybox}
 
-\subsubsection{Method \tkzMeth{matrix}{create(n,m)}}
+\subsubsection{Function \tkzFct{matrix}{matrix.create(n,m)}}
 \label{ssub:function_matrix_create_n_m}
 
 \begin{mybox}
-\code{ M.c = matrix:create (2, 3)}
+\code{ M.c = matrix.create (2, 3)}
 
-M.c = \directlua{matrix:create (2, 3):print()}
+M.c = \directlua{matrix.create (2, 3):print()}
 \end{mybox}
 
-\subsubsection{Method \tkzMeth{matrix}{square}(liste)}
+\subsubsection{Function \tkzFct{matrix}{matrix.square}(liste)}
 \label{ssub:method_square}
 
 We have already seen this method in the presentation of matrices. We first need to give the order of the matrix, then the coefficients, row by row.
@@ -590,18 +615,18 @@ We have already seen this method in the presentation of matrices. We first need 
 \begin{verbatim}
 \directlua{
  init_elements()
- M.s = matrix:square(2, 2, 3, -5, 4)
+ M.s = matrix.square(2, 2, 3, -5, 4)
  M.s:print()}
 \end{verbatim}
 \end{minipage}
 \begin{minipage}{.5\textwidth}
 \directlua{
  init_elements()
- M.s = matrix:square(2, 2, 3, -5, 4)
+ M.s = matrix.square(2, 2, 3, -5, 4)
  M.s:print()}
 \end{minipage}
 
-\subsubsection{Method \tkzMeth{matrix}{identity}}
+\subsubsection{Function \tkzFct{matrix}{matrix.identity}}
 \label{ssub:method_identity}
 
 Creating the identity matrix order 3
@@ -611,14 +636,14 @@ Creating the identity matrix order 3
 \begin{verbatim}
 \directlua{
   init_elements()
-  M.Id_3 = matrix:identity(3)
+  M.Id_3 = matrix.identity(3)
   M.Id_3:print()}
 \end{verbatim}
 \end{minipage}
 \begin{minipage}{.5\textwidth}
 \directlua{
   init_elements()
-  M.Id_3 = matrix:identity(3)
+  M.Id_3 = matrix.identity(3)
   M.Id_3:print()}
 \end{minipage}
 
@@ -654,7 +679,7 @@ The method returns \code{true} if the matrix is orthogonal and \code{false} othe
  local cos = math.cos
  local sin = math.sin
  local pi = math.pi
- M.A = matrix({ { cos(pi / 6), -sin(pi / 6) }, { sin(pi / 6), cos(pi / 6) } })
+ M.A = matrix({{cos(pi / 6), -sin(pi / 6)}, {sin(pi / 6), cos(pi / 6)}})
  M.A:print()
  bool = M.A:is_orthogonal()
  tex.print("\\\\")
@@ -912,7 +937,7 @@ which gives:
 \directlua{
  init_elements()
  pi = math.pi
- M.h = matrix:htm(pi / 4, 3, 1)
+ M.h = matrix.htm(pi / 4, 3, 1)
  z.A = point(2, 0)
  M.V = z.A.mtx:homogenization()
  z.A.mtx:print()
@@ -924,7 +949,7 @@ which gives:
 \directlua{
  init_elements()
  pi = math.pi
- M.h = matrix:htm(pi / 4, 3, 1)
+ M.h = matrix.htm(pi / 4, 3, 1)
  z.A = point(2, 0)
  M.V = z.A.mtx:homogenization()
  z.A.mtx:print()
@@ -932,7 +957,7 @@ which gives:
  M.V:print()}
 \end{minipage}
 
-\subsubsection{Method \tkzMeth{matrix}{htm}}
+\subsubsection{Function \tkzFct{matrix}{matrix.htm}}
 \label{ssub:method_htm}
 Homogeneous transformation matrix.
 
@@ -942,7 +967,7 @@ The main method is to create the matrix:
 
 \begin{mybox}
   pi  = math.pi\\
-  M.h   = matrix:htm(pi / 4, 3, 1)
+  M.h   = matrix.htm(pi / 4, 3, 1)
 \end{mybox}
 
 A 3x3 matrix is created which combines a $\pi/4$ rotation and a $\overrightarrow{t}=(3,1)$ translation.
@@ -950,7 +975,7 @@ A 3x3 matrix is created which combines a $\pi/4$ rotation and a $\overrightarrow
 \directlua{
 init_elements()
   pi  = math.pi
-  M.h   = matrix:htm(pi / 4, 3, 1)
+  M.h   = matrix.htm(pi / 4, 3, 1)
   M.h :print()
 }
 
@@ -965,7 +990,7 @@ M.W = M.A * M.V
 \directlua{
 init_elements()
 pi  = math.pi
-M.h   = matrix:htm(pi / 4 , 3 , 1)
+M.h   = matrix.htm(pi / 4 , 3 , 1)
 M.h :print()
 z.A = point(2,0)
 M.V = z.A.mtx:homogenization()
@@ -988,7 +1013,7 @@ The  method \code{get\_htm\_point}  extracts a point from a vector obtained afte
 \directlua{
   init_elements()
   pi  = math.pi
-  M.h   = matrix:htm(pi / 4 , 3 , 1)
+  M.h   = matrix.htm(pi / 4 , 3 , 1)
   z.A = point(2,0)
   M.V = z.A.mtx:homogenization()
   M.W = M.h * M.V
@@ -1002,7 +1027,7 @@ The  method \code{get\_htm\_point}  extracts a point from a vector obtained afte
 \directlua{
   init_elements()
   pi  = math.pi
-  M.h   = matrix:htm(pi / 4 , 3 , 1)
+  M.h   = matrix.htm(pi / 4 , 3 , 1)
   z.A = point(2,0)
   M.V = z.A.mtx:homogenization()
   M.W = M.h * M.V
@@ -1026,7 +1051,7 @@ Then the method \code{htm\_apply} transforms a point, a list of points or an obj
 \directlua{
  init_elements()
  pi = math.pi
- M.h = matrix:htm(pi / 4, 3, 1)
+ M.h = matrix.htm(pi / 4, 3, 1)
  z.O = point(0, 0)
  z.I = point(1, 0)
  z.J = point(0, 1)
@@ -1047,7 +1072,7 @@ Then the method \code{htm\_apply} transforms a point, a list of points or an obj
 \directlua{
  init_elements()
  pi = math.pi
- M.h = matrix:htm(pi / 4, 3, 1)
+ M.h = matrix.htm(pi / 4, 3, 1)
  z.O = point(0, 0)
  z.I = point(1, 0)
  z.J = point(0, 1)
@@ -1089,10 +1114,10 @@ New  cartesian coordinates system:
  nl = "\\\\"
  a = point(1, 0)
  b = point(0, 1)
- M.R = matrix:htm(pi / 5, 2, 1)
+ M.R = matrix.htm(pi / 5, 2, 1)
  M.R:print()
  tp(nl)
- M.v = matrix:vector(1, 2)
+ M.v = matrix.vector(1, 2)
  M.v:print()
  M.v.h = M.v:homogenization()
  M.v.h:print()
@@ -1111,10 +1136,10 @@ tex.print(tkz.display(z.N))}
  nl = "\\\\"
  a = point(1, 0)
  b = point(0, 1)
- M.R = matrix:htm(pi / 5, 2, 1)
+ M.R = matrix.htm(pi / 5, 2, 1)
  M.R:print()
  tp(nl)
- M.v = matrix:vector(1, 2)
+ M.v = matrix.vector(1, 2)
  M.v:print()
  M.v.h = M.v:homogenization()
  M.v.h:print()
@@ -1124,4 +1149,283 @@ tex.print(tkz.display(z.N))}
  z.N = get_htm_point(M.V)
  tex.print(tkz.display(z.N))}
 \end{minipage}
+
+\subsubsection{Method \tkzMeth{matrix}{gauss\_jordan()}}
+\label{ssub:method_matrix_gauss_jordan}
+
+
+This method applies the Gauss–Jordan elimination algorithm to the matrix and returns its reduced row echelon form (RREF).
+
+\medskip
+The Gauss–Jordan algorithm transforms a matrix into an equivalent matrix by a sequence of elementary row operations:
+\begin{itemize}
+\item swapping two rows;
+\item multiplying a row by a non-zero scalar;
+\item adding a multiple of one row to another.
+\end{itemize}
+The resulting matrix satisfies the following properties:
+\begin{itemize}
+\item each leading entry of a non-zero row is equal to $1$;
+\item each leading $1$ is the only non-zero entry in its column;
+\item all zero rows, if any, are at the bottom of the matrix.
+\end{itemize}
+
+\medskip
+\texttt{Return value: }
+
+The method returns a new matrix object corresponding to the reduced row echelon form of the original matrix.
+The original matrix is not modified.
+
+\medskip
+\texttt{Numerical considerations: }
+
+Since computations are performed using floating-point arithmetic, a numerical tolerance is used internally to detect zero pivots.
+Very small values (typically below a fixed threshold) are treated as zero.
+
+\medskip
+\texttt{Typical uses: }
+
+\begin{itemize}
+\item solving linear systems;
+\item computing the rank of a matrix;
+\item testing linear independence of vectors;
+\item computing the inverse of a square matrix (when it exists).
+\end{itemize}
+
+\texttt{Example with matrix 2x2: }
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  M.A    = matrix({{2,1},{5,3}})
+  M.Ainv = M.A:augment_right(matrix.identity(2))
+              :gauss_jordan()
+              :submatrix(1, 2, 3, 4)
+
+  M.Ainv:print()
+}
+\end{tkzexample}
+
+\texttt{Example with matrix 3x3: }
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  % Matrix 3x3
+  M.A = matrix({
+    {2, 1, 1},
+    {1, 3, 2},
+    {1, 0, 0}
+  })
+
+  % Inverse via augmentation + Gauss–Jordan
+  M.Ainv = M.A
+            :augment_right(matrix.identity(3))
+            :gauss_jordan()
+            :submatrix(1, 3, 4, 6)
+
+  % Print the inverse
+  M.Ainv:print()
+}
+\end{tkzexample}
+
+
+
+
+\subsubsection{Method \tkzMeth{matrix}{rank()}}
+\label{ssub:method_matrix_rank}
+
+This method returns the rank of the matrix, that is, the dimension of the vector space spanned by its rows (or equivalently, by its columns).
+
+\medskip
+The rank is computed using the Gauss–Jordan elimination process: it is equal to the number of non-zero rows in the reduced row echelon form of the matrix.
+
+\medskip
+\texttt{Return value: }
+The method returns a non-negative integer equal to the rank of the matrix.
+
+\medskip
+\texttt{Remarks: }
+\begin{itemize}
+\item The rank is always less than or equal to the minimum of the number of rows and columns.
+\item A matrix has full rank if its rank is equal to this minimum.
+\item A square matrix is invertible if and only if its rank is maximal.
+\end{itemize}
+
+\medskip
+\texttt{Numerical stability: }
+As for \tkzMeth{matrix}{gauss\_jordan()}, a numerical tolerance is used to decide whether a row should be considered zero.
+
+\medskip
+\noindent
+\textbf{Note.}
+The method \tkzMeth{matrix}{rank()} internally relies on the Gauss–Jordan reduction, but provides a direct and convenient access to the rank without exposing the intermediate reduced matrix.
+
+\texttt{Example 1: }
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  M.A = matrix({
+    {2, 1, 1},
+    {1, 3, 2},
+    {1, 0, 0}
+  })
+
+  tex.print("rank(A) = ", M.A:rank())
+}
+\end{tkzexample}
+
+\texttt{Example 2: }
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  M.B = matrix({
+    {1, 2, 3},
+    {2, 4, 6},
+    {1, 1, 1}
+  })
+
+  tex.print("rank(B) = ", M.B:rank())
+}
+\end{tkzexample}
+
+\texttt{Example 3: }
+
+\begin{tkzexample}[latex=.5\textwidth]
+
+\directlua{
+  M.C = matrix({
+    {1, 2, 3},
+    {2, 4, 6},
+    {1, 1, 1}
+  })
+
+  M.R = M.C:gauss_jordan()
+
+  tex.print("rank(C) = ", M.C:rank())
+}
+
+\end{tkzexample}
+
+
+\subsubsection{Augmented matrices and submatrices}
+\label{ssub:matrix-augmentation-submatrix}
+
+The inversion of a square matrix and the resolution of linear systems are both
+based on the same fundamental idea: the manipulation of an \emph{augmented matrix}
+followed by a block extraction after a Gauss--Jordan reduction.
+
+\medskip
+
+\paragraph{Augmented matrix.}
+Let $A$ be an $m\times n$ matrix and $B$ an $m\times p$ matrix.
+The augmented matrix $[A \mid B]$ is obtained by appending the columns of $B$
+to the right of $A$:
+
+\[
+[A \mid B] =
+\begin{pmatrix}
+A_{11} & \cdots & A_{1n} & B_{11} & \cdots & B_{1p} \\
+\vdots &        & \vdots & \vdots &        & \vdots \\
+A_{m1} & \cdots & A_{mn} & B_{m1} & \cdots & B_{mp}
+\end{pmatrix}.
+\]
+
+In the \texttt{matrix} class, this operation is performed by the method
+\texttt{augment\_right}.
+
+\medskip
+
+\paragraph{Example (matrix inversion).}
+Let
+\[
+A =
+\begin{pmatrix}
+2 & 1\\
+5 & 3
+\end{pmatrix}.
+\]
+The augmented matrix $[A \mid I]$ is
+
+\[
+\begin{pmatrix}
+2 & 1 & 1 & 0\\
+5 & 3 & 0 & 1
+\end{pmatrix}.
+\]
+
+Applying the Gauss--Jordan algorithm yields
+
+\[
+\begin{pmatrix}
+1 & 0 & 3 & -1\\
+0 & 1 & -5 & 2
+\end{pmatrix}
+=
+[I \mid A^{-1}],
+\]
+from which the inverse matrix can be read directly.
+
+\medskip
+
+\paragraph{Submatrix extraction.}
+The method \texttt{submatrix(r1, r2, c1, c2)} extracts a rectangular block from a
+matrix, defined by:
+
+\begin{itemize}
+  \item rows from \texttt{r1} to \texttt{r2},
+  \item columns from \texttt{c1} to \texttt{c2}.
+\end{itemize}
+
+All indices start at~$1$.
+
+\medskip
+
+\paragraph{Meaning of \texttt{submatrix(1,2,3,4)}.}
+In the previous example, the reduced augmented matrix has:
+\begin{itemize}
+  \item $2$ rows,
+  \item $4$ columns.
+\end{itemize}
+
+The inverse matrix occupies:
+\begin{itemize}
+  \item rows $1$ to $2$,
+  \item columns $3$ to $4$.
+\end{itemize}
+
+Thus the extraction
+\[
+\texttt{submatrix(1,2,3,4)}
+\]
+returns exactly the block
+\[
+A^{-1} =
+\begin{pmatrix}
+3 & -1\\
+-5 & 2
+\end{pmatrix}.
+\]
+
+\medskip
+
+\paragraph{General rule.}
+For a square matrix of order $n$, the inverse matrix is obtained by
+\[
+[A \mid I_n]
+\;\xrightarrow{\text{Gauss--Jordan}}\;
+[I_n \mid A^{-1}],
+\]
+and extracted using
+\[
+\texttt{submatrix(1, n, n+1, 2n)}.
+\]
+
+\medskip
+
+\paragraph{Summary.}
+\begin{itemize}
+  \item \texttt{augment\_right} constructs an augmented matrix,
+  \item \texttt{gauss\_jordan} performs the row reduction,
+  \item \texttt{submatrix} extracts the desired result block.
+\end{itemize}
+
 \endinput

@@ -338,7 +338,6 @@ This approach saves time and space in scripts involving medians, altitudes, bise
 
   \textbf{Reals} &\\
    \midrule
-  \tkzMeth{triangle}{area()} & better T.ABC.area\\
 
   \tkzMeth{triangle}{barycentric\_coordinates(pt)}& [\ref{ssub:_triangle_barycentric__coordinates_pt}]\\
 
@@ -936,24 +935,39 @@ Unlike barycentric coordinates, trilinear coordinates are homogeneous, i.e., the
 P = x : y : z
 \]
 
-\subsubsection{Method \tkzMeth{triangle}{get\_angle(n)}}
+
+\subsubsection{Method \tkzMeth{triangle}{get\_angle(arg)}}
 \label{ssub:method_triangle_get_angle}
 
-This method returns one of the three internal angles of the triangle, based on a cyclic permutation index \code{n}.
+This method returns one of the three internal angles of the triangle.
 
 \medskip
 
-It must not be confused with the function \code{get\_angle(pta, ptb, ptc)}, which computes the angle at a vertex formed by any three given points.
+The argument \code{arg} identifies the vertex at which the angle is measured.
+It can be specified in several equivalent ways:
+\begin{itemize}
+  \item by a cyclic index \code{0}, \code{1}, or \code{2},
+  \item by a symbolic identifier (\code{pa}, \code{pb}, \code{pc}),
+  \item or directly by passing one of the triangle’s vertices as a point.
+\end{itemize}
 
 \medskip
 
-The triangle's vertices are assumed to be ordered in the direct (counter-clockwise) orientation. The value of \code{n} determines which angle is computed, by applying cyclic permutations to the vertex list $(A, B, C)$:
+The vertices of the triangle are assumed to be ordered in direct
+(counter-clockwise) orientation as $(A, B, C)$.
+Accordingly, the returned angle is determined as follows:
 
 \begin{itemize}
-  \item \code{n = 0} (or omitted): returns the angle $∠BAC$,
-  \item \code{n = 1}: returns the angle $∠CBA$,
-  \item \code{n = 2}: returns the angle $∠ACB$.
+  \item \code{arg = 0} or \code{arg = pa}: returns the angle at vertex $A$,
+  \item \code{arg = 1} or \code{arg = pb}: returns the angle at vertex $B$,
+  \item \code{arg = 2} or \code{arg = pc}: returns the angle at vertex $C$.
 \end{itemize}
+
+\medskip
+
+This method should not be confused with the function
+\code{get\_angle(pta, ptb, ptc)}, which computes the angle formed by three
+arbitrary points, independently of any triangle object.
 
 \vspace{1em}
 
@@ -962,9 +976,9 @@ The triangle's vertices are assumed to be ordered in the direct (counter-clockwi
 \directlua{
  z.A = point: new(0, 0)
  z.B = point: new(4, 0)
- z.C = point: new(1, 3)
+ z.C = point: new(2, 2)
  T.ABC = triangle(z.A, z.B, z.C)
- cc = T.ABC:get_angle()
+ tkzAngleA = math.deg(T.ABC:get_angle(z.A))
  z.O = T.ABC.circumcenter
  C.OB = circle(z.O,z.B)
  z.T = C.OB:point(.2)}
@@ -979,6 +993,7 @@ The triangle's vertices are assumed to be ordered in the direct (counter-clockwi
  \tkzLabelPoints(C)
  \tkzLabelPoint[right=6pt,red,thick](T){$\mathbf{+}$}
  \tkzMarkAngle[->,red](B,A,C)
+ \tkzLabelAngle(B,A,C){\tkzUseLua{tkzAngleA}}
  \end{tikzpicture}
 \end{center}
 \end{tkzexample}

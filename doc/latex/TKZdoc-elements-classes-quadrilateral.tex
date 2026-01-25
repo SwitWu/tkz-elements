@@ -48,7 +48,7 @@ Points are created in the direct direction. A test is performed to check whether
   \tkzAttr{quadrilateral}{pc}   & |z.C = Q.new.pc| & \\
   \tkzAttr{quadrilateral}{pd}   & |z.D = Q.new.pd| & \\
   \tkzAttr{quadrilateral}{type} & |Q.new.type= 'quadrilateral'|  &\\
-  \tkzAttr{quadrilateral}{i}    & |z.I = Q.new.i| & intersection of diagonals\\
+  \tkzAttr{quadrilateral}{center}    & |z.I = Q.new.center| & intersection of diagonals\\
   \tkzAttr{quadrilateral}{g}    & |z.G = Q.new.g| & barycenter\\
   \tkzAttr{quadrilateral}{a}    & |AB = Q.new.a| & barycenter\\
   \tkzAttr{quadrilateral}{b}    & |BC = Q.new.b| & barycenter\\
@@ -96,7 +96,7 @@ z.G = Q.ABCD.g}
  z.C = point(5, 1)
  z.D = point(0, 3)
  Q.ABCD = quadrilateral(z.A, z.B, z.C, z.D)
- z.I = Q.ABCD.i
+ z.I = Q.ABCD.center
  z.G = Q.ABCD.g}
 
 \begin{center}
@@ -108,6 +108,93 @@ z.G = Q.ABCD.g}
   \end{tikzpicture}
 \end{center}
 \end{minipage}
+
+\subsubsection{Quadrilateral examples}
+Advanced Euclidean Geometry 2013 Supplement June 26\\
+
+\texttt{Construction of geometric mean: }
+
+
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(1, 4)
+z.C = point(3.5, 4)
+z.D = point(5, 0 )
+Q.ABCD = quadrilateral(z.A,z.B,z.C,z.D)
+z.I = Q.ABCD.center
+L.ll = Q.ABCD.da:ll_from (z.I)
+z.H = intersection(L.ll,Q.ABCD.ab)
+z.Hp = intersection(L.ll,Q.ABCD.cd)
+z.M =  Q.ABCD.ab.mid
+C.MA = circle(z.M,z.A)
+L.perp = Q.ABCD.ab:ortho_from(z.H)
+_,z.P = intersection (C.MA,L.perp)
+T.PAB = triangle (z.P,z.A,z.B)
+L.bis =  T.PAB:bisector ()
+z.G = L.bis.pb
+L.llg = Q.ABCD.da: ll_from (z.G)
+L.llm = Q.ABCD.da : ll_from (z.M)
+z.Gp = intersection (L.llg,Q.ABCD.cd)}
+\begin{center}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C,D)
+\tkzDrawCircle(M,A)
+\tkzDrawSegments[red](H,H')
+\tkzDrawSegments[blue](G,G')
+\tkzDrawSegments[dashed](P,H P,B P,A P,G A,C B,D)
+\tkzDrawPoints(A,B,C,D,H,I,M,P,G,G',H')
+\tkzLabelPoints(A,D,I)
+\tkzLabelPoints[above](B,C,P)
+\tkzLabelPoints[above right=-3pt](H,G)
+\tkzLabelPoints[right](G',H')
+ \tkzLabelSegment[above](B,C){$b$}
+ \tkzLabelSegment[below](A,D){$a$}
+\end{tikzpicture}
+\end{center}
+
+
+
+\begin{proof}
+A trapezoid with parallel sides $AD$ and $BC$ is given.
+
+Let H be the endpoint of the parallel through $I$
+to the side $AD$.  $HH' = \dfrac{2ab}{a+b}$ .
+
+$PH$ is perpendicular to $AB$
+
+$(PG)$ is the bisector of $\widehat{APB}$
+
+ $GG' = \dfrac{a \cdot \sqrt{b} + b \cdot \sqrt{a}}{\sqrt{a}+\sqrt{b}}
+= \dfrac{\sqrt{ab}(\sqrt{a}+\sqrt{b})}{\sqrt{a}+\sqrt{b}} = \sqrt{ab} $
+\end{proof}
+
+\texttt{Code: }
+
+\begin{verbatim}
+\directlua{
+init_elements()
+z.A = point(0, 0)
+z.B = point(1, 4)
+z.C = point(3.5, 4)
+z.D = point(5, 0 )
+Q.ABCD = quadrilateral(z.A,z.B,z.C,z.D)
+z.I = Q.ABCD.center
+L.ll = Q.ABCD.da:ll_from (z.I)
+z.H = intersection(L.ll,Q.ABCD.ab)
+z.Hp = intersection(L.ll,Q.ABCD.cd)
+z.M =  Q.ABCD.ab.mid
+C.MA = circle(z.M,z.A)
+L.perp = Q.ABCD.ab:ortho_from(z.H)
+_,z.P = intersection (C.MA,L.perp)
+T.PAB = triangle (z.P,z.A,z.B)
+L.bis =  T.PAB:bisector ()
+z.G = L.bis.pb
+L.llg = Q.ABCD.da: ll_from (z.G)
+L.llm = Q.ABCD.da : ll_from (z.M)
+z.Gp = intersection (L.llg,Q.ABCD.cd)}
+\end{verbatim}
 
 \subsection{Quadrilateral methods}
 
@@ -121,10 +208,11 @@ z.G = Q.ABCD.g}
   \toprule
   \textbf{Methods} & \textbf{Reference}    \\
   \midrule
-  \tkzMeth{quadrilateral}{new()}& Note\footnote{quadrilateral(pt, pt, pt, pt) (short form, recommended)}; [\ref{sub:creating_a_quadrilateral} ; \ref{ssub:inscribed_quadrilateral}]\\
+  \tkzMeth{quadrilateral}{new()}& Note\footnote{quadrilateral(pt, pt, pt, pt) (short form, recommended)}; [\ref{sub:creating_a_quadrilateral}]\\
 
-  \tkzMeth{quadrilateral}{iscyclic ()} & [\ref{ssub:inscribed_quadrilateral}]\\
-    \tkzMeth{quadrilateral}{poncelet\_point()} & [\ref{ssub:poncelet_point}]\\
+  \tkzMeth{quadrilateral}{is\_cyclic ()} & [\ref{ssub:iscyclic}]\\
+  \tkzMeth{quadrilateral}{is\_convex ()} & [\ref{ssub:isconvex}]\\
+  \tkzMeth{quadrilateral}{poncelet\_point()} & [\ref{ssub:poncelet_point}]\\
   \bottomrule %
   \end{tabular}
   \egroup
@@ -132,7 +220,7 @@ z.G = Q.ABCD.g}
 
 
 \subsubsection{Method \tkzMeth{quadrilateral}{is\_cyclic()}}
-\label{ssub:inscribed_quadrilateral}
+\label{ssub:iscyclic}
 
 \textbf{Inscribed quadrilateral}
 
@@ -148,7 +236,7 @@ z.G = Q.ABCD.g}
  T.equ = L.DB:equilateral()
  z.C = T.equ.pc
  Q.new = quadrilateral(z.A, z.B, z.C, z.D)
- bool = Q.new:iscyclic()
+ bool = Q.new:is_cyclic()
  if bool == true then
  	C.cir = triangle(z.A, z.B, z.C):
    circum_circle()
@@ -176,7 +264,7 @@ L.DB = line(z.D, z.B)
 T.equ = L.DB:equilateral()
 z.C = T.equ.pc
 Q.new = quadrilateral(z.A, z.B, z.C, z.D)
-bool = Q.new:iscyclic()
+bool = Q.new:is_cyclic()
 if bool == true then
 	C.cir = triangle(z.A, z.B, z.C):circum_circle()
 	z.O = C.cir.center
@@ -194,8 +282,16 @@ end
   \tkzLabelPoints[above](C,D)
 \end{tikzpicture}
 \end{center}
-
 \end{minipage}
+
+\subsubsection{Method \tkzMeth{quadrilateral}{is\_convex()}}
+\label{ssub:isconvex}
+
+
+
+
+
+
 
 \subsubsection{Method \tkzMeth{quadrilateral}{poncelet\_point}}
 \label{ssub:poncelet_point}

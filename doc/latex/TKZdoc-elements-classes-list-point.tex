@@ -1,0 +1,338 @@
+\section{Class \tkzClass{list\_point}}
+\label{sec:class_list_point}
+
+The variable \tkzVar{list\_point}{LP} holds a table used to store \tkzClass{list\_point} objects.
+Its use is optional, and users are free to choose any variable name.
+
+\medskip
+
+However, for the sake of consistency and readability throughout the documentation,
+it is recommended to use the predefined variable \tkzVar{list\_point}{LP}.
+The function \tkzFct{tkz-elements}{init\_elements()} automatically reinitializes this table.
+
+\medskip
+
+The \tkzClass{list\_point} class represents an ordered list of points.
+It is primarily intended as a lightweight container used to store and manipulate multiple points
+produced by geometric constructions, intersections, or iterative algorithms.
+
+Unlike geometric objects such as lines or circles, a \tkzClass{list\_point} object does not define intrinsic geometry.
+Its purpose is to facilitate grouping, iteration, and data transfer between \tkzname{Lua} and \tkzname{TikZ}.
+
+\medskip
+
+A \tkzClass{list\_point} object behaves like a Lua table indexed by integers,
+while providing a set of convenience methods adapted to geometric workflows.
+
+\medskip
+
+\subsection{Attributes}
+\label{subsec:list_point_attributes}
+
+\vspace{1em}
+\bgroup
+\small
+\captionof{table}{\texttt{list\_point} attributes.}\label{list_point:attributes}
+\begin{tabular}{lll}
+\toprule
+\textbf{Attribute} & \textbf{Meaning} & \textbf{Reference} \\
+\midrule
+\tkzAttr{list\_point}{n} &  [\ref{ssub:attr_list_point_n}] \\
+\tkzAttr{list\_point}{items} & [\ref{ssub:attr_list_point_items}] \\
+\bottomrule
+\end{tabular}
+\egroup
+
+
+\subsubsection{Attribute \tkzAttr{list\_point}{n}}
+\label{ssub:attr_list_point_n}
+
+The attribute \tkzAttr{list\_point}{n} denotes the number of points stored in the list.
+In practice, it corresponds to the Lua length operator \texttt{\#P} (array part).
+
+\subsubsection{Attribute \tkzAttr{list\_point}{items}}
+\label{ssub:attr_list_point_items}
+
+The attribute \tkzAttr{list\_point}{items} refers to the ordered sequence of points stored in the list.
+Individual points are accessed using standard Lua indexing, e.g. \texttt{P[i]}.
+
+
+\subsection{Creating an object}
+\label{subsec:list_point_create}
+
+\subsubsection{Method \tkzMeth{list\_point}{new(...)}}
+\label{ssub:meth_list_point_new}
+
+Creates a new \tkzClass{list\_point} object.
+
+In user code, the recommended constructor is the callable form \code{list\_point(...)}.
+Internally, this calls the method \tkzMeth{list\_point}{new(...)}.
+
+\medskip
+
+A \tkzClass{list\_point} object can be created either as a local Lua variable
+or as an entry of the table \tkzVar{list\_point}{LP}, which is reserved for storing
+lists of points.
+
+\begin{tkzexample}[code only]
+local P = list_point()
+LP.Q = list_point(z.A, z.B, z.C)
+\end{tkzexample}
+
+Both forms are valid and produce independent \tkzClass{list\_point} objects.
+
+\medskip
+
+Using a local variable is convenient for temporary computations or intermediate results.
+However, for objects intended to be reused, transferred to \tkzname{TikZ},
+or accessed outside a local scope, it is recommended to store them in the
+\tkzVar{list\_point}{LP} table.
+
+\medskip
+
+The function \tkzFct{tkz-elements}{init\_elements()} automatically reinitializes
+the \tkzVar{list\_point}{LP} table.
+
+
+% --------------------------------------------------------------------
+\subsection{Methods or Basic accessors}
+\label{subsec:list_point_accessors}
+
+\vspace{1em}
+\bgroup
+\small
+\captionof{table}{\texttt{list\_point} methods.}\label{list_point:methods}
+\begin{tabular}{ll}
+\toprule
+\textbf{Method}  & \textbf{Reference} \\
+\midrule
+\tkzMeth{list\_point}{new(...)}   & [\ref{ssub:meth_list_point_new}] \\
+\tkzMeth{list\_point}{len()}      & [\ref{ssub:meth_list_point_len}] \\
+\tkzMeth{list\_point}{get(i)}     & [\ref{ssub:meth_list_point_get}] \\
+\tkzMeth{list\_point}{unpack()}   & [\ref{ssub:meth_list_point_unpack}] \\
+\tkzMeth{list\_point}{add(p)}     & [\ref{ssub:meth_list_point_add}] \\
+\tkzMeth{list\_point}{extend(pl)} & [\ref{ssub:meth_list_point_extend}] \\
+\tkzMeth{list\_point}{clear()}    & [\ref{ssub:meth_list_point_clear}] \\
+\tkzMeth{list\_point}{foreach(f)} & [\ref{ssub:meth_list_point_foreach}] \\
+\tkzMeth{list\_point}{map(f)}     & [\ref{ssub:meth_list_point_map}] \\
+\tkzMeth{list\_point}{bbox()}     & [\ref{ssub:meth_list_point_bbox}] \\
+\tkzMeth{list\_point}{barycenter()}& [\ref{ssub:meth_list_point_barycenter}]\\
+\tkzMeth{list\_point}{to\_path()}& [\ref{ssub:meth_list_point_to_path}] \\
+\bottomrule
+\end{tabular}
+\egroup
+
+\subsubsection{Method \tkzMeth{list\_point}{len()}}
+\label{ssub:meth_list_point_len}
+
+Returns the number of points stored in the list.
+
+\subsubsection{Method \tkzMeth{list\_point}{get(i)}}
+\label{ssub:meth_list_point_get}
+
+Returns the point at index \code{i}.
+
+\subsubsection{Method \tkzMeth{list\_point}{unpack()}}
+\label{ssub:meth_list_point_unpack}
+
+Returns all points as separate values using \code{table.unpack}.
+This method is useful when interfacing with functions expecting individual point arguments.
+
+
+% --------------------------------------------------------------------
+\subsection{Modification methods}
+\label{subsec:list_point_mutators}
+
+\subsubsection{Method \tkzMeth{list\_point}{add(p)}}
+\label{ssub:meth_list_point_add}
+
+Appends the point \code{p} to the list and returns the object itself.
+
+\subsubsection{Method \tkzMeth{list\_point}{extend(pl)}}
+\label{ssub:meth_list_point_extend}
+
+Appends all points from another \tkzClass{list\_point} object \code{pl}.
+
+\subsubsection{Method \tkzMeth{list\_point}{clear()}}
+\label{ssub:meth_list_point_clear}
+
+Removes all points from the list.
+
+
+These methods modify the object in place and allow method chaining.
+
+% --------------------------------------------------------------------
+\subsection{Iteration helpers}
+\label{subsec:list_point_iteration}
+
+\subsubsection{Method \tkzMeth{list\_point}{foreach(f)}}
+\label{ssub:meth_list_point_foreach}
+
+Applies the function \code{f(p, i)} to each point \code{p} with its index \code{i}.
+
+\subsubsection{Method \tkzMeth{list\_point}{map(f)}}
+\label{ssub:meth_list_point_map}
+
+Applies the function \code{f(p, i)} to each point and returns a new \tkzClass{list\_point} object
+containing the results.
+
+
+These methods support a functional programming style for geometric transformations.
+
+% --------------------------------------------------------------------
+\subsection{Geometric utilities}
+\label{subsec:list_point_geometry}
+
+\subsubsection{Method \tkzMeth{list\_point}{barycenter()}}
+\label{ssub:meth_list_point_barycenter}
+
+Returns the barycenter (centroid) of all points in the list.
+If the list is empty, the method returns \code{nil}.
+
+\subsubsection{Method \tkzMeth{list\_point}{bbox()}}
+\label{ssub:meth_list_point_bbox}
+
+Returns the bounding box of the point set as four numbers:
+\[
+  (x_{\min}, y_{\min}, x_{\max}, y_{\max})
+\]
+
+
+% --------------------------------------------------------------------
+\subsection{TikZ output}
+\label{subsec:list_point_output}
+
+\subsubsection{Method \tkzMeth{list\_point}{to\_path()}}
+\label{ssub:meth_list_point_to_path}
+
+Converts the list of points into a TikZ path string of the form
+\[
+  (x_1,y_1) -- (x_2,y_2) -- \dots
+\]
+suitable for drawing with TikZ commands.
+
+
+\medskip
+
+This class provides a minimal yet effective bridge between \tkzname{Lua} computations and \tkzname{TikZ} drawing instructions.
+
+
+\subsection{Examples}
+\label{subsec:list_point_examples}
+
+% --------------------------------------------------------------------
+\subsubsection{Temporary list of points}
+\label{ssub:list_point_example_local}
+
+This example illustrates the use of a local \tkzClass{list\_point} object to store
+temporary results inside a computation.
+
+\begin{tkzexample}[code only]
+local P = list_point()
+for i = 1, 10 do
+  P:add(z.A + i * (z.B - z.A) / 10)
+end
+local G = P:barycenter()
+\end{tkzexample}
+
+The list \code{P} is used only locally to compute the barycenter of a set of points.
+
+% --------------------------------------------------------------------
+\subsubsection{Storing construction results in \tkzVar{list\_point}{LP}}
+\label{ssub:list_point_example_lp}
+
+This example shows how to store a list of intersection points for later use.
+
+\begin{tkzexample}[code only]
+LP.I = list_point()
+local X, Y = intersection(L.AB, C.circ)
+LP.I:add(X)
+LP.I:add(Y)
+\end{tkzexample}
+
+Storing the points in \tkzVar{list\_point}{LP} makes them accessible for drawing
+or further constructions.
+
+% --------------------------------------------------------------------
+\subsubsection{Iterative construction}
+\label{ssub:list_point_example_iterative}
+
+A typical use case is the progressive construction of a family of points.
+
+\begin{tkzexample}[code only]
+LP.P = list_point()
+for i = 0, 24 do
+  local t = i / 24
+  LP.P:add(L.AB:point(t))
+end
+\end{tkzexample}
+
+The list \code{LP.P} contains a discrete sampling of a segment.
+
+% --------------------------------------------------------------------
+\subsubsection{Functional transformation}
+\label{ssub:list_point_example_map}
+
+This example uses the \tkzMeth{list\_point}{map} method to transform a set of points.
+
+\begin{tkzexample}[code only]
+local P = list_point(z.A, z.B, z.C)
+LP.Q = P:map(function(p)
+  return rotation_(p, tkz.tau / 3, z.O)
+end)
+\end{tkzexample}
+
+The original list \code{P} is preserved, while \code{LP.Q} stores the transformed points.
+
+% --------------------------------------------------------------------
+\subsubsection{Conversion to a TikZ path}
+\label{ssub:list_point_example_path}
+
+This example illustrates the interaction between \tkzClass{list\_point} and TikZ.
+
+\begin{tkzexample}[code only]
+LP.P = list_point(z.A, z.B, z.C)
+local path = LP.P:to_path()
+\end{tkzexample}
+
+The string returned by \tkzMeth{list\_point}{to\_path} can be passed directly
+to TikZ drawing commands.
+
+
+% --------------------------------------------------------------------
+\subsubsection{From \tkzClass{list\_point} to \tkzClass{path} and drawing with \tkzNamePack{tkz-euclide}}
+\label{ssub:list_point_example_points_path_draw}
+
+This example shows a typical workflow: compute a list of points in \tkzname{Lua},
+convert it into a \tkzClass{path}, and then draw the resulting points with
+\tkzMeth{tkz-euclide}{tkzDrawPointsFromPath}.
+
+
+\begin{tkzexample}[latex = .5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(8, 6)
+  L.AB = line(z.A, z.B)
+  % list of sampled points
+  LP.P = list_point()
+  for i = 0, 12 do
+    LP.P:add(L.AB:point(i/12))
+  end
+  % convert list_point -> path
+  PA.sample = path()
+  for i = 1, LP.P:len() do
+    PA.sample:add_point(LP.P:get(i))
+  end
+}
+\begin{center}
+\begin{tikzpicture}
+\tkzGetNodes
+% draw the points stored in the path
+\tkzDrawPointsFromPath(PA.sample)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+The points are stored in \code{LP.P} for later reuse, while \code{PA.sample}
+contains the corresponding TikZ path representation used for drawing.

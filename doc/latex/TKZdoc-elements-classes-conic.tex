@@ -865,12 +865,14 @@ The most natural creation method is now the one based on a focus, a directrix, a
   \textbf{Methods} & \textbf{Reference}     \\
   \midrule
   \tkzMeth{conic}{points (ta,tb,nb,<'sawp'>)}  & See  [ \ref{ssub:method_conic_points}]  \\
-  \tkzMeth{conic}{point (t)}         & \\
-  \tkzMeth{conic}{in\_out (pt)}      & [\ref{ssub:method_conic_in_out}] \\
-  \tkzMeth{conic}{tangent\_at (pt)}  & [\ref{ssub:method_conic_tangent_at}]  \\
-  \tkzMeth{conic}{tangent\_from (pt)}& [\ref{ssub:method_conic_tangent_from}] \\
+  \tkzMeth{conic}{get(i)}& [\ref{ssub:method_conic_get}]\\
+  \tkzMeth{conic}{point(t)}         & [\ref{ssub:method_conic_points}]\\
+  \tkzMeth{conic}{in\_out(pt)}      & [\ref{ssub:method_conic_in_out}] \\
+  \tkzMeth{conic}{tangent\_at(pt)}  & [\ref{ssub:method_conic_tangent_at}]  \\
+  \tkzMeth{conic}{tangent\_from(pt)}& [\ref{ssub:method_conic_tangent_from}] \\
   \tkzMeth{conic}{orthoptic\_curve()}& [\ref{ssub:method_conic_orthoptic}] \\
   \tkzMeth{conic}{path(pt, pt, nb, swap)} &  [\ref{ssub:conic_path}]   \\
+  \tkzMeth{conic}{asymptotes()} &  [\ref{ssub:conic_asymptotes}]   \\
   \bottomrule
   \end{tabular}
   \egroup
@@ -896,6 +898,36 @@ The most natural creation method is now the one based on a focus, a directrix, a
   \bottomrule
   \end{tabular}
   \egroup
+
+\subsubsection{Method \tkzMeth{conic}{get()}}
+  \label{ssub:method_conic_get}
+
+  This method retrieves the main characteristic points of a conic.
+  The points returned depend on the subtype of the conic (ellipse, hyperbola, or parabola), but the calling convention is uniform.
+
+  \begin{itemize}
+    \item For a \emph{parabola}, the defining points are the vertex and the focus.
+    \item For an \emph{ellipse} or a \emph{hyperbola}, the defining points are the center and the two foci.
+  \end{itemize}
+
+  \medskip
+
+  \begin{itemize}
+    \item \code{C:get()} returns all defining points of the conic.
+    \item \code{C:get(1)} returns the first defining point.
+    \item \code{C:get(2)} returns the second defining point.
+    \item \code{C:get(3)} returns the third defining point, if it exists.
+  \end{itemize}
+
+  \medskip
+
+  More precisely:
+  \begin{itemize}
+    \item For a parabola, \code{C:get()} returns the vertex and the focus.
+    \item For an ellipse or a hyperbola, \code{C:get()} returns the center and the two foci.
+  \end{itemize}
+
+  This method provides a unified way to access the essential points of a conic, independently of its construction (focus--directrix definition, axis-based construction, etc.). It is particularly useful for composing constructions, exporting points, or defining derived geometric objects.
 
 
 \subsubsection{Method \tkzMeth{conic}{points}}
@@ -2368,5 +2400,108 @@ The center is obtained by solving the system of equations corresponding to the p
  cPA.urve = CO.EL:points(0, 1, 100)}
 \end{tkzexample}
 \end{minipage}
+
+
+
+\subsubsection{Method \tkzMeth{conic}{asymptotes()}}
+\label{ssub:conic_asymptotes}
+
+This method computes the asymptotes of a conic when the conic is a
+\emph{hyperbola}.
+For other types of conics (ellipse or parabola), asymptotes are not defined
+and an error is raised.
+
+\medskip
+
+\texttt{Description: }
+This method computes the asymptotes of a conic when the conic is a
+\emph{hyperbola}.
+For other types of conics (ellipse or parabola), asymptotes are not defined
+and an error is raised.
+
+\medskip
+
+Let $\mathcal{H}$ be a hyperbola with center $O$, semi-major axis $a$ and
+semi-minor axis $b$.
+The asymptotes of $\mathcal{H}$ are the two straight lines passing through the
+center $O$ and having slopes $\pm \tfrac{b}{a}$ with respect to the principal
+axis.
+
+The method constructs these asymptotes geometrically:
+\begin{itemize}
+  \item a point $P$ is computed on the transverse axis of the hyperbola,
+  \item two directions orthogonal to the principal axis and scaled by $b$
+        are constructed at $P$,
+  \item the corresponding points are symmetrized with respect to the center
+        in order to define two straight lines.
+\end{itemize}
+
+\medskip
+
+\texttt{Syntax:}
+
+\begin{verbatim}
+L.a1, L.a2 = C:asymptotes()
+\end{verbatim}
+
+\medskip
+
+\texttt{Parameters: }
+None.
+
+\medskip
+
+\texttt{Return values: }
+
+If the conic is an hyperbola, the method returns two objects of type
+\texttt{line}:
+
+\begin{itemize}
+  \item \texttt{L.a1}: first asymptote,
+  \item \texttt{L.a2}: second asymptote.
+\end{itemize}
+
+If the conic is not an hyperbola, an error is raised.
+
+\medskip
+
+\texttt{Example:}
+
+\begin{tkzexample}[vbox]
+\directlua{
+  init_elements()
+  z.A = point(-2, -1)
+  z.B = point(4, 0)
+  L.AB = line(z.A, z.B)
+  z.F = point(0, -3)
+  CO.HY  = conic(z.F, L.AB, 2)
+  curve  = CO.HY:points(-5, 5, 50)
+  curveb = CO.HY:points(-5, 5, 50, swap)
+  z.K = CO.HY.K
+  z.S = CO.HY.vertex
+  z.O = CO.HY.center
+  z.X = CO.HY:point(1)
+  L.A1, L.A2 = CO.HY:asymptotes()
+  z.u1, z.v1 = L.A1:get()
+  z.u2, z.v2 = L.A2:get()
+}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawCoordinates[smooth,cyan](curve)
+\tkzDrawCoordinates[smooth,cyan](curveb)
+\tkzDrawPointOnCurve[mark=ball,ball color=red](X)
+\tkzDrawLines[purple](A,B F,K)
+\tkzDrawLines[red,thick,add=0 and 1](u1,v1 u2,v2)
+\tkzDrawPoints(A,B,F,K,S)
+\tkzLabelPoints(A,B,F,K,S)
+\end{tikzpicture}
+\end{tkzexample}
+
+\medskip
+
+\texttt{Remark: }
+The asymptotes are returned as infinite straight lines.
+They are independent of the chosen parametrization of the hyperbola and
+depend only on its geometric definition.
 
 \endinput

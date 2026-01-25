@@ -1,5 +1,5 @@
 -- File: tkz_elements_occs.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -23,18 +23,32 @@ setmetatable(occs, {
 	end,
 })
 -----------------------
-function occs:coordinates(pt) -- S,U,V orthonormé
-	local xs = self.origin.re
-	local ys = self.origin.im
-	local x = pt.re
-	local y = pt.im
-	local xsu = (self.x - self.origin).re
-	local ysu = (self.x - self.origin).im
-	local xsv = (self.y - self.origin).re
-	local ysv = (self.y - self.origin).im
-	local xxs = x - xs
-	local yys = y - ys
-	return (xsu * xxs + ysu * yys), (xsv * xxs + ysv * yys)
+function occs:coordinates(pt)
+	local O = self.origin
+
+	local dx = pt.re - O.re
+	local dy = pt.im - O.im
+
+	-- axes directeurs
+	local ux = self.x - O
+	local vx = self.y - O
+
+	-- normes (évite division par 0)
+	local nu = point.abs(ux)
+	local nv = point.abs(vx)
+	local eps = tkz.epsilon or 1e-9
+
+	if nu <= eps or nv <= eps then
+		tex.error("Degenerate occs: axis length too small.")
+		return
+	end
+
+	-- coordonnées projetées, corrigées par l'échelle des axes
+	local u = (ux.re * dx + ux.im * dy) / nu
+	local v = (vx.re * dx + vx.im * dy) / nv
+
+	return u, v
 end
+
 
 return occs

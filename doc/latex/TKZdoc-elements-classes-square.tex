@@ -52,8 +52,8 @@ Creation | S.AB = square(z.A,z.B,z.C,z.D)|
   \tkzAttr{square}{side}       & |s = S.AB.center|     & s = length of side   \\
   \tkzAttr{square}{center}     & |z.I = S.AB.center|   & center of the square \\
   \tkzAttr{square}{circumradius}   & |S.AB.circumradius|       & radius of the circumscribed circle \\
-  \tkzAttr{square}{inradius}   & |S.AB.inxradius|      & radius of the inscribed circle   \\
-  \tkzAttr{square}{proj}       & |S.AB.proj|           & projection of the center on one side \\
+  \tkzAttr{square}{inradius}   & |S.AB.inxradius|      & radius of the inscribed circle (apothem)  \\
+  \tkzAttr{square}{apothem\_foot}       & |S.AB.proj|           & projection of the center on one side \\
   \tkzAttr{square}{ab}         & |S.AB.ab|             &  line passing through two vertices   \\
   \tkzAttr{square}{ac}         & |S.AB.ca|             &  idem. \\
   \tkzAttr{square}{ad}         & |S.AB.ad|             &  idem. \\
@@ -130,7 +130,7 @@ Creation | S.AB = square(z.A,z.B,z.C,z.D)|
 \newpage
 
 
-\subsection{Square Methods}
+\subsection{Square Methods and Functions}
 \label{sub:square_methods}
 
 
@@ -145,9 +145,9 @@ Creation | S.AB = square(z.A,z.B,z.C,z.D)|
 
   \tkzMeth{square}{new(za,zb,zc,zd)} &Note\footnote{square(pt,pt,pt,pt) (short form, recommended)};[\ref{ssub:method_square_rotation}]\\
 
-  \tkzMeth{square}{rotation (zi,za)} &[\ref{ssub:method_square_rotation}]\\
+  \tkzFct{square}{square.by\_rotation (zi,za)} &[\ref{ssub:method_square_rotation}]\\
 
-  \tkzMeth{square}{side (za,zb,"swap")} & \ref{ssub:square_with_side_method} \\
+  \tkzFct{square}{square.from\_side(za,zb,"swap")} & \ref{ssub:square_with_side_method} \\
   \bottomrule %
   \end{tabular}
   \egroup
@@ -155,7 +155,7 @@ Creation | S.AB = square(z.A,z.B,z.C,z.D)|
 
 
 
-\subsubsection{Method \tkzFct{square}{rotation(pt,pt)}}
+\subsubsection{Function \tkzFct{square}{square.by\_rotation(pt,pt)}}
 \label{ssub:method_square_rotation}
 $I$ square center; $A$ first vertex
 
@@ -164,7 +164,7 @@ $I$ square center; $A$ first vertex
 \directlua{
  z.A  = point(0, 0)
  z.I  = point(2, -1)
- S    = square:rotation(z.I, z.A)
+ S    = square.by_rotation(z.I, z.A)
  z.B  = S.pb
  z.C  = S.pc
  z.D  = S.pd
@@ -180,7 +180,7 @@ $I$ square center; $A$ first vertex
 \end{tikzpicture}
 \end{tkzexample}
 
-\subsubsection{Method \tkzFct{square}{side (za,zb)}}
+\subsubsection{Method \tkzFct{square}{square.from\_side(za,zb)}}
 \label{ssub:square_with_side_method}
 With the option \code{"swap"} then the square is defined in counterclockwise. The result can also be obtained from a line  [\ref{ssub:method_line_square}].
 
@@ -190,7 +190,7 @@ With the option \code{"swap"} then the square is defined in counterclockwise. Th
  init_elements()
  z.A = point(0, 0)
  z.B = point(2, 1)
- S.side = square:side(z.A, z.B)
+ S.side = square.from_side(z.A, z.B)
  z.B = S.side.pb
  z.C = S.side.pc
  z.D = S.side.pd
@@ -210,7 +210,7 @@ With the option \code{"swap"} then the square is defined in counterclockwise. Th
  init_elements()
  z.A = point(0, 0)
  z.B = point(2, 1)
- S.side = square:side(z.A, z.B)
+ S.side = square.from_side(z.A, z.B)
  z.B = S.side.pb
  z.C = S.side.pc
  z.D = S.side.pd

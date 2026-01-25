@@ -1,5 +1,5 @@
 -- File: tkz_elements_path.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -43,8 +43,13 @@ function path.__sub(p1, p2)
 end
 
 function path:__tostring()
-	return "path: { " .. table.concat(self, " , ") .. " }"
+	local t = {}
+	for i, v in ipairs(self) do
+		t[i] = tostring(v)
+	end
+	return "path: { " .. table.concat(t, " , ") .. " }"
 end
+
 
 function path:add_point(z, decimals)
 	table.insert(self, utils.format_point(z, decimals))
@@ -128,7 +133,8 @@ function path:close()
 	local x1, y1 = utils.parse_point(self[1])
 	local x2, y2 = utils.parse_point(self[#self])
 
-	if x1 ~= x2 or y1 ~= y2 then
+local eps = tkz.epsilon or 1e-9
+	if math.abs(x1 - x2) > eps or math.abs(y1 - y2) > eps then
 		local closed = {}
 		for i, pt in ipairs(self) do
 			closed[i] = pt
@@ -139,6 +145,7 @@ function path:close()
 		return self
 	end
 end
+
 
 -- Sous-chemin
 function path:sub(i1, i2)
@@ -171,17 +178,13 @@ function path:count()
 	return #self
 end
 
+-- format interne: "(x,y)" uniquement
 local function parse_xy(entry)
-	if type(entry) == "table" then
-		-- au cas où tu ranges déjà sous forme table
-		if entry.x_num and entry.y_num then return entry.x_num, entry.y_num end
-		if entry.x and entry.y then return tonumber(entry.x), tonumber(entry.y) end
-	end
-	-- formats tolérés: "(x,y)" | "x,y" | "x/y"
 	local s = tostring(entry)
-	local x, y = s:match("%(?%s*([%+%-]?%d+%.?%d*)%s*[,/ ]%s*([%+%-]?%d+%.?%d*)%s*%)?")
+	local x, y = s:match("^%(%s*([%+%-]?[%d%.eE]+)%s*,%s*([%+%-]?[%d%.eE]+)%s*%)$")
 	return tonumber(x), tonumber(y)
 end
+
 
 --  coordinates of the i-th point
 function path:get_number_path(i)

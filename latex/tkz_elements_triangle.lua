@@ -1,5 +1,5 @@
--- File: tkz_elements_triangles.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- File: tkz_elements_triangle.lua
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -95,16 +95,19 @@ setmetatable(triangle, {
 })
 
 function triangle:get(i)
-	if i == 1 then
+	if i == nil then
+		return self.pa, self.pb, self.pc
+	elseif i == 1 then
 		return self.pa
 	elseif i == 2 then
 		return self.pb
 	elseif i == 3 then
 		return self.pc
 	else
-		return self.pa, self.pb, self.pc
+		return nil
 	end
 end
+
 -----------------------
 -- Result -> boolean
 -----------------------
@@ -163,19 +166,18 @@ function triangle:trilinear_to_d(x, y, z)
 	return trilinear_to_d_(x, y, z, self.a, self.b, self.c)
 end
 
-function triangle:get_angle(n)
-	local a, b, c
-	a = self.pa
-	b = self.pb
-	c = self.pc
-	if n == 1 then
-		return point.arg((a - b) / (c - b))
-	elseif n == 2 then
-		return point.arg((b - c) / (a - c))
-	else
-		return point.arg((c - a) / (b - a))
+function triangle:get_angle(arg)
+	local i = resolve_triangle_index(self, arg)  -- 0,1,2
+	if i < 0 or i > 2 then
+		tex.error("triangle:get_angle -> invalid argument (use 0/1/2, 'a'/'b'/'c', or a vertex point)")
+		return nil
 	end
+
+	if i == 0 then return self.alpha end  -- angle en B dans ton alpha = angle(za,zb,zc)
+	if i == 1 then return self.beta  end
+	return self.gamma
 end
+
 
 function triangle:parameter(p)
 	local a, b, c = self.a, self.b, self.c -- a=BC, b=CA, c=AB
@@ -222,7 +224,6 @@ end
 
 function triangle:random(inside)
 	inside = (inside == "inside")
-	math.randomseed(os.time())
 	if inside then
 		local x = self.bc:random()
 		local L = line:new(self.pa, x)
@@ -282,7 +283,7 @@ function triangle:kimberling(n)
 	elseif n == 115 then
 		return self:barycentric((b ^ 2 - c ^ 2) ^ 2, (c ^ 2 - a ^ 2) ^ 2, (a ^ 2 - b ^ 2) ^ 2) -- kiepert hyperbola
 	elseif n == 175 then
-		ra, rb, rc = radius_excircle_(self.pa, self.pb, self.pc)
+		local ra, rb, rc = radius_excircle_(self.pa, self.pb, self.pc)
 		return self:barycentric(a - ra, b - rb, c - rc)
 	elseif n == 176 then
 		ra, rb, rc = radius_excircle_(self.pa, self.pb, self.pc)
@@ -369,7 +370,7 @@ function triangle:spieker_center()
 end
 
 function triangle:euler_points()
-	H = self.orthocenter
+	local H = self.orthocenter
 	return midpoint_(H, self.pa), midpoint_(H, self.pb), midpoint_(H, self.pc)
 end
 
@@ -380,7 +381,7 @@ function triangle:nine_points()
 	-- Calculate the orthic triangle
 	ha, hb, hc = orthic_tr_(self.pa, self.pb, self.pc)
 	-- Calculate the orthocenter
-	H = self.orthocenter
+	local H = self.orthocenter
 	-- Return the points of the nine-point circle
 	return ma, mb, mc, ha, hb, hc, midpoint_(H, self.pa), midpoint_(H, self.pb), midpoint_(H, self.pc)
 end
@@ -545,14 +546,41 @@ function triangle:poncelet_point(pt)
 	end
 end
 
-function triangle:orthopole(l)
-	local ap, bp, cp = l:projection(self.pa, self.pb, self.pc)
-	local bpp = self.ca:projection(bp)
-	local app = self.bc:projection(ap)
-	local la = line:new(ap, app)
-	local lb = line:new(bp, bpp)
-	return intersection(la, lb)
+function triangle:orthopole(l, EPS)
+	EPS = EPS or tkz.epsilon
+
+	-- garde-fous
+	if tkz.is_linear(self.pa, self.pb, self.pc) then
+		tex.error("orthopole: degenerate triangle")
+		return
+	end
+
+	local p, q = l:get()
+	if point.abs(p - q) <= EPS then
+		tex.error("orthopole: degenerate line")
+		return
+	end
+
+	-- projections de A,B sur l (on n'a pas besoin de C ici)
+	local ap = projection_(p, q, self.pa)
+	local bp = projection_(p, q, self.pb)
+
+	-- pieds sur les côtés CA et BC
+	local a1, a2 = self.bc:get()   -- droite (BC)
+	local c1, c2 = self.ca:get()   -- droite (CA)
+
+	if point.abs(a2 - a1) <= EPS or point.abs(c2 - c1) <= EPS then
+		tex.error("orthopole: degenerate triangle side")
+		return
+	end
+
+	local app = projection_(a1, a2, ap)  -- pied de ap sur (BC)
+	local bpp = projection_(c1, c2, bp)  -- pied de bp sur (CA)
+
+	-- orthopole = intersection des droites (ap, app) et (bp, bpp)
+	return intersection(line:new(ap, app), line:new(bp, bpp))
 end
+
 
 
 function triangle:isodynamic_points()
@@ -588,10 +616,10 @@ function triangle:apollonius_points(side, EPS)
 	local a, b, c = self.a, self.b, self.c  -- a = BC, b = CA
 	local A, B, C = self.pa, self.pb, self.pc
   local ab, bc, ca = self.ab, self.bc, self.ca
-   local x, y, X, Y
+   local x, y, X, Y, L, k
 		if side == "ab"  then
-			L = self.ab
-			k = b / a
+			 L = self.ab
+			 k = b / a
 			x, y = a, b
 			X, Y = A, B     -- AC / BC
 	elseif side == "bc"  then

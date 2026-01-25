@@ -1,5 +1,5 @@
 -- File: tkz_elements_line.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 -- -------------------------------------------------------------------------
@@ -46,14 +46,17 @@ setmetatable(line, {
 })
 
 function line:get(i)
-  if i == 1 then
+  if i == nil then
+    return self.pa, self.pb
+  elseif i == 1 then
     return self.pa
   elseif i == 2 then
     return self.pb
   else
-    return self.pa, self.pb
+    return nil
   end
 end
+
 
 -------------------
 -- Result -> real
@@ -154,9 +157,12 @@ end
 function line:harmonic(mode, arg)
   -- si le premier argument n'est pas une chaîne, on suppose mode = "both"
   if type(mode) ~= "string" then
+    if mode == "int" then mode = "internal" end
+    if mode == "ext" then mode = "external" end
     arg  = mode
     mode = "both"
   end
+
 
   if mode == "internal" then
     return div_harmonic_int_(self.pa, self.pb, arg)
@@ -183,8 +189,9 @@ end
 
 -- Normalize line (point at one unit distance)
 function line:normalize()
-  return self.pa + (self.pb - self.pa) / point.mod(self.pb - self.pa)
+  return self.pa + (self.pb - self.pa) / self.length
 end
+
 
 -- Reverse normalizes the line
 function line:normalize_inv()
@@ -228,7 +235,6 @@ end
 
 
 function line:random()
-  math.randomseed(os.time())
   return self:point(math.random())
 end
 
@@ -243,7 +249,8 @@ end
 line.parallel_from = line.ll_from
 
 function line:ortho_from(pt)
-  return line:new(pt + (self.pb - self.pa) * point(0, -1), pt + (self.pb - self.pa) * point(0, 1))
+  local v = (self.pb - self.pa) * point(0, 1)
+  return line:new(pt - v, pt + v)
 end
 
 line.orthogonal_from = line.ortho_from
@@ -256,10 +263,11 @@ line.perpendicular_bisector = line.mediator
 line.bisector = line.mediator
 
 function line:swap_line()
-  self.pa, self.pb = self.pb, self.pa -- Inverse les points pa et pb
-  return line:new(self.pa, self.pb) -- Crée et retourne la ligne avec les points permutés
+  self.pa, self.pb = self.pb, self.pa
+  return self
 end
 
+-- d : signed distance from the line (positive / negative side)
 function line:collinear_at_distance(d)
  local a, b = self.pa, self.pb
  local u = orthogonal_at_(a, b, a, d / self.length)
@@ -386,15 +394,15 @@ line.asa = line.two_angles
 line.a_a = line.two_angles
 
 function line:s_s(a, b, swap)
-  local pta, ptb, i, j
+  local pta, ptb
   swap = (swap == "swap")
 
   pta = self.pa + point(a, 0)
   ptb = self.pb + point(-b, 0)
 
   local i, j = intersection_cc_(self.pa, pta, self.pb, ptb)
-  local a = get_angle_normalize_(self.pa, self.pb, i)
-  if a < 0 then
+  local an = get_angle_normalize_(self.pa, self.pb, i)
+  if an < 0 then
     i, j = j, i
   end
   if swap then
@@ -553,12 +561,7 @@ line.golden_gnomon = line.divine
 -- Résultat -> carré
 ------------------------------
 function line:square(swap)
-  swap = (swap == "swap")
-  if swap then
-    return square:side(self.pa, self.pb, "swap")
-  else
-    return square:side(self.pa, self.pb)
-  end
+  return square_from_side_(self.pa, self.pb, swap)
 end
 
 -------------------
@@ -738,7 +741,7 @@ function line:reflection(...)
 end
 
 function line:set_reflection(...)
-  return set_symmetry_axial_(self.pb, self.pa, ...)
+  return set_symmetry_axial_(self.pa, self.pb, ...)
 end
 
 function line:affinity(...)

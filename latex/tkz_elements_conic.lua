@@ -1,5 +1,5 @@
 -- File: tkz_elements_conic.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 
@@ -91,6 +91,33 @@ setmetatable(conic, {
 	end,
 })
 
+function conic:get(i)
+	local p1, p2, p3
+
+	if self.subtype == "parabola" then
+		p1 = self.vertex
+		p2 = self.Fa
+		p3 = nil
+	else
+		p1 = self.center
+		p2 = self.Fa
+		p3 = self.Fb
+	end
+
+	if i == nil then
+		return p1, p2, p3
+	elseif i == 1 then
+		return p1
+	elseif i == 2 then
+		return p2
+	elseif i == 3 then
+		return p3
+	else
+		return nil
+	end
+end
+
+
 function conic:points(ta, tb, nb, swap)
 	swap = (swap == "swap")
 	if not swap then
@@ -173,7 +200,7 @@ function conic:inter_Pa_line(pa, pb)
 end
 
 function conic:tangent_from(pt)
-	if self.e == 1 then -- Parabola
+  if math.abs(self.e - 1) < tkz.epsilon then --
 		local sys = occs:new(self.major_axis, self.vertex)
 		local Xb, Yb = sys:coordinates(pt)
 		local p1, p2 = tkz.solve_quadratic_(self.h, -2 * Xb, 2 * Yb)
@@ -284,7 +311,7 @@ end
 
 -- Fonction pour calculer les asymptotes de la conique
 function conic:asymptotes()
-	if self.e > 1 then -- Hyperbole
+	if self.subtype == "hyperbola" then -- Hyperbole
 		-- Calcul du point sur les foyers et des asymptotes
 		local pa = report_(self.Fa, self.Fb, self.a, self.center)
 		local p1 = (pa - self.center):orthogonal(self.b):at(pa)
@@ -297,7 +324,7 @@ function conic:asymptotes()
 		-- Retourne les deux asymptotes
 		return line:new(p1, q1), line:new(p2, q2)
 	else
-		-- Si ce n'est pas une hyperbole, renvoie une erreur
+		-- If this is not an hyperbola, return an error
 		tex.error("An error has occurred", { "It's not an hyperbola" })
 		return
 	end
@@ -429,7 +456,7 @@ which = which or "external"  -- "external" (défaut) ou "internal"
 	end
 
 	local E1 = self
-  local E2 = CO.E2
+  local E2 = E2
 	local C1 = E1.center
 	local C2 = E2.center
 	local A1 = E1.a
@@ -536,133 +563,6 @@ local function is_internal(A, u)
 					is_which=is_internal
 				end
 				if is_which(A, u) then
-					local n = utils.table_getn(E1_raw)
-					local dup = false
-					for i = 1, n do
-						if almost_eq(B, E1_raw[i]) and almost_eq(A, E2_raw[i]) then
-							dup = true
-							break
-						end
-					end
-					if not dup then
-						E1_raw[n + 1] = B
-						E2_raw[n + 1] = A
-						if n + 1 >= 2 then break end
-					end
-				end
-			end
-		end
-	end
-
-	-- projection finale en global via le repère sys centré en C1
-	local a = E1_raw[1] and to_global(sys, C1, E1_raw[1].x, E1_raw[1].y) or nil
-	local b = E1_raw[2] and to_global(sys, C1, E1_raw[2].x, E1_raw[2].y) or nil
-	local c = E2_raw[1] and to_global(sys, C1, E2_raw[1].x, E2_raw[1].y) or nil
-	local d = E2_raw[2] and to_global(sys, C1, E2_raw[2].x, E2_raw[2].y) or nil
-	return line:new(a, b), line:new(c, d)
-end
-
-function conic:common_tangent_internal(E2)
-
-	if self.subtype ~= "ellipse" or E2.subtype ~= "ellipse" then
-		return nil, nil
-	end
-
-	local E1 = self
-	local E2 = CO.E2
-	local C1 = E1.center
-	local C2 = E2.center
-	local A1 = E1.a
-	local B1 = E1.b
-
-	local a, b  = E1.directrix:get()
-	local ll    = line(b, a)
-	local sys   = occs(ll, C1)
-	local X2, Y2 = sys:coordinates(E2.center)
-	local c2_loc = point(X2, Y2)
-	local u2_loc, v2_loc
-	do
-		local vx, vy = sys:coordinates(E2.vertex)
-		local cvx, cvy = vx - c2_loc.re, vy - c2_loc.im
-		local nv = math.sqrt(cvx * cvx + cvy * cvy)
-		if nv > 0 then cvx, cvy = cvx / nv, cvy / nv end
-		u2_loc = point(cvx, cvy)
-
-		local wx, wy = sys:coordinates(E2.covertex)
-		local cwx, cwy = wx - c2_loc.re, wy - c2_loc.im
-		local nw = math.sqrt(cwx * cwx + cwy * cwy)
-		if nw > 0 then cwx, cwy = cwx / nw, cwy / nw end
-		v2_loc = point(cwx, cwy)
-	end
-
-	local A2 = E2.a
-	local B2 = E2.b
-
-	-- paramétrisation locale de E2 (dans le repère sys)
-	local function pE2_loc(t)
-		return {
-			x = c2_loc.re + A2 * math.cos(t) * u2_loc.re + B2 * math.sin(t) * v2_loc.re,
-			y = c2_loc.im + A2 * math.cos(t) * u2_loc.im + B2 * math.sin(t) * v2_loc.im
-		}
-	end
-	local function dE2_loc(t)
-		return {
-			x = -A2 * math.sin(t) * u2_loc.re + B2 * math.cos(t) * v2_loc.re,
-			y = -A2 * math.sin(t) * u2_loc.im + B2 * math.cos(t) * v2_loc.im
-		}
-	end
-
-	-- produit scalaire elliptique (E1) & normes associées
-	local function ps_loc(z1, z2)
-		return (z1.x * z2.x) / (A1 * A1) + (z1.y * z2.y) / (B1 * B1)
-	end
-	local function N2_loc(z)
-		return ps_loc(z, z)
-	end
-
-	-- discriminant de tangence
-	local function D_of_t(t)
-		local p  = pE2_loc(t)
-		local dp = dE2_loc(t)
-		return ps_loc(p, dp) ^ 2 - N2_loc(dp) * (N2_loc(p) - 1)
-	end
-
-local function is_internal(A, u)
-		local px, py = -u.y, u.x
-		local s1 = A.x * px + A.y * py
-		local dx, dy = A.x - c2_loc.re, A.y - c2_loc.im
-		local s2 = dx * px + dy * py
-		return s1 * s2 <= 0
-	end
-
-	local function to_global(O, origin, a, b)
-		local ox, oy = origin.re, origin.im
-		local ux, uy = O.x.re - ox, O.x.im - oy
-		local vx, vy = O.y.re - ox, O.y.im - oy
-		return point(ox + a * ux + b * vx, oy + a * uy + b * vy)
-	end
-
-	local function almost_eq(P, Q, eps)
-		if (not P) or (not Q) then return false end
-		eps = eps or 1e-4
-		return (math.abs(P.x - Q.x) < eps) and (math.abs(P.y - Q.y) < eps)
-	end
-	-- ===== Fin du bloc “préambule/repère” adapté =====
-
-	local E1_raw, E2_raw = {}, {}
-	local T = solve(D_of_t, -math.pi, math.pi, 720)
-	if T == nil then T = {} end
-	if type(T) ~= "table" then T = { T } end
-
-	for _, t in ipairs(T) do
-		local A = pE2_loc(t)
-		local u = dE2_loc(t)
-		if A and u then
-			local uu = ps_loc(u, u)
-			if uu and uu > 0 then
-				local lam = -ps_loc(A, u) / uu
-				local B = { x = A.x + lam * u.x, y = A.y + lam * u.y }
-				if is_internal(A, u) then
 					local n = utils.table_getn(E1_raw)
 					local dup = false
 					for i = 1, n do

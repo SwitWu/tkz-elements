@@ -49,7 +49,7 @@ Creation | P.new = parallelogram(z.A,z.B,z.C,z.D)|
   \tkzAttr{parallelogram}{pc}   & |z.C = P.new.pc|     &  \\
   \tkzAttr{parallelogram}{pd}   & |z.D = P.new.pd|     &  \\
   \tkzAttr{parallelogram}{type} & |P.new.type= 'parallelogram'|&  \\
-  \tkzAttr{parallelogram}{i}    & |z.I = P.new.i|  & intersection of diagonals \\
+  \tkzAttr{parallelogram}{center}    & |z.I = P.new.center|  & intersection of diagonals \\
   \tkzAttr{parallelogram}{ab}   & |P.new.ab|    &  line passing through two vertices \\
   \tkzAttr{parallelogram}{ac}   & |P.new.ca|           &  idem. \\
   \tkzAttr{parallelogram}{ad}   & |P.new.ad|           &  idem. \\
@@ -124,7 +124,7 @@ Creation | P.new = parallelogram(z.A,z.B,z.C,z.D)|
   \textbf{Functions} & \textbf{Reference}    \\
   \midrule
   \tkzMeth{parallelogram}{new (za, zb, zc, zd)} & \ref{ssub:example_attributes}\\
-  \tkzMeth{parallelogram}{fourth (za,zb,zc)} & \ref{ssub:parallelogram_with_fourth_method} \\
+  \tkzFct{parallelogram}{parallelogram.fourth (za,zb,zc)} & \ref{ssub:parallelogram_with_fourth_method} \\
   \bottomrule %
   \end{tabular}
   \egroup
@@ -165,7 +165,7 @@ init_elements()
 z.A = point(0, 0)
 z.B = point(3, 1)
 z.C = point(4, 3)
-P.four= parallelogram:fourth(z.A, z.B, z.C)
+P.four= parallelogram.fourth(z.A, z.B, z.C)
 z.D = P.four.pd
 z.I = P.four.center}
 \begin{tikzpicture}[ scale = .75]
@@ -184,7 +184,7 @@ z.I = P.four.center}
  z.A = point(0, 0)
  z.B = point(3, 1)
  z.C = point(4, 3)
- P.four= parallelogram:fourth(z.A, z.B, z.C)
+ P.four= parallelogram.fourth(z.A, z.B, z.C)
  z.D = P.four.pd
  z.I = P.four.center}
 \begin{center}

@@ -175,7 +175,8 @@ The circle class offers a wide range of methods, which can be grouped according 
 
   \textbf{Points} &\\
   \midrule
-  \tkzMeth{circle}{antipode(pt)} &     [\ref{ssub:method_circle_antipode}]   \\
+  \tkzMeth{circle}{get(i)} &     [\ref{ssub:method_circle_get}]   \\
+  \tkzMeth{circle}{antipode(pt)} & [\ref{ssub:method_circle_antipode}]   \\
   \tkzMeth{circle}{midarc(pt,pt)} &  [\ref{ssub:method_circle_midarc}]\\
   \tkzMeth{circle}{point(r)} & [\ref{ssub:method_circle_point}]\\
   \tkzMeth{circle}{random\_pt(<'inside'>)}  & [\ref{ssub:method_imeth_circle_random_inside}]\\
@@ -977,6 +978,23 @@ if position == "inside tangent" then color = "orange" else color = "blue" end}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{The result is a point}
+
+\subsubsection{Method \tkzMeth{circle}{get()}}
+\label{ssub:method_circle_get}
+
+This method retrieves the defining points of a circle.
+A circle is determined by its center and one point on its circumference.
+
+\begin{itemize}
+  \item \code{C:get()} returns the center and a point through which the circle passes.
+  \item \code{C:get(1)} returns the center of the circle.
+  \item \code{C:get(2)} returns the point on the circumference.
+\end{itemize}
+
+This method is useful whenever the geometric definition of a circle needs to be reused, for instance when constructing tangents, radical axes, or when passing circle data to other constructions.
+It provides a simple and consistent way to access the fundamental points that define a circle.
+
+
 
 \subsubsection{Method \tkzMeth{circle}{antipode}}
 \label{ssub:method_circle_antipode}

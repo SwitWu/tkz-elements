@@ -1,5 +1,5 @@
 -- File: tkz_elements_parallelogram.lua
--- Copyright (c) 2023–2025 Alain Matthes
+-- Copyright (c) 2026 Alain Matthes
 -- SPDX-License-Identifier: LPPL-1.3c
 -- Maintainer: Alain Matthes
 ---------------------------------------------------------------------------
@@ -8,27 +8,27 @@
 
 parallelogram = {}
 parallelogram.__index = parallelogram
-function parallelogram:new(za, zb, zc, zd)
+function parallelogram:new(pa, pb, pc, pd)
 	local d
-	local zi = midpoint_(za, zc)
-	local zj = midpoint_(zb, zd)
+	local zi = midpoint_(pa, pc)
+	local zj = midpoint_(pb, pd)
 	if point.abs(zj - zi) < tkz.epsilon then
 	else
 		tex.error("it's not a parallelogram")
 	end
 	local type = "parallelogram"
-	local center = midpoint_(za, zc)
-	local ab = line:new(za, zb)
-	local bc = line:new(zb, zc)
-	local cd = line:new(zc, zd)
-	local da = line:new(zd, za)
-	local ac = line:new(za, zc)
-	local bd = line:new(zb, zd)
+	local center = zi
+	local ab = line:new(pa, pb)
+	local bc = line:new(pb, pc)
+	local cd = line:new(pc, pd)
+	local da = line:new(pd, pa)
+	local ac = line:new(pa, pc)
+	local bd = line:new(pb, pd)
 	local o = {
-		pa = za,
-		pb = zb,
-		pc = zc,
-		pd = zd,
+		pa = pa,
+		pb = pb,
+		pc = pc,
+		pd = pd,
 		ab = ab,
 		ac = ac,
 		bc = bc,
@@ -50,11 +50,6 @@ setmetatable(parallelogram, {
 
 function parallelogram:get()
 	return self.pa, self.pb, self.pc, self.pd
-end
-
-function parallelogram:fourth(za, zb, zc)
-	local zd = zc + (za - zb)
-	return parallelogram:new(za, zb, zc, zd)
 end
 
 return parallelogram
