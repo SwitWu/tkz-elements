@@ -247,7 +247,7 @@ function PA_in_out(PA, pt)
 		return false
 	else
 		local L = line:new(x, y)
-		return L:in_out_segment(pt)
+		return L:on_segment(pt)
 	end
 end
 
@@ -259,7 +259,7 @@ function HY_in_out(HY, pt)
 		return false
 	else
 		local L = line:new(x, y)
-		return L:in_out_segment(pt)
+		return L:on_segment(pt)
 	end
 end
 

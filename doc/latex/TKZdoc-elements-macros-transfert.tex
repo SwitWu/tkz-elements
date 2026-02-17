@@ -1,0 +1,560 @@
+%====================================================================
+\section{TeX Interface Macros (\texttt{tkz-elements.sty})}
+\label{sec:sty_interface}
+
+\subsection{Purpose}
+
+The file \texttt{tkz-elements.sty} provides a small set of macros that
+act as a bridge between \TeX{} and the Lua engine used by
+\tkzNamePack{tkz-elements}. Their main goals are:
+
+\begin{itemize}
+\item printing Lua values safely in \TeX{};
+\item transferring geometric objects (points, paths, circles) from Lua to TikZ;
+\item simplifying the drawing stage when computations are done in Lua.
+\end{itemize}
+
+\medskip
+Unless stated otherwise, these macros assume that \tkzNamePack{tkz-elements}
+has been initialized in Lua (typically via |\directlua{init_elements()}|.
+
+%--------------------------------------------------------------------
+\subsection{Summary of provided macros}
+
+
+\begin{tabular}{ll}
+\toprule
+\texttt{Macro} & \texttt{Reference} \\
+\midrule
+\tkzMacro{tkz-elements}{tkzUseLua\{...\}}               & \\
+\tkzMacro{tkz-elements}{tkzPrintNumber\{...\}}          & \\
+\tkzMacro{tkz-elements}{tkzEraseLuaObj\{name\}}         & \\
+\tkzMacro{tkz-elements}{tkzDrawCoordinates(\dots)}      & \\
+\tkzMacro{tkz-elements}{tkzGetPointsFromPath\{P\}\{A\}} & \\
+\tkzMacro{tkz-elements}{tkzDrawPointsFromPath(\dots)}   & \\
+\tkzMacro{tkz-elements}{tkzDrawSegmentsFromPaths(\dots)}& \\
+\tkzMacro{tkz-elements}{tkzDrawCirclesFromPaths(\dots)} & \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\texttt{Note:} The exact internal Lua object layout may evolve; these macros
+are designed to remain stable at the user level.
+
+%====================================================================
+\subsection{Macro \tkzMacro{tkz-elements}{tkzUseLua}}
+\label{subsec:tkzUseLua}
+
+\medskip
+\texttt{Syntax: }
+
+\verb|tkzUseLua{<lua-expression>\}|
+
+
+\medskip
+\texttt{Description: }
+Evaluates the Lua expression and prints its result in the \TeX{} stream.
+
+\medskip
+\texttt{Argument: }
+\begin{itemize}
+\item \tkzname{<lua-expression>}: a Lua expression returning a value.
+\end{itemize}
+
+\medskip
+\texttt{Notes: }
+\begin{itemize}
+\item This macro is meant for \emph{values} (numbers, booleans, strings).
+\item For Lua objects (point, line, circle, path, \dots), prefer dedicated
+transfer/draw macros or call an explicit Lua method that returns a value.
+\end{itemize}
+
+\texttt{Example: }
+\begin{minipage}{.52\textwidth}
+\begin{verbatim}
+\directlua{init_elements()
+  z.A = point(0,0)
+  z.B = point(4,2)
+}
+The slope is \tkzUseLua{(z.B.im-z.A.im)/(z.B.re-z.A.re)}.
+\end{verbatim}
+\end{minipage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This macro evaluates a Lua expression and inserts its result in the document.
+
+
+\texttt{Syntax: }\verb|\tkzUseLua{<lua-code>}|
+
+\texttt{Example usage: }
+
+\begin{mybox}
+\begin{verbatim}
+\tkzUseLua{checknumber(math.pi)}
+\end{verbatim}
+\end{mybox}
+
+
+%====================================================================
+\subsection{Macro \tkzMacro{tkz-elements}{tkzPrintNumber}}
+This macro formats and prints a number using PGF’s fixed-point output, with a default precision of 2 decimal places.
+
+\medskip
+
+%\texttt{Syntax: }\verb|\tkzPrintNumber[<precision>]{<number>}|
+\texttt{Syntax: }
+\begin{quote}
+\tkzMacro{tkz-elements}{tkzPrintNumber\{<lua-expression>\}} \qquad
+\tkzMacro{tkz-elements}{tkzPN\{<lua-expression>\}}
+\end{quote}
+
+\texttt{Example: }
+
+\begin{mybox}
+\begin{verbatim}
+\tkzPrintNumber{pi} % outputs 3.14
+\tkzPrintNumber[4]{sqrt(2)} % outputs 1.4142
+\end{verbatim}
+\end{mybox}
+
+\texttt{Alias: } The macro \tkzMacro{tkz-elements}{tkzPN} is a shorthand for \tkzMacro{tkz-elements}{tkzPrintNumber}.
+
+
+\texttt{Example: }
+\begin{minipage}{.52\textwidth}
+\begin{verbatim}
+\directlua{init_elements()
+  x = math.pi/7
+}
+$\alpha = \tkzPN{x}$.
+\end{verbatim}
+\end{minipage}
+
+
+%====================================================================
+\subsection{Macro \tkzMacro{tkz-elements}{tkzEraseLuaObj}}
+
+\label{sub:macro_tkzEraseLuaObj}
+
+\texttt{Syntax: }
+\begin{quote}
+\tkzMacro{tkz-elements}{tkzEraseLuaObj\{<name>\}}
+\end{quote}
+
+
+
+\texttt{Description: }
+Removes a stored Lua object from the global storage table (typically \code{z},
+\code{L}, \code{C}, \code{CO}, etc., depending on your conventions).
+
+
+\texttt{Syntax: } \verb|\tkzEraseLuaObj{<object>}|
+
+\texttt{Example usage: }
+
+\begin{mybox}
+\begin{verbatim}
+\tkzEraseLuaObj{z.A}
+\tkzEraseLuaObj{T.ABC}
+\end{verbatim}
+\end{mybox}
+
+
+\texttt{Notes: }
+Use this macro to avoid name collisions when compiling large documents
+or when reusing the same object names across figures.
+
+
+
+%====================================================================
+\subsection{Macro \tkzMacro{tkz-elements}{tkzPathCount}}
+This macro retrieves the number of vertices in a Lua path and stores the result in a TeX macro.
+
+\texttt{Syntax: }\verb|\tkzPathCount(<lua-path>){<MacroName>}|
+
+\texttt{Arguments: }
+
+\verb|<lua-path>|: identifier of a Lua \verb|path| object.
+\verb|<MacroName>|: name of a TeX macro (without the backslash) that will store the count.
+
+
+\texttt{Example usage: }
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ z.A = point(0, 0)
+ z.B = point(5, 4)
+ L.AB = line(z.A, z.B)
+ PA.AB = L.AB:path(3)
+ z.O = point(2, 0)
+ }
+\tkzPathCount(PA.AB){N}
+\begin{center}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawCoordinates[blue](PA.AB)
+\tkzDrawPointsFromPath[red,size=2](PA.AB)
+  \foreach \i in {1,...,\N}{
+ \tkzGetPointFromPath(PA.AB,\i){P\i}
+ \tkzDrawSegment[orange](O,P\i)
+  }
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+
+
+%====================================================================
+\subsection{Macro \tkzMacro{tkz-elements}{tkzDrawCoordinates}}
+This macro draws a curve using the TikZ \code{plot coordinates} syntax, with coordinates generated by Lua.
+
+
+\texttt{Syntax: } |\tkzDrawCoordinates[<options>](lua-path)|
+
+\texttt{Example usage: }
+
+%\begin{mybox}
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  z.A = point(0, 0)
+  z.B = point(6, 0)
+  z.C = point(1, 4)
+  T.ABC = triangle(z.A, z.B, z.C)
+  z.M = T.ABC.bc.mid
+  z.N = T.ABC.ca.mid
+  PA.path = T.ABC:path(z.M,z.N,4)
+}
+\begin{tikzpicture}[gridded]
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C)
+\tkzDrawCoordinates[orange,thick](PA.path)
+\tkzDrawPoints(A,B,C,M,N)
+\tkzLabelPoints(A,B)
+\tkzLabelPoints[above](C)
+\end{tikzpicture}
+\end{tkzexample}
+%\end{mybox}
+
+\medskip
+\texttt{Description: }
+Draws a Lua \code{path} object as a TikZ path. This macro is typically used
+after the computational phase in Lua. Draws the polyline defined by the sequence of points in a Lua path, using explicit \code{(x,y)} coordinates.
+
+
+\medskip
+\texttt{Alias: } % \let\tkzDrawPath\tkzDrawCoordinates
+\label{subsec:tkzDrawPath}
+
+\begin{quote}
+\tkzMacro{tkz-elements}{tkzDrawPath[<tikz-options>](lua-path)}
+\end{quote}
+
+%====================================================================
+
+\subsection{Macro \tkzMacro{tkz-elements}{tkzDrawPointsFromPath}}
+\label{sub:macro_tkzDrawPointsFromPath}
+
+This macro draws all points of a path using \tkzname{tkzDrawPoint}, without exporting point names.
+
+\medskip
+\texttt{Syntax: }
+\verb|\tkzDrawPointsFromPath[<options>](lua-path)|
+
+\medskip
+\texttt{Example usage: }
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+init_elements()
+LP.test = list_point()
+LP.test:add(point(0, 0))
+LP.test:add(point(1, 0))
+LP.test:add(point(1, 1))
+PA.curve = LP.test:as_path()
+}
+\begin{tikzpicture}
+\tkzDrawCoordinates[blue](PA.curve)
+\tkzDrawPointsFromPath[red,size=2](PA.curve)
+\end{tikzpicture}
+\end{tkzexample}
+
+%====================================================================
+
+
+%====================================================================
+\subsection{Macro \tkzMacro{tkz-elements}{tkzGetPointsFromPath}}
+This macro defines TikZ points from a Lua path. Each point is named with a base name followed by an index.
+
+\texttt{Syntax: }\verb|\tkzGetPointsFromPath[<options>](<path>,<basename>)|
+
+\medskip
+\texttt{Description: }
+Exports the points of a Lua path as named \TeX/TikZ points.
+The naming scheme is \code{<prefix>1}, \code{<prefix>2}, \dots
+
+\medskip
+\texttt{Example: }
+
+\begin{tkzexample}[latex=.5\textwidth]
+ \directlua{
+  init_elements()
+  PA.g = path({ "(0, 0)", "(1, 0)","(1, 1)" })
+}
+\begin{tikzpicture}
+  \tkzGetPointsFromPath(PA.g,A)
+  \tkzDrawPolygon(A_1,A_2,A_3)
+  \tkzDrawPoints(A_1,A_2,A_3)
+\end{tikzpicture}
+\end{tkzexample}
+
+%====================================================================
+
+
+
+
+\subsection{Macro \tkzMacro{tkz-elements}{tkzGetPointFromPath}}
+This macro extracts the i-th vertex of a Lua path and defines it as a TikZ point with a given name.
+
+\texttt{Syntax: }\verb|\tkzGetPointFromPath(<PathLua>,<index>){<PointName>}|
+
+\texttt{Arguments: }
+
+\verb|<PathLua>|: identifier of a Lua \verb|path| object.
+\verb|<index>|: index of the vertex to retrieve (TeX number or numeric macro).
+\verb|<PointName>|: name of the TikZ point to create.
+\medskip
+
+
+\texttt{Example usage:}
+
+\begin{mybox}
+\begin{verbatim}
+% Get the 3rd vertex of PA.A and name it P3
+\tkzGetPointFromPath(PA.A,3){P3}
+% With counting and a loop
+\tkzPathCount(PA.A){N}
+\foreach \i in {1,...,\N}{
+\expandafter\tkzGetPointFromPath\expandafter(PA.A,\i){P\i}
+}
+\end{verbatim}
+\end{mybox}
+%====================================================================
+
+
+
+
+\subsection{Macro \tkzMacro{tkz-elements}{tkzDrawSegmentsFromPaths}}
+\label{sub:macro_tkzDrawSegmentsFromPaths}
+
+\texttt{Description: }
+Draws segments encoded in one or more Lua paths (pairs of points or consecutive
+points, depending on the chosen convention).
+
+\texttt{Syntax: }\verb|\tkzDrawSegmentsFromPaths[<options>](<lua-path-start>,<lua-path-end>)|
+
+\texttt{Example: }
+
+\begin{tkzexample}[vbox]
+\directlua{
+ init_elements()
+ z.A = point(0, 0)
+ z.B = point(3, 0)
+ C.AB = circle(z.A, z.B)
+ PA.c = path()
+ PA.u = path()
+ PA.v = path()
+ for i = 0, 18, 2 do
+   local angle = i * 2 * math.pi / 18
+   local p = point(polar(8, angle))
+   local Lu, Lv = C.AB:tangent_from(p)
+   local u , v  = Lu.pb, Lv.pb
+   PA.c:add_point(p)
+   PA.u:add_point(u)
+   PA.v:add_point(v)
+ end}
+
+\begin{center}
+ \begin{tikzpicture}[scale =.6]
+  \tkzGetNodes
+  \tkzDrawSegmentsFromPaths[draw,red](PA.c,PA.u)
+  \tkzDrawSegmentsFromPaths[draw,red](PA.c,PA.v)
+  \tkzDrawCircle[blue](A,B)
+  \tkzDrawPoints(A,I,u,v)
+\end{tikzpicture}
+ \end{center}
+\end{tkzexample}
+%====================================================================
+\subsection{Macro \tkzMacro{tkz-elements}{tkzDrawCirclesFromPaths}}
+\label{sub:macro_tkzDrawCirclesFromPaths}
+This macro draws circles defined by two paths: one for the centers and one for the points through which each circle passes.
+
+\medskip
+\texttt{Syntax: }\verb|\tkzDrawCirclesFromPaths[<options>](<PA.center>,<PA.through>)|
+
+\medskip
+\texttt{Example usage: }
+
+\begin{mybox}
+\begin{verbatim}
+\tkzDrawCirclesFromPaths[blue](PA.O, PA.A)
+\end{verbatim}
+\end{mybox}
+
+See the document \tkzname{Euclidean Geometry} presented in \href{http://altermundus.fr}{altermundus.fr}for other examples.
+
+\medskip
+\begin{tkzexample}[vbox]
+\directlua{
+ init_elements()
+ z.A = point(-4, -4)
+ z.B = point(4, -4)
+ L.AB = line(z.A, z.B)
+ C.AB = circle(z.A, z.B)
+ S.AB = L.AB:square()
+ _, _, z.C, z.D = S.AB:get()
+ z.O = S.AB.ac.mid
+ z.a = S.AB.ab.mid
+ z.c = S.AB.cd.mid
+ z.o1 = tkz.midpoint(z.a, z.O)
+ z.o = tkz.midpoint(z.c, z.O)
+ z.b = S.AB.bc.mid
+ z.g = (z.o1 - z.O) + (z.b - z.O)
+ z.o2 = intersection(line(z.c, z.g), line(z.O,z.b))
+ z.o3 = (z.o - z.O) + (z.o2 - z.O)
+ z.j = intersection(line(z.c, z.b), line(z.o2,z.o3))
+ local C2 = circle(z.O, z.a)
+ local C1 = circle(z.o, z.c)
+ local C3 = circle(z.o3, z.j)
+ PA.pc, PA.pt, n = C1:CCC(C2, C3)
+}
+
+\begin{center}
+\begin{tikzpicture}[scale=1]
+\tkzGetNodes
+\tkzDrawPolygon[cyan](A,B,C,D)
+\tkzDrawCircles(O,a o,c o1,a o2,b o3,j)
+\tkzDrawCirclesFromPaths[draw,red](PA.pc,PA.pt)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+
+%===============================================================
+
+\subsection{Macro \tkzMacro{tkz-elements}{tkzDrawFromPointToPath}}
+This macro draws a set of line segments from a given TikZ point to every point of a Lua \emph{path} object.
+
+\medskip
+\texttt{Syntax: }\verb|\tkzDrawFromPointToPath[<options>](<point-tikz>,<lua-path>)|
+
+\medskip
+\texttt{Arguments: }
+
+\verb|<options>| (optional): pgf/tikz drawing options (color, thickness, etc.).
+
+\verb|<point-tikz>|: the name of a TikZ point (already defined).
+
+\verb|<lua-path>|: identifier of a Lua \verb|path| object.
+
+\medskip
+\texttt{Example usage: }
+
+\medskip
+\begin{tkzexample}[vbox]
+\directlua{
+ init_elements()
+ z.O = point(0, 0)
+ z.A = point(5, 1)
+ z.Ta = point(8, 2)
+ C.A = circle(z.A, z.Ta)
+ L.OA = line(z.O,z.A)
+ z.x, z.y = intersection(C.A, L.OA,{near=z.O})
+ C.A.through = z.y
+ z.m = tkz.midpoint(z.O, z.x)
+ z.n = tkz.midpoint(z.O, z.y)
+ z.w = tkz.midpoint(z.m, z.n)
+ PA.A = path()
+ PA.c = path()
+ for t = 0, 1 - 1e-12, 0.1 do
+   PA.A:add_point(C.A:point(t))
+   local m = tkz.midpoint(z.O, C.A:point(t))
+   PA.c:add_point(m)
+ end
+}
+ \begin{center}
+  \begin{tikzpicture}[scale=.8]
+   \tkzGetNodes
+   \tkzDrawCircle(A,Ta)
+   \tkzDrawLine(O,A)
+   \tkzDrawPoints(O,A,m,n,w,x,y)
+   \tkzLabelPoints(O,A,m,n,w)
+   \tkzDrawCircle[red](w,n)
+   \tkzDrawPointsFromPath[red](PA.c)
+   \tkzDrawPointsFromPath[blue](PA.A)
+   \tkzDrawSegmentsFromPaths[draw,teal](PA.c,PA.A)
+   \tkzDrawFromPointToPath[orange](O,PA.A)
+ \end{tikzpicture}
+  \end{center}
+\end{tkzexample}
+
+
+\subsection{Macros \tkzMacro{tkz-elements}{tkzDrawPointOnGraph} and
+\tkzMacro{tkz-elements}{tkzDrawPointsOnGraph}}
+
+These macros are described in the section [\ref{sec:class_fct}]
+
+
+
+\subsection{Macros \tkzMacro{tkz-elements}{tkzDrawPointOnParamGraph} and
+\tkzMacro{tkz-elements}{tkzDrawPointsOnParamGraph}}
+
+These macros are described in the section [\ref{sec:class_pfct}]
+
+
+
+\subsection{Archimedes spiral, a complete example}
+
+This example is built with the help of some of the macros presented in this section. It is inspired by an example created with tkz-euclide by Jean-Marc Desbonnez.
+
+\vspace{1em}
+\begin{tkzexample}[vbox]
+\directlua{
+  z.O = point(0, 0)
+  z.A = point(5, 0)
+  L.OA = line(z.O, z.A)
+  PA.spiral = path()
+  PA.center = path()
+  PA.through = path()
+  PA.ray = path()
+  for i = 1, 48 do
+      local k = i / 48
+      z["P"..i] = L.OA:point(k)
+      local angle = i * tkz.tau / 48
+      z["r"..i] = point(polar(5, angle))
+      ray = line(z.O, z["r"..i])
+      circ = circle(z.O, z["P"..i])
+      z["X"..i], _ = intersection(ray, circ, { near = z["r"..i] })
+      PA.spiral:add_point(z["X"..i])
+      PA.center:add_point(z.O)
+      PA.through:add_point(z["P"..i])
+      PA.ray:add_point(z["r"..i])
+  end}
+\begin{center}
+  \begin{tikzpicture}[scale = .8]
+  \tkzGetNodes
+  \tkzDrawCircle(O,A)
+  \tkzDrawCirclesFromPaths[draw,
+      orange!50](PA.center,PA.through)
+  \tkzDrawSegmentsFromPaths[draw,teal](PA.center,PA.ray)
+  \tkzDrawPath[red,thick,smooth](PA.spiral)
+  \tkzDrawPointsFromPath[blue, size=2](PA.spiral)
+  \end{tikzpicture}
+\end{center}
+
+\end{tkzexample}
+
+
+
+\endinput
+

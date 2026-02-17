@@ -11,7 +11,7 @@ The variable \code{R} holds a table used to store triangles. It is optional, and
 Points are created in the direct direction. A test is performed to check whether the points form a rectangle, otherwise compilation is blocked.
 
 \begin{mybox}
-Creation | R.ABCD = rectangle : new (z.A,z.B,z.C,z.D)|
+Creation | R.ABCD = rectangle:new(z.A, z.B, z.C, z.D)|
 \end{mybox}
 
   \bgroup
@@ -101,7 +101,7 @@ Creation | R.ABCD = rectangle : new (z.A,z.B,z.C,z.D)|
   \small
   \captionof{table}{Rectangle methods.}\label{rectangle:methods}
   \begin{tabular}{lll}
-  \textbf{Methods} & \textbf{Reference}  &  \\
+  \textbf{Methods} & \texttt{Reference}  &  \\
   \toprule
   \tkzMeth{rectangle}{new(za ,zb, zc, zd)} & Note\footnote{rectangle(pt,pt,pt,pt) (short form, recommended)};[\ref{meth_rectangle_new}]\\
   \tkzMeth{rectangle}{angle (zi, za, angle)} & [\ref{ssub:angle_method}]\\
@@ -144,7 +144,7 @@ This function creates a square using four points. No test is performed, and veri
 \subsubsection{Method \tkzMeth{rectangle}{angle(pt,pt,an)}}
 \label{ssub:angle_method}
 
-|R.ang = rectangle : angle (z.I,z.A)| ; |z.A | vertex ; ang angle between 2 vertices
+|R.ang = rectangle:angle(z.I,z.A)| ; |z.A | vertex ; ang angle between 2 vertices
 
 
 \begin{minipage}{.5\textwidth}
@@ -229,7 +229,7 @@ This function creates a square using four points. No test is performed, and veri
 \tkzLabelPoints[above](C,D)
 \tkzDrawPoints[red](I)
 \tkzLabelSegment[sloped,above](A,B){%
-   |rectangle : side (z.A,z.B,3)|}
+   |rectangle:side(z.A,z.B,3)|}
 \end{tikzpicture}
 \end{minipage}
 
@@ -274,7 +274,7 @@ z.I = R.diag.center}
 \tkzLabelPoints[above](C,D)
 \tkzDrawPoints[red](I)
 \tkzLabelSegment[sloped,above](A,B){%
-   |rectangle : diagonal (z.A,z.C)|}
+   |rectangle:diagonal(z.A, z.C)|}
 \end{tikzpicture}
 \end{minipage}
 
@@ -298,7 +298,7 @@ z.I = R.diag.center}
 \tkzLabelPoints[above](Z,W)
 \tkzDrawPoints[red](I)
 \tkzLabelSegment[sloped,above](X,Y){%
-|rectangle :  gold (z.X,z.Y)|}
+|rectangle:gold(z.X,z.Y)|}
 \end{tikzpicture}
 \end{verbatim}
 \end{minipage}
@@ -320,7 +320,7 @@ z.I = R.gold.center}
 \tkzLabelPoints[above](Z,W)
 \tkzDrawPoints[red](I)
 \tkzLabelSegment[sloped,above](X,Y){%
-  |rectangle :  gold (z.X,z.Y)|}
+  |rectangle:gold(z.X,z.Y)|}
 \end{tikzpicture}
 \end{minipage}
 

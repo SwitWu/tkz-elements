@@ -1,0 +1,260 @@
+%--------------------------------------------------------------------
+\newpage
+\section{Class \tkzClass{pfct}}
+\label{sec:class_pfct}
+
+The \tkzClass{pfct} class represents a parametric curve
+\[
+t \longmapsto \bigl(x(t),y(t)\bigr),
+\]
+defined and evaluated in Lua. A \tkzClass{pfct} object encapsulates two
+expressions (or callable Lua functions) describing the $x$- and $y$-components
+of the curve, together with methods for evaluation, sampling, and geometric
+construction.
+
+By convention, parametric function objects are stored in a Lua table named
+\tkzVar{pfct}{PF}. Although this name is not mandatory, using \texttt{PF} is
+strongly recommended for consistency across examples and documentation. Each
+entry of \texttt{PF} associates a symbolic name (such as \texttt{lis}) with an
+object of class \tkzClass{pfct}. If a custom table name is used, it must be
+initialized manually. The \tkzFct{tkz-elements}{init\_elements()} function will
+reset the \texttt{PF} table if it has already been defined.
+
+\paragraph{Mathematical expressions.}
+All expressions defining a \tkzClass{pfct} object are evaluated using standard
+Lua rules. A \tkzClass{pfct} object can be evaluated at a parameter value, converted into
+points, sampled into a \tkzClass{path}, or exported to a data file suitable for
+TikZ \texttt{plot file} input.
+
+\paragraph{Important.}
+In function and parametric function definitions
+(\tkzClass{fct} and \tkzClass{pfct}),
+expressions must be written using standard mathematical notation.
+The Lua prefix \texttt{math.} must \emph{not} be used.
+
+In contrast, in all other methods and Lua code fragments of
+\tkzNamePack{tkz-elements},
+standard Lua syntax applies, and the use of the prefix \texttt{math.}
+is required whenever a Lua mathematical function is called. For convenience, users may define local aliases in their Lua code, such as
+\code{local sin, cos, pi = math.sin, math.cos, math.pi}.
+
+\medskip
+Correct:
+\begin{verbatim}
+sin(x), exp(-x^2)
+\end{verbatim}
+
+Incorrect (in \tkzClass{fct} and \tkzClass{pfct}):
+\begin{verbatim}
+math.sin(x), math.exp(-x^2)
+\end{verbatim}
+
+\subsection{Methods of the class pfct}
+\vspace{1em}
+
+\bgroup
+  \small
+  \captionof{table}{pfct methods.}\label{pfct:methods}
+  \begin{tabular}{ll}
+  \toprule
+  \texttt{Methods} & \texttt{Reference} \\
+  \midrule
+  \texttt{Constructor} & \\
+  \midrule
+  \tkzFct{pfct}{new(exprx,expry)}       & [\ref{ssub:method_pfct_new}] \\
+  \tkzFct{pfct}{compile(exprx,expry)}   & [\ref{ssub:method_pfct_compile}] \\
+  \midrule
+  \texttt{Methods Returning a Real Number } & \\
+  \midrule
+  \tkzMeth{pfct}{x(t)}                 & [\ref{ssub:method_pfct_x}] \\
+  \tkzMeth{pfct}{y(t)}                 & [\ref{ssub:method_pfct_y}] \\
+  \tkzMeth{pfct}{point(t)}             & [\ref{ssub:method_pfct_point}] \\
+  \midrule
+  \texttt{Methods Returning a Path} & \\
+  \midrule
+  \tkzMeth{pfct}{path(tmin,tmax,n)}    & [\ref{ssub:method_pfct_path}] \\
+  \bottomrule
+  \end{tabular}
+\egroup
+
+%-------------------- details ---------------------------------------
+\subsubsection{Constructor \tkzFct{pfct}{new(exprx,expry)}}
+\label{ssub:method_pfct_new}
+
+\texttt{Description: }Creates a parametric function object from two expressions
+or callable Lua functions describing the components $x(t)$ and $y(t)$. When
+strings are provided, they represent Lua expressions in the variable
+\texttt{t}, evaluated using standard Lua rules (therefore requiring
+\texttt{math.} prefixes).
+
+\texttt{Arguments: }\par
+\begin{itemize}
+\item \code{exprx}: a string expression in \texttt{t}, or a callable Lua
+      function representing $x(t)$;
+\item \code{expry}: a string expression in \texttt{t}, or a callable Lua
+      function representing $y(t)$.
+\end{itemize}
+
+\texttt{Returns: } a \tkzClass{pfct} object.
+
+\subsubsection{Function \tkzFct{pfct}{compile(exprx,expry)}}
+\label{ssub:method_pfct_compile}
+
+\texttt{Description: }Compiles the two expressions defining $x(t)$ and $y(t)$
+and returns the corresponding callable Lua functions (or wraps them into a
+\tkzClass{pfct} object, depending on the implementation). This is a low-level
+helper mainly intended for internal use.
+
+\subsubsection{Method \tkzMeth{pfct}{x(t)}}
+\label{ssub:method_pfct_x}
+
+\texttt{Description: }Evaluates the $x$-component of the parametric curve at
+parameter \code{t}.
+
+\texttt{Returns: } a number.
+
+\subsubsection{Method \tkzMeth{pfct}{y(t)}}
+\label{ssub:method_pfct_y}
+
+\texttt{Description: }Evaluates the $y$-component of the parametric curve at
+parameter \code{t}.
+
+\texttt{Returns: } a number.
+
+\subsubsection{Method \tkzMeth{pfct}{point(t)}}
+\label{ssub:method_pfct_point}
+
+\texttt{Description: }Constructs the point $(x(t),y(t))$ associated with the
+parametric curve. This method provides a direct bridge between numerical
+evaluation and geometric construction.
+
+\texttt{Returns: } a \tkzClass{point}.
+
+\subsubsection{Method \tkzMeth{pfct}{path(tmin,tmax,n)}}
+\label{ssub:method_pfct_path}
+
+\texttt{Description: }Samples the parameter $t$ on the interval
+$[tmin,tmax]$ using \code{n} subdivisions and returns the corresponding
+\tkzClass{path}. Invalid values (NaN, infinities) may be skipped according to
+the internal policy.
+
+\texttt{Returns: } a \tkzClass{path}.
+
+\texttt{Example: }
+\begin{tkzexample}[latex=.4\textwidth]
+\directlua{
+ init_elements()
+ PF.lis = pfct("sin(5*t)", "cos(3*t)")
+ PA.curve = PF.lis:path(0, 2*math.pi, 400)
+ }
+
+\begin{center}
+ \begin{tikzpicture}[scale=2]
+  \tkzDrawCoordinates[smooth,cyan](PA.curve)
+\end{tikzpicture}
+ \end{center}
+\end{tkzexample}
+
+
+%--------------------------------------------------------------------
+\subsection{Macros \tkzMacro{tkz-elements}{tkzDrawPointOnParamGraph} and
+\tkzMacro{tkz-elements}{tkzDrawPointsOnParamGraph}}
+
+These macros allow drawing points on a \emph{parametric curve} defined
+in the module system.
+
+The parametric function must already exist in the module table
+\texttt{PF}.
+
+%--------------------------------------------------------------------
+
+\subsubsection{Macro \tkzMacro{tkz-elements}{tkzDrawPointOnParamGraph}}
+
+
+\paragraph{Syntax}
+\begin{verbatim}
+\tkzDrawPointOnParamGraph[<TikZ options>]{<t>}{<name>}
+\end{verbatim}
+
+\paragraph{Description}
+This macro draws a point belonging to a parametric curve stored
+in the module \texttt{PF}.
+
+The drawn point has coordinates
+\[
+\bigl(x(t),\,y(t)\bigr),
+\]
+where the parametric curve is defined by the object \texttt{PF.<name>}.
+
+\paragraph{Arguments}
+\begin{itemize}
+  \item \texttt{<TikZ options>} (optional): graphical options applied to the point
+  \item \texttt{<t>}: value of the parameter
+  \item \texttt{<name>}: name of the parametric function stored in \texttt{PF}
+\end{itemize}
+
+\paragraph{Example}
+\begin{verbatim}
+\tkzDrawPointOnParamGraph[blue]{1.5}{lis}
+\end{verbatim}
+
+%--------------------------------------------------------------------
+\subsubsection{Macro \tkzMacro{tkz-elements}{tkzDrawPointsOnParamGraph}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+\tkzDrawPointsOnParamGraph[<TikZ options>]{<t1,t2,...,tn>}{<name>}
+\end{verbatim}
+
+\paragraph{Description}
+This macro draws several points belonging to a parametric curve stored
+in the module \texttt{PF}.
+
+For each value \(t_i\) in the list, a point of coordinates
+\[
+\bigl(x(t_i),\,y(t_i)\bigr)
+\]
+is computed and drawn.
+
+\paragraph{Arguments}
+\begin{itemize}
+  \item \texttt{<TikZ options>} (optional): graphical options applied to all points
+  \item \texttt{<t1,t2,...,tn>}: comma-separated list of parameter values
+  \item \texttt{<name>}: name of the parametric function stored in \texttt{PF}
+\end{itemize}
+
+\paragraph{Example}
+\begin{verbatim}
+\tkzDrawPointsOnParamGraph[red]{0,0.5,1,1.5,2}{lis}
+\end{verbatim}
+
+\paragraph{Remarks}
+\begin{itemize}
+  \item These macros assume that the parametric function is already defined
+        in the module \texttt{PF}.
+  \item All evaluations are performed in Lua.
+  \item The macros are compatible with parametric curves drawn using
+        \texttt{\textbackslash tkzDrawCoordinates}.
+\end{itemize}
+
+\texttt{Example: }
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ init_elements()
+ PF.lem = pfct("cos(t+pi/2)", "sin(2*t)")
+ PA.courbe = PF.lem:path(0, 2*math.pi, 200)
+ z.A = PF.lem:point(math.pi/2)
+ }
+\begin{center}
+ \begin{tikzpicture}[scale=2]
+\tkzGetNodes
+  \tkzDrawCoordinates[smooth,cyan](PA.courbe)
+  \tkzDrawPoint[blue](A)
+  \tkzDrawPointsOnParamGraph[red]{0,2,3,5}{lem}
+  \tkzDrawPointOnParamGraph[blue]{4}{lem}
+\end{tikzpicture}
+ \end{center}
+\end{tkzexample}
+
+\endinput
+%--------------------------------------------------------------------

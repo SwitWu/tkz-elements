@@ -1,6 +1,8 @@
 \newpage
 
 \section{Class \tkzClass{point}}
+A point in tkz-elements is internally represented as a complex number (its affix). This choice enables concise computations (translation, rotation, scaling) while remaining compatible with TikZ/tkz-euclide for rendering.
+
 
 The variable \tkzVar{point}{z} holds a table used to store points. It is \textbf{mandatory} and is automatically initialized by the package (e.g.,\tkzname{ z = \{\}}).
 
@@ -30,7 +32,7 @@ The \code{point} object possesses several attributes:
 
 
 
-\subsection{Creating a Point}
+\subsection{Creating a point}
 \label{sub:creating_a_point}
 
 Points are created by providing their coordinates in the current orthonormal Cartesian coordinate system (OCCS). The recommended form is:
@@ -54,7 +56,7 @@ Alternatively, the more explicit syntax is also available:
 \end{center}
 
 
-Both forms are equivalent. The shorter syntax is available since version 4 and preferred for readability and consistency.
+Both forms are equivalent. The shorthand constructor is available since version 4 and preferred for readability and consistency.
 
 
 \def\size{42mm}
@@ -151,14 +153,14 @@ This is the creation of a fixed point with coordinates $1$ and $2$ and which is 
   \captionof{table}{Point attributes.}\label{point:attributes}
   \begin{tabular}{lll}
   \toprule
-  \textbf{Attributes}      & \textbf{Description}&   \texttt{Example / Reference} \\
+  \texttt{Attributes}      & \textbf{Description}&   \texttt{Example / Reference} \\
   \midrule
   \tkzAttr{point}{type}     &  Object type name, always \texttt{"point"}   & \\
   \tkzAttr{point}{re}       &  Real part (i.e., $x$-coordinate)      & [\ref{ssub:methods}] \\
   \tkzAttr{point}{im}       &  Imaginary part (i.e., $y$-coordinate)    & [\ref{ssub:methods}]  \\
   \tkzAttr{point}{argument} &   Argument of the affix (angle in radians) & $\approx$ \code{0.785398...} \quad  [\ref{ssub:example_point_attributes}] \\
   \tkzAttr{point}{modulus}  & Modulus of the affix (distance to origin)  &  $\sqrt{5} \approx$ \code{2.2360...} \quad [\ref{ssub:example_point_attributes}] \\
-  \tkzAttr{point}{mtx}  & Matrix representation as column vector   & \code{z.A.mtx = {{1},{2}}} \quad  [\ref{ssub:example_point_attributes}] \\
+  \tkzAttr{point}{mtx}  & Matrix representation as column vector   & \code{z.A.mtx = \{\{1\},\{2\}\}} \quad  [\ref{ssub:example_point_attributes}] \\
   \bottomrule
   \end{tabular}
 \egroup
@@ -229,7 +231,7 @@ Attributes of \texttt{z.M}
      \begin{itemize}
      \item \texttt{z.M.re} = 1
      \item \texttt{z.M.im} = 2
-     \item \texttt{z.M.type} = 'point'
+     \item \texttt{z.M.type} = point
      \item \texttt{z.M.argument} = $\theta \approx \pmpn{\tkzUseLua{z.M.argument}}$ rad
      \item \texttt{z.M.modulus} = $|z_M| =\sqrt{5}\approx \pmpn{\tkzUseLua{z.M.modulus}}$ cm
      \item \texttt{z.M.mtx} =  \tkzUseLua{z.M.mtx:print()}
@@ -330,45 +332,46 @@ For more advanced operations using complex numbers and operator overloading, see
 \begin{tabular}{lll}
 \toprule
 
-\textbf{Methods} & \textbf{Reference} \\
+\texttt{Methods} & \texttt{Reference} \\
 \midrule
-\textbf{Creation} &\\
+\texttt{Constructors} &\\
 \midrule
-\tkzMeth{point}{new(r,r)} &[\ref{ssub:method_point_new}; \ref{ssub:method_normalize}] \\
-
+\tkzMeth{point}{new(r,r)} &[\ref{ssub:method_point_new}; \ref{ssub:method_normalize}\\
 \tkzMeth{point}{polar(d,an)} &[\ref{ssub:method_point_polar}] \\
 \tkzMeth{point}{polar\_deg(d,an)} &[\ref{ssub:method_point_polar_deg}]   \\
+\midrule
+\texttt{Methods Returning a Real Number} & \\
+\midrule
 \tkzMeth{point}{get()}     &[\ref{ssub:method_point_get}] \\
 \midrule
-
-\textbf{Directional Shifts} & \\
+\texttt{Methods Returning a Point} & \\
 \midrule
-\tkzMeth{point}{north(r)} & \ref{ssub:methods}]   \\
+\tkzMeth{point}{north(r)} & [\ref{ssub:methods}]   \\
 \tkzMeth{point}{south(r)} &  \\
 \tkzMeth{point}{east(r)}  &  \\
 \tkzMeth{point}{west(r)}  &  \\
+\tkzMeth{point}{normalize()}         & [\ref{ssub:method_normalize}] \\
+\tkzMeth{point}{normalize\_from(pt)} & [\ref{ssub:method_normalize}] \\
+\tkzMeth{point}{orthogonal(d)}       & [\ref{ssub:orthogonal_method}]\\
+\tkzMeth{point}{at()}                &  [\ref{ssub:_point_at_method}] \\
+\tkzMeth{point}{shift\_orthogonal\_to(pt, d)}& [\ref{shift_orthogonal}] \\
+\tkzMeth{point}{shift\_collinear\_to(pt, d)} & [\ref{shift_collinear}] \\
 \midrule
-\textbf{Geometry} & \\
+\texttt{Methods Returning a Circle} & \\
 \midrule
-\tkzMeth{point}{normalize()} &   [\ref{ssub:method_normalize}] \\
-\tkzMeth{point}{normalize\_from(pt)} &   [\ref{ssub:method_normalize}] \\
-\tkzMeth{point}{orthogonal(d)} & [\ref{ssub:orthogonal_method}]\\
-\tkzMeth{point}{at()} &   [\ref{ssub:_point_at_method}] \\
-\tkzMeth{point}{shift\_orthogonal\_to(pt, d)} &   [\ref{shift_orthogonal}] \\
-\tkzMeth{point}{shift\_collinear\_to(pt, d)} &   [\ref{shift_collinear}] \\
 \tkzMeth{point}{PPP(a,b)} &[\ref{ssub:point_PPP}]\\
 \midrule
-\textbf{Transformations} & \\
+\texttt{Methods Returning a Object} & \\
 \midrule
 \tkzMeth{point}{symmetry(obj)} & [\ref{ssub:object_symmetry}] \\
 \tkzMeth{point}{rotation(an, obj)}  &  [\ref{ssub:object_rotation}] \\
 \tkzMeth{point}{homothety(r,obj)}    & [\ref{ssub:method_point_homothety_k_obj}]   \\
 \midrule
 
-\textbf{Utilities} &\\
+\texttt{Utilities} &\\
 \midrule
-\tkzMeth{point}{identity(pt)} & [\ref{ssub:identity} ]\\
-\tkzMeth{point}{print()} & [\ref{ssub:object_symmetry} ]\\
+\tkzMeth{point}{identity(pt)} & [\ref{ssub:identity}]\\
+\tkzMeth{point}{print()} & [\ref{ssub:object_symmetry}]\\
 \bottomrule %
 \end{tabular}
 \egroup
@@ -377,7 +380,7 @@ For more advanced operations using complex numbers and operator overloading, see
 \subsubsection{Method \tkzMeth{point}{new(r, r)}}
 \label{ssub:method_point_new}
 
-This method creates a point in the plane using Cartesian coordinates. The \textbf{shorter syntax} \tkzMeth{point}{(r, r)} is available since version 4 and preferred for readability and consistency.
+This method creates a point in the plane using Cartesian coordinates. The \textbf{shorthand constructor} \tkzMeth{point}{(r, r)} is available since version 4 and preferred for readability and consistency.
 
 \medskip
 

@@ -23,7 +23,7 @@ T.ABC = triangle:new(z.A, z.B, z.C)
 \end{verbatim}
 \end{mybox}
 
-\textbf{Short form.}
+\texttt{Short form: }
 
 The short form \code{triangle(z.A, z.B, z.C)} is equivalent and more commonly used:
 
@@ -33,7 +33,7 @@ T.ABC = triangle(z.A, z.B, z.C)
 \end{verbatim}
 \end{mybox}
 
-\subsection{Attributes of a Triangle} %(fold)
+\subsection{Attributes of a triangle} %(fold)
 
 The triangle object is created using the method \tkzMeth{triangle}{new}, for example:
 
@@ -44,31 +44,31 @@ The triangle object is created using the method \tkzMeth{triangle}{new}, for exa
 Several attributes are automatically computed and stored:
 
 \begin{itemize}
-  \item \textbf{Vertices:} The three vertices are accessible via:
+  \item \texttt{Vertices: } The three vertices are accessible via:
   \begin{center}
     \code{T.ABC.pa}, \code{T.ABC.pb}, \code{T.ABC.pc}
   \end{center}
 
-  \item \textbf{Sides:} The side lengths are:
+  \item \texttt{Sides: } The side lengths are:
   \begin{align*}
     T.ABC.a &= \text{length of } BC \\
     T.ABC.b &= \text{length of } AC \\
     T.ABC.c &= \text{length of } AB
   \end{align*}
 
-  \item \textbf{Area:} The area is computed using Heron’s formula:
+  \item \texttt{Area: } The area is computed using Heron’s formula:
   \[
     s = \frac{a + b + c}{2}, \quad \text{Area} = \sqrt{s(s - a)(s - b)(s - c)}
   \]
   This value is stored in \code{T.ABC.area}.
 
-  \item \textbf{Perimeter:} The perimeter is the sum of side lengths:
+  \item \texttt{Perimeter: } The perimeter is the sum of side lengths:
   \[
     P = a + b + c
   \]
   It is stored in \code{T.ABC.perimeter}.
 
-  \item \textbf{Angles:} The internal angles $\alpha$, $\beta$, and $\gamma$ (at $A$, $B$, and $C$ respectively) are computed using the law of cosines:
+  \item \texttt{Angles: } The internal angles $\alpha$, $\beta$, and $\gamma$ (at $A$, $B$, and $C$ respectively) are computed using the law of cosines:
   \[
   \cos(\alpha) = \frac{b^2 + c^2 - a^2}{2bc}, \quad
   \cos(\beta) = \frac{a^2 + c^2 - b^2}{2ac}, \quad
@@ -85,7 +85,7 @@ These attributes define the essential geometric properties of the triangle and a
   \captionof{table}{Triangle attributes.}\label{triangle:attributes}
   \begin{tabular}{ll}
   \toprule
-  \textbf{Attributes}     & \textbf{Reference}\\
+  \texttt{Attributes}     & \texttt{Reference}\\
   \midrule
   \tkzAttr{triangle}{pa} &[\ref{ssub:triangle_attributes_points}]\\
   \tkzAttr{triangle}{pb} & idem \\
@@ -103,11 +103,16 @@ These attributes define the essential geometric properties of the triangle and a
   \tkzAttr{triangle}{alpha}&[ \ref{ssub:triangle_attributes_angles}]\\
   \tkzAttr{triangle}{beta} & \\
   \tkzAttr{triangle}{gamma}& \\
+  \tkzAttr{triangle}{alpha\_}&[ \ref{ssub:triangle_attributes_angles_objects}]\\
+  \tkzAttr{triangle}{beta\_} & \\
+  \tkzAttr{triangle}{gamma\_}& \\
   \tkzAttr{triangle}{ab}& [\ref{ssub:triangle_attributes_straight_lines}]\\
   \tkzAttr{triangle}{bc}&  \\
   \tkzAttr{triangle}{ca}&  \\
   \tkzAttr{triangle}{semiperimeter}& [\ref{ssub:triangle_attributes_lengths}] \\
   \tkzAttr{triangle}{area}&  \\
+  \tkzAttr{triangle}{orientation}& [\ref{ssub:triangle_attributes_orientation}] \\
+  \tkzAttr{triangle}{cross}& [\ref{ssub:triangle_attributes_cross}] \\
   \tkzAttr{triangle}{inradius}& [\ref{ssub:triangle_attributes_lengths}]\\
   \tkzAttr{triangle}{circumradius}& [\ref{ssub:triangle_attributes_lengths}] \\
   \bottomrule %
@@ -116,7 +121,7 @@ These attributes define the essential geometric properties of the triangle and a
 
 
 
-\subsubsection{Triangle attributes: definition points}
+\subsubsection{Triangle attributes: defining points}
 \label{ssub:triangle_attributes_points}
 
 Consider a triangle $ABC$. We want to construct a new triangle whose vertices are the reflections of $A$, $B$, and $C$ with respect to the midpoints of their opposite sides.
@@ -225,6 +230,18 @@ init_elements()
 
 \subsubsection{Triangle attributes: angles} %(fold)
 \label{ssub:triangle_attributes_angles}
+\noindent\textbf{Numeric measures.}
+The variables \code{alpha}, \code{beta}, and \code{gamma} are \emph{numbers}
+(measured in radians). They are obtained by evaluating
+\[
+\alpha = \lvert \angle(ZA,ZB,ZC)\rvert,\qquad
+\beta  = \lvert \angle(ZB,ZC,ZA)\rvert,\qquad
+\gamma = \lvert \angle(ZC,ZA,ZB)\rvert,
+\]
+where \code{get\_angle\_} returns an oriented angle (possibly negative,
+depending on the orientation of the three points). The use of
+\code{math.abs} ensures that \code{alpha}, \code{beta}, and \code{gamma}
+represent the \emph{unsigned} interior angle measures.
 
 \begin{tkzexample}[latex=.5\textwidth-2cm]
 \directlua{init_elements()
@@ -245,6 +262,61 @@ init_elements()
   \end{tikzpicture}
 \end{center}
 The sum of the angles is: \tkzUseLua{math.deg(S)}
+\end{tkzexample}
+
+
+\subsubsection{Triangle attributes: angle objects} %(fold)
+\label{ssub:triangle_attributes_angles_objects}
+\noindent\texttt{Angle objects: }
+The variables \code{alpha\_}, \code{beta\_}, and \code{gamma\_} are
+\emph{objects} of class \tkzClass{angle} created with \code{angle:new(...)}.
+They store the defining triple of points and provide methods to
+retrieve the measure (in radians or degrees) and to support later
+geometric operations or drawings based on that angle.
+
+\medskip
+\noindent\texttt{Remark: }
+The function \code{get\_angle\_} returns an \emph{oriented} angle,
+whose sign depends on the order of the three points.
+Its value is typically in the interval $(-\pi,\pi]$.
+Taking the absolute value therefore produces the
+(non--oriented) interior angle measure.
+
+By contrast, an object of class \tkzClass{angle}
+may preserve the orientation information,
+depending on its internal implementation.
+This distinction allows one to work either with
+pure numeric measures (for computations)
+or with full geometric angle objects
+(for constructions and drawings).
+
+\texttt{Example: }
+
+\parindent =0pt
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.C = point(3, 0)
+  z.B = point(3, 2)
+  T.ABC = triangle(z.A, z.B, z.C)
+  A.A = T.ABC.alpha_
+  A.B = T.ABC.beta_
+  T.C = T.ABC.gamma_
+  tex.print("A(value) = \\", A.A.value)
+  tex.print('\\\\')
+  tex.print("A(raw) = \\", A.A.raw)
+  tex.print('\\\\')
+  tex.print("A(deg) = \\", A.A.deg)}
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawPoints(A,B,C)
+  \tkzLabelPoints(A,C)
+  \tkzLabelPoints[above](B)
+\end{tikzpicture}
+\end{center}
 \end{tkzexample}
 
 \subsubsection{Triangle attributes: lengths}
@@ -296,138 +368,167 @@ This approach saves time and space in scripts involving medians, altitudes, bise
 
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{
-  z.A = point(0,0)
-  z.B = point(5,0)
-  z.C = point(2,3)
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(2, 3)
   T.ABC = triangle(z.A, z.B, z.C)
-  % z.Q = midpoint(z.A, midpoint(z.B, z.C))
-  z.Q = tkz.midpoint(z.A, T.ABC.bc.mid)
-  % if L.BC = line(z.B,z.C)
-  % z.M = L.BC.mid gives the midpoint
-}
+  z.M = T.ABC.bc.mid
+  L.AM = line(z.A, z.M)
+  z.Q = L.AM.mid }
 \begin{tikzpicture}
   \tkzGetNodes
   \tkzDrawPolygon(A,B,C)
   \tkzDrawLine[add = 0 and 1](A,Q)
-  \tkzDrawPoints(A,B,C,Q)
+  \tkzDrawPoints(A,B,C,M,Q)
+  \tkzLabelPoints(A,B)
+  \tkzLabelPoints[above](C,M,Q)
   \end{tikzpicture}
+\end{tkzexample}
+
+\subsubsection{Triangle attributes: orientation}
+\label{ssub:triangle_attributes_orientation}
+The \tkzAttr{orientation} attribute of a triangle indicates the orientation
+of its vertices.
+It is positive when the vertices are ordered counter--clockwise,
+negative when they are ordered clockwise,
+and zero when the three points are collinear.
+Geometrically, this value corresponds to the sign of the oriented area
+of the triangle.
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(2, 0)
+  z.C = point(1, 1)
+  T.ABC = triangle(z.A, z.B, z.C)
+  tex.print("orientation =\\ ", T.ABC.orientation)}
+\begin{center}
+\begin{tikzpicture}[scale = 3]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawPoints(A,B,C)
+  \tkzLabelPoints(A,B)
+  \tkzLabelPoints[above](C)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\subsubsection{Triangle attributes: cross}
+\label{ssub:triangle_attributes_cross}
+In \tkzNamePack{tkz-elements}, the operator \verb|^| denotes the two--dimensional
+cross product of vectors.
+For three points $A$, $B$, and $C$, the expression
+
+$(B - A)$\ \verb|^|\ $(C - A)$
+
+returns a scalar value.
+Its sign indicates the relative orientation of the vectors
+$\overrightarrow{AB}$ and $\overrightarrow{AC}$:
+a positive value corresponds to a counter--clockwise rotation,
+a negative value to a clockwise rotation,
+and a zero value indicates collinearity.
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(1, 1)
+  z.C = point(2, 0)
+  T.ABC = triangle(z.A, z.B, z.C)
+  local cross = (z.B - z.A) ^ (z.C - z.A)
+  tex.print("cross =\\ ", cross)}
+\begin{center}
+\begin{tikzpicture}[scale = 3]
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawPoints(A,B,C)
+  \tkzLabelPoints(A,C)
+  \tkzLabelPoints[above](B)
+\end{tikzpicture}
+\end{center}
 \end{tkzexample}
 
 \subsection{Methods of the class triangle} %(fold)
 
 \bgroup
-  \catcode`_=12
-  \small
-  \begin{minipage}{\textwidth}
-  \captionof{table}{triangle methods.}\label{triangle:methods}
-  \begin{tabular}{ll}
-  \toprule
-  \textbf{Methods} & \textbf{Reference}      \\
-  \midrule
-  \tkzMeth{triangle}{new}(a, b ,c) & Note\footnote{triangle(pt, pt, pt) (short form, recommended)}; [\ref{sub:creating_a_triangle}; \ref{ssub:method_triangle_new_pt_pt_pt}]  \\
-  \midrule
-  \textbf{Booleans}&\\
-  \midrule
+\catcode`_=12
+\small
+\begin{minipage}{\textwidth}
+\captionof{table}{triangle methods.}\label{triangle:methods}
+\begin{tabular}{ll}
+\toprule
+\texttt{Constructor} & \texttt{Reference}      \\
+\midrule
+\tkzMeth{triangle}{new}(a, b ,c) & Note\footnote{triangle(pt, pt, pt) (short form, recommended)}; [\ref{sub:creating_a_triangle}; \ref{ssub:method_triangle_new_pt_pt_pt}]\\
+\midrule
 
-  \tkzMeth{triangle}{in\_out(pt)}  & [\ref{ssub:_triangle_in__out_pt}]\\
+\texttt{Methods Returning a Boolean}&\\
+\midrule
+\tkzMeth{triangle}{in\_out(pt)}  & [\ref{ssub:_triangle_in__out_pt}]\\
+\tkzMeth{triangle}{on\_triangle(pt)}  & [\ref{ssub:method_triangle_on_triangle}]\\
+\tkzMeth{triangle}{check\_equilateral()}&[\ref{ssub:_triangle_check__equilateral}] \\
+\tkzMeth{triangle}{check\_acutangle()} &[\ref{ssub:_triangle_check__acutangle}] \\
+\midrule
 
-  \tkzMeth{triangle}{check\_equilateral()}&[\ref{ssub:_triangle_check__equilateral}] \\
-
-  \tkzMeth{triangle}{check\_acutangle()} &[\ref{ssub:_triangle_check__acutangle}] \\
-  \midrule
-
-  \textbf{Reals} &\\
-   \midrule
-
-  \tkzMeth{triangle}{barycentric\_coordinates(pt)}& [\ref{ssub:_triangle_barycentric__coordinates_pt}]\\
-
-  \tkzMeth{triangle}{trilinear\_coordinates(pt)} & [\ref{ssub:triangle_trilinear_coordinates_pt}]\\
-
-  \tkzMeth{triangle}{get\_angle(arg)} & [\ref{ssub:method_triangle_get_angle}] \\
-
-
-  \tkzMeth{triangle}{trilinear\_to\_d} & \ref{ssub:triangle_trilinear_to_d}\\
-   \midrule
-   \textbf{Points} &\\
-  \midrule
+\texttt{Methods Returning a String} &\\
+\midrule
+\tkzMeth{triangle}{position(pt, EPS)}  & [\ref{ssub:method_triangle_position}]\\
+\midrule
+\texttt{Methods Returning a Real Number} &\\
+\midrule
+\tkzMeth{triangle}{barycentric\_coordinates(pt)}& [\ref{ssub:_triangle_barycentric__coordinates_pt}]\\
+\tkzMeth{triangle}{trilinear\_coordinates(pt)} & [\ref{ssub:triangle_trilinear_coordinates_pt}]\\
+\tkzMeth{triangle}{get\_angle(arg)} & [\ref{ssub:method_triangle_get_angle}] \\
+\tkzMeth{triangle}{trilinear\_to\_d} & \ref{ssub:triangle_trilinear_to_d}\\
+\midrule
+\texttt{Methods Returning a Point} &\\
+\midrule
 \tkzMeth{triangle}{get(arg)} & [\ref{ssub:method_triangle_get}]\\
-
 \tkzMeth{triangle}{point(r)} & [\ref{ssub:method_triangle_point_r}]\\
-
 \tkzMeth{triangle}{random(<'inside'>)} & [\ref{ssub:method_triangle_random_inside}]\\
-
 \tkzMeth{triangle}{barycentric(ka,kb,kc)} & Note \footnote{The function \code{barycenter} is used to obtain the barycentre for any number of points }\\
-
 \tkzMeth{triangle}{base(u,v)} & [\ref{ssub:method_triangle_base}] \\
-
 \tkzMeth{triangle}{trilinear(u,v,w)}  & [\ref{ssub:method_triangle_trilinear_x_y_z}] \\
-
 \tkzMeth{triangle}{lemoine\_point()} &  [\ref{ssub:method_line_isosceles}]\\
-
 \tkzMeth{triangle}{symmedian\_point()} & [\ref{ssub:method_triangle_symmedial}] \\
-
 \tkzMeth{triangle}{lemoine\_point()}  &  [\ref{ssub:method_triangle_symmedial}] \\
-
-  \tkzMeth{triangle}{bevan\_point()}  &  [\ref{ssub:method_imeth_triangle_bevan_point}; \ref{ssub:methods_triangle_bevan_circle}]\\
-
-  \tkzMeth{triangle}{mittenpunkt\_point()} &  [\ref{ssub:method_triangle_mittenpunkt}]\\
-
-  \tkzMeth{triangle}{gergonne\_point()} & [\ref{ssub:gergonne_point}]\\
-
-  \tkzMeth{triangle}{nagel\_point()} & [\ref{ssub:method_triangle_nagel__point}]\\
-
-  \tkzMeth{triangle}{feuerbach\_point()} & [\ref{ssub:method_point_feuerbach}]\\
-
-  \tkzMeth{triangle}{spieker\_center()} & [\ref{ssub:method_triangle_spieker_center}]\\
-
-  \tkzMeth{triangle}{projection(p)}  & [\ref{ssub:method_triangle_projection_pt}]\\
-
-  \tkzMeth{triangle}{euler\_points()} &  [\ref{ssub:method_triangle_euler__points}] \\
-
-  \tkzMeth{triangle}{nine\_points()} &  [\ref{ssub:method_triangle_nine__points}] \\
-
-  \tkzMeth{triangle}{taylor\_points()} & See  [\ref{ssub:method_triangle_taylor__circle}] \\
-
-  \tkzMeth{triangle}{parallelogram()} & [\ref{ssub:director_circle}]\\
-
-  \tkzMeth{triangle}{kimberling(n)}  & See  [\ref{ssub:method_triangle_kimberling_n}]\\
-
-  \tkzMeth{triangle}{isogonal(p)}  & See   [\ref{ssub:method_triangle_isogonal}]\\
-
-  \tkzMeth{triangle}{macbeath\_point()(p)}  & See   [\ref{ssub:method_triangle_macbeath_point}]\\
-
-  \tkzMeth{triangle}{poncelet\_point(p)}  & See   [\ref{ssub:method_triangle_poncelet_point}]\\
-
-  \tkzMeth{triangle}{orthopole(L)}  & See   [\ref{ssub:method_triangle_orthopole}]\\
-
-  \tkzMeth{triangle}{first\_fermat\_point()}  &
-    See [\ref{ssub:method_triangle_first_fermat_point}] \\
-
-  \tkzMeth{triangle}{second\_fermat\_point()}  &
-  See [\ref{ssub:method_triangle_second__fermat__point}] \\
-
-  \tkzMeth{triangle}{lamoen\_points()}  &
+\tkzMeth{triangle}{bevan\_point()}  &  [\ref{ssub:method_imeth_triangle_bevan_point}; \ref{ssub:methods_triangle_bevan_circle}]\\
+\tkzMeth{triangle}{mittenpunkt\_point()} &  [\ref{ssub:method_triangle_mittenpunkt}]\\
+\tkzMeth{triangle}{gergonne\_point()} & [\ref{ssub:gergonne_point}]\\
+\tkzMeth{triangle}{nagel\_point()} & [\ref{ssub:method_triangle_nagel__point}]\\
+\tkzMeth{triangle}{feuerbach\_point()} & [\ref{ssub:method_point_feuerbach}]\\
+\tkzMeth{triangle}{spieker\_center()} & [\ref{ssub:method_triangle_spieker_center}]\\
+\tkzMeth{triangle}{projection(p)}  & [\ref{ssub:method_triangle_projection_pt}]\\
+\tkzMeth{triangle}{euler\_points()} &  [\ref{ssub:method_triangle_euler__points}] \\
+\tkzMeth{triangle}{nine\_points()} &  [\ref{ssub:method_triangle_nine__points}] \\
+\tkzMeth{triangle}{taylor\_points()} & See  [\ref{ssub:method_triangle_taylor__circle}]\\
+\tkzMeth{triangle}{parallelogram()} & [\ref{ssub:director_circle}]\\
+\tkzMeth{triangle}{kimberling(n)}  & See  [\ref{ssub:method_triangle_kimberling_n}]\\
+\tkzMeth{triangle}{isogonal(p)}  & See   [\ref{ssub:method_triangle_isogonal}]\\
+\tkzMeth{triangle}{macbeath\_point()(p)} & See [\ref{ssub:method_triangle_macbeath_point}]\\
+\tkzMeth{triangle}{poncelet\_point(p)} & See   [\ref{ssub:method_triangle_poncelet_point}]\\
+\tkzMeth{triangle}{orthopole(L)}  & See   [\ref{ssub:method_triangle_orthopole}]\\
+\tkzMeth{triangle}{first\_fermat\_point()}  &
+ See [\ref{ssub:method_triangle_first_fermat_point}] \\
+\tkzMeth{triangle}{second\_fermat\_point()}  &
+See [\ref{ssub:method_triangle_second__fermat__point}] \\
+\tkzMeth{triangle}{lamoen\_points()}  &
 See [\ref{ssub:method_triangle_lamoen_points}]\\
-
-  \tkzMeth{triangle}{soddy\_center()}  &
+\tkzMeth{triangle}{soddy\_center()}  &
 See [\ref{ssub:method_triangle_soddy_center}] \\
-
-  \tkzMeth{triangle}{conway\_points()}  &
+\tkzMeth{triangle}{conway\_points()}  &
 See [\ref{ssub:method_triangle_conway_points}] \\
-
-  \tkzMeth{triangle}{kenmotu\_point()}  &
+\tkzMeth{triangle}{kenmotu\_point()}  &
 See [\ref{ssub:_triangle_kenmotu__point}] \\
-
-  \tkzMeth{triangle}{orthic\_axis\_points()}  &
-See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_points}] \\
-
+\tkzMeth{triangle}{orthic\_axis\_points()}  &
+See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_points}]\\
 \tkzMeth{triangle}{isodynamic\_points()} & [\ref{ssub:isodynamic_points}] \\
-
 \tkzMeth{triangle}{apollonius\_point()} & [\ref{ssub:apollonius_point}] \\
-  \bottomrule
-  \end{tabular}
-  \end{minipage}
-  \egroup
+\bottomrule
+\end{tabular}
+\end{minipage}
+\egroup
 
 
 
@@ -438,46 +539,31 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
   \captionof{table}{triangle methods.}
   \begin{tabular}{ll}
   \toprule
-  \textbf{Methods} & \textbf{Reference}      \\
+  \texttt{Methods} & \texttt{Reference}      \\
   \midrule
 
-\textbf{Lines} &\\
-  \midrule
-
-  \tkzMeth{triangle}{altitude(arg) } & Note
-  \footnote{|z.Ha = L.AHa.pb| recovers the common point of the opposite side and altitude. The method |orthic| is usefull. If you don't need to use the triangle object several times, you can obtain a bisector or a altitude with the function |tkz.altitude(z.A, z.B, z.C)| ; [ \ref{misc}]} [\ref{ssub:method_triangle_altitude} ]\\
-
-  \tkzMeth{triangle}{bisector(arg) }  & Note  \footnote{|_, z.b = L.Bb:get()| recovers the common point of the opposite side and bisector. If you don't need to use the triangle object several times, you can obtain a bisector  with the function |tkz.bisector(z.A, z.B, z.C)|  [\ref{misc}]};  [\ref{ssub:method_triangle_bisector}]\\
-
-  \tkzMeth{triangle}{bisector\_ext(arg) } & [\ref{ssub:method_triangle_bisector_ext}]\\
-
+\texttt{Methods Returning a Line} &\\
+\midrule
+\tkzMeth{triangle}{altitude(arg) } & Note
+\footnote{|z.Ha = L.AHa.pb| recovers the common point of the opposite side and altitude. The method |orthic| is usefull. If you don't need to use the triangle object several times, you can obtain a bisector or a altitude with the function |tkz.altitude(z.A, z.B, z.C)| ; [ \ref{misc}]} [\ref{ssub:method_triangle_altitude}]\\
+\tkzMeth{triangle}{bisector(arg) }  & Note  \footnote{|_, z.b = L.Bb:get()| recovers the common point of the opposite side and bisector. If you don't need to use the triangle object several times, you can obtain a bisector  with the function |tkz.bisector(z.A, z.B, z.C)|  [\ref{misc}]};  [\ref{ssub:method_triangle_bisector}]\\
+\tkzMeth{triangle}{bisector\_ext(arg) } & [\ref{ssub:method_triangle_bisector_ext}]\\
 \tkzMeth{triangle}{mediator(arg)} & [\ref{ssub:triangle_mediator}]\\
-
-
-  \tkzMeth{triangle}{symmedian\_line(arg)} & [\ref{ssub:method_imeth_triangle_symmedian__line}
+\tkzMeth{triangle}{symmedian\_line(arg)} & [\ref{ssub:method_imeth_triangle_symmedian__line}
 ; \ref{ssub:method_triangle_symmedial} ; \ref{ssub:method_line_isosceles}]\\
-
-  \tkzMeth{triangle}{euler\_line() } &Note
-  \footnote{N center of nine points circle, G centroid, H orthocenter , O circum center } ; [\ref{ssub:euler_line}]\\
-
-  \tkzMeth{triangle}{antiparallel(pt,n)} & [\ref{antiparallel};\ref{sub:antiparallel_through_lemoine_point}]\\
-
-  \tkzMeth{triangle}{steiner\_line(pt)} &[\ref{ssub:method_triangle_steiner__line}] \\
-
-  \tkzMeth{triangle}{simson\_line(pt)} &[\ref{ssub:method_triangle_simson__line}] \\
-
-  \tkzMeth{triangle}{lemoine\_axis()} &[\ref{ssub:method_triangle_lemoine__line}] \\
-
-  \tkzMeth{triangle}{brocard\_axis()} &[\ref{ssub:method_triangle_brocard__axis}] \\
-
-  \tkzMeth{triangle}{fermat\_axis()}  & \\
-
-  \tkzMeth{triangle}{orthic\_axis()}  & See [\ref{ssub:method_triangle_orthic_axis}]\\
-
-  \bottomrule
-  \end{tabular}
-  \end{minipage}
-  \egroup
+\tkzMeth{triangle}{euler\_line() } & Note
+\footnote{N center of nine points circle, G centroid, H orthocenter , O circum center } ; [\ref{ssub:euler_line}]\\
+\tkzMeth{triangle}{antiparallel(pt,n)} & [\ref{antiparallel};\ref{sub:antiparallel_through_lemoine_point}]\\
+\tkzMeth{triangle}{steiner\_line(pt)} &[\ref{ssub:method_triangle_steiner__line}] \\
+\tkzMeth{triangle}{simson\_line(pt)} &[\ref{ssub:method_triangle_simson__line}] \\
+\tkzMeth{triangle}{lemoine\_axis()} &[\ref{ssub:method_triangle_lemoine__line}] \\
+\tkzMeth{triangle}{brocard\_axis()} &[\ref{ssub:method_triangle_brocard__axis}] \\
+\tkzMeth{triangle}{fermat\_axis()}  & \\
+\tkzMeth{triangle}{orthic\_axis()}  & See [\ref{ssub:method_triangle_orthic_axis}]\\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\egroup
 
 
 
@@ -486,146 +572,88 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 \catcode`_=12
 \small
 \begin{minipage}{\textwidth}
-    \begin{tabular}{ll}
-  \toprule
-  \textbf{Methods} & \textbf{Comments}     \\
-  \midrule
-   \textbf{Circles} &\\
-  \midrule
-  \tkzMeth{triangle}{euler\_circle()} & Note
-   \footnote{ The midpoint of each side of the triangle, the foot of each altitude, the midpoint of the line segment from each vertex of the triangle to the orthocenter.}   [\ref{ssub:method_triangle_euler_circle}]\\
-
-  \tkzMeth{triangle}{circum\_circle()}  & [\ref{ssub:method_triangle_circum_circle}] \\
-
-  \tkzMeth{triangle}{in\_circle()}  &
-  [\ref{ssub:method_triangle_in_circle}]\\
-
-  \tkzMeth{triangle}{ex\_circle(n)}  & [\ref{ssub:method_triangle_ex__circle}]\\
-
+\begin{tabular}{ll}
+\toprule
+\texttt{Methods} & \textbf{Comments}     \\
+\midrule
+\texttt{Methods Returning a Circle} &\\
+\midrule
+\tkzMeth{triangle}{euler\_circle()} & Note
+\footnote{ The midpoint of each side of the triangle, the foot of each altitude, the midpoint of the line segment from each vertex of the triangle to the orthocenter.}   [\ref{ssub:method_triangle_euler_circle}]\\
+\tkzMeth{triangle}{circum\_circle()}  & [\ref{ssub:method_triangle_circum_circle}] \\
+\tkzMeth{triangle}{in\_circle()}  &[\ref{ssub:method_triangle_in_circle}]\\
+\tkzMeth{triangle}{ex\_circle(n)}  & [\ref{ssub:method_triangle_ex__circle}]\\
 \tkzMeth{triangle}{first\_lemoine\_circle()} & [\ref{ssub:method_triangle_first_lemoine_circle}] \\
-
-\tkzMeth{triangle}{second\_lemoine\_circle()}  &  \ref{sub:antiparallel_through_lemoine_point}] \\
-
+\tkzMeth{triangle}{second\_lemoine\_circle()}&  \ref{sub:antiparallel_through_lemoine_point}]\\
 \tkzMeth{triangle}{spieker\_circle()} &  [\ref{ssub:method_triangle_spieker__circle}]\\
-
 \tkzMeth{triangle}{bevan\_circle()}  & [\ref{ssub:methods_triangle_bevan_circle}]\\
-
 \tkzMeth{triangle}{cevian\_circle()} &  [\ref{ssub:_triangle_cevian__circle_pt}
 ; \ref{ssub:method_triangle_cevian}]\\
-
 \tkzMeth{triangle}{symmedial\_circle()}  & [\ref{ssub:method_triangle_symmedial_circ}; \ref{ssub:method_triangle_symmedial}]\\
-
 \tkzMeth{triangle}{pedal\_circle()} &  [\ref{ssub:method_triangle_pedal}]\\
-
 \tkzMeth{triangle}{conway\_circle()} &  [\ref{ssub:method_triangle_conway}]\\
-
 \tkzMeth{triangle}{taylor\_circle()} &  [\ref{ssub:method_triangle_taylor__circle}]\\
-
 \tkzMeth{triangle}{kenmotu\_circle()}  & [\ref{ssub:kenmotu_circle}]\\
-
-
 \tkzMeth{triangle}{c\_c(pt)}  &  [\ref{ssub:method_triangle_c_c}]\\
-
 \tkzMeth{triangle}{thebault(pt)}  &  [\ref{ssub:method_triangle_c_c}]\\
-
 \tkzMeth{triangle}{mixtilinear\_incircle(arg)}  &  [\ref{ssub:method_triangle_mixti}]\\
-
 \tkzMeth{triangle}{three\_tangent\_circles} &  [\ref{ssub:method_triangle_three_tgt_c}]\\
-
 \tkzMeth{triangle}{adams\_circle()}  & [\ref{ssub:method_triangle_adams_circle}]\\
-
 \tkzMeth{triangle}{lamoen\_circle()}  &
   See [\ref{ssub:method_triangle_lamoen_points}] \\
-
 \tkzMeth{triangle}{soddy\_circle()}  &
   See [\ref{ssub:method_triangle_soddy_circle}] \\
-
 \tkzMeth{triangle}{three\_apollonius\_circles()}  &
   See [\ref{ssub:three_apollonius_circles}] \\
-
 \tkzMeth{triangle}{apollonius\_circle(side, EPS)}  &
   See [\ref{ssub:apollonius_circle}] \\
-
 \tkzMeth{triangle}{feuerbach\_apollonius\_k181(side, EPS)}  &
   See [\ref{ssub:feuerbach_apollonius_k181}] \\
-
 \tkzMeth{triangle}{feuerbach\_apollonius(side, EPS)}  &
   See [\ref{ssub:feuerbach_apollonius}] \\
-
-
 \midrule
 
-\textbf{Triangles} &\\
+\texttt{Methods Returning a Triangle} &\\
 \midrule
-  \tkzMeth{triangle}{orthic()}   & [\ref{ssub:method_triangle_altitude}]   \\
-
+\tkzMeth{triangle}{orthic()}   & [\ref{ssub:method_triangle_altitude}]   \\
 \tkzMeth{triangle}{medial()} &  [\ref{ssub:method_triangle_medial} ; \ref{ssub:method_triangle_symmedial}]\\
-
 \tkzMeth{triangle}{incentral()}  &[\ref{ssub:method_incentral}] \\
-
-\tkzMeth{triangle}{excentral()}  &[\ref{ssub:method_triangle_excentral}; \ref{ssub:method_triangle_feuerbach} ]  \\
-
+\tkzMeth{triangle}{excentral()}  &[\ref{ssub:method_triangle_excentral}; \ref{ssub:method_triangle_feuerbach}]  \\
 \tkzMeth{triangle}{extouch()}   &[\ref{ssub:method_triangle_extouch}] \\
-
 \tkzMeth{triangle}{intouch() }   &[\ref{ssub:method_triangle_intouch}; \ref{ssub:gergonne_point}]\\
-
 \tkzMeth{triangle}{contact() } &  contact = intouch ; [
 \ref{ssub:gergonne_point}] \\
-
 \tkzMeth{triangle}{tangential()} &[\ref{ssub:method_triangle_tangential}]\\
-
 \tkzMeth{triangle}{anti() }&  Anticomplementary [\ref{ssub:method_triangle_anti}]  \\
-
-  \tkzMeth{triangle}{cevian(pt)} & [\ref{ssub:method_triangle_cevian}] \\
-
-  \tkzMeth{triangle}{pedal(pt)} &[\ref{ssub:method_triangle_pedal}]\\
-
-  \tkzMeth{triangle}{symmedial()}  &[\ref{ssub:method_triangle_symmedial}] \\
-
-  \tkzMeth{triangle}{euler()} & [\ref{ssub:method_triangle_euler}; \ref{ssub:method_triangle_euler__points}] \\
-
-  \tkzMeth{triangle}{lemoine()} &[\ref{ssub:method_triangle_lemoine}] \\
-
-  \tkzMeth{triangle}{macbeath()}  & See   [\ref{ssub:method_triangle_macbeath}]\\
-
-  \tkzMeth{triangle}{circumcevian()}  & See   [  \ref{ssub:method_triangle_circumcevian}]\\
+\tkzMeth{triangle}{cevian(pt)} & [\ref{ssub:method_triangle_cevian}] \\
+\tkzMeth{triangle}{pedal(pt)} &[\ref{ssub:method_triangle_pedal}]\\
+\tkzMeth{triangle}{symmedial()}  &[\ref{ssub:method_triangle_symmedial}] \\
+\tkzMeth{triangle}{euler()} & [\ref{ssub:method_triangle_euler}; \ref{ssub:method_triangle_euler__points}] \\
+\tkzMeth{triangle}{lemoine()} &[\ref{ssub:method_triangle_lemoine}] \\
+\tkzMeth{triangle}{macbeath()}  & See   [\ref{ssub:method_triangle_macbeath}]\\
+\tkzMeth{triangle}{circumcevian()}  & See   [  \ref{ssub:method_triangle_circumcevian}]\\
 
 
-  \midrule
-   \textbf{Conics} &\\
-    \tkzMeth{triangle}{kiepert\_parabola()} & [\ref{ssub:method_triangle_kiepert_parabola}] \\
-
-   \tkzMeth{triangle}{kiepert\_hyperbola()} & [\ref{ssub:method_triangle_kiepert__hyperbola}] \\
-
-  \tkzMeth{triangle}{steiner\_inellipse()}& [ \ref{ssub:steiner_inellipse_and_circumellipse}] \\
-
-  \tkzMeth{triangle}{steiner\_circumellipse()} & [ \ref{ssub:steiner_inellipse_and_circumellipse}] \\
-
-  \tkzMeth{triangle}{euler\_ellipse()}  & [\ref{ssub:euler_ellipse}]\\
-
-  \tkzMeth{triangle}{lemoine\_ellipse()} & [\ref{ssub:method_triangle_lemoine_inellipse}]\\
-
-  \tkzMeth{triangle}{brocard\_inellipse()}  & [\ref{ssub:method_triangle_brocard__inellipse}]\\
-
-  \tkzMeth{triangle}{macbeath\_inellipse()}  & [\ref{ssub:method_triangle_macbeath__inellipse}]\\
-
-  \tkzMeth{triangle}{mandart\_ellipse()}  & [\ref{ssub:method_triangle_mandart__inellipse}]\\
-
-  \tkzMeth{triangle}{orthic\_inellipse()}  & [\ref{ssub:method_triangle_orthic__inellipse}]\\
-
-  \tkzMeth{triangle}{reflection()}  & [See \ref{ssub:method_triangle_reflection}; \ref{ssub:method_triangle_simson__line}; \ref{ssub:method_yiu_circles}]\\
-
-
-  \midrule
-
-  \textbf{Misc.} &\\
-
-  \tkzMeth{triangle}{square\_inscribed()}  &  [ex.(\ref{ssub:method_triangle_square__inscribed}]\\
-
-  \bottomrule
-  \end{tabular}
-  \end{minipage}
-  \egroup
+\midrule
+\texttt{Methods Returning a Conic} &\\
+\tkzMeth{triangle}{kiepert\_parabola()} & [\ref{ssub:method_triangle_kiepert_parabola}] \\
+\tkzMeth{triangle}{kiepert\_hyperbola()} & [\ref{ssub:method_triangle_kiepert__hyperbola}] \\
+\tkzMeth{triangle}{steiner\_inellipse()}& [ \ref{ssub:steiner_inellipse_and_circumellipse}] \\
+\tkzMeth{triangle}{steiner\_circumellipse()} & [ \ref{ssub:steiner_inellipse_and_circumellipse}] \\
+\tkzMeth{triangle}{euler\_ellipse()}  & [\ref{ssub:euler_ellipse}]\\
+\tkzMeth{triangle}{lemoine\_ellipse()} & [\ref{ssub:method_triangle_lemoine_inellipse}]\\
+\tkzMeth{triangle}{brocard\_inellipse()}  & [\ref{ssub:method_triangle_brocard__inellipse}]\\
+\tkzMeth{triangle}{macbeath\_inellipse()}  & [\ref{ssub:method_triangle_macbeath__inellipse}]\\
+\tkzMeth{triangle}{mandart\_ellipse()}  & [\ref{ssub:method_triangle_mandart__inellipse}]\\
+\tkzMeth{triangle}{orthic\_inellipse()}  & [\ref{ssub:method_triangle_orthic__inellipse}]\\
+\tkzMeth{triangle}{reflection()}  & [See \ref{ssub:method_triangle_reflection}; \ref{ssub:method_triangle_simson__line}; \ref{ssub:method_yiu_circles}]\\
+\midrule
+\texttt{Methods Returning a Square} &\\
+\tkzMeth{triangle}{square\_inscribed()}  &  [ex.(\ref{ssub:method_triangle_square__inscribed}]\\
+\bottomrule
+\end{tabular}
+ \end{minipage}
+\egroup
 
 
 
@@ -738,72 +766,89 @@ This method belongs to a general mechanism shared by all geometric objects. Its 
 \end{minipage}
 
 %%%%%%%%%%%%%%% boolean %%%%%%%%%%%%
-\subsection{The result is a boolean}
+\subsection{Returns a boolean value}
 
+%--------------------------------------------------------------------
+\subsubsection{Method \tkzMeth{triangle}{position(pt[, EPS])}}
+\label{ssub:method_triangle_position}
+%--------------------------------------------------------------------
 
-\subsubsection{Method \tkzMeth{triangle}{in\_out(pt)}}
-\label{ssub:_triangle_in__out_pt}
-
-This method tests whether a given point lies \emph{inside} the triangle.
+This method classifies the position of a point \code{pt}
+with respect to the triangle.
 
 \medskip
 
-It takes a single argument \code{pt}, which must be a point object. The method returns a boolean:
+\texttt{Return values: }
 \begin{itemize}
-  \item \code{true} if the point lies strictly inside or on the boundary of the triangle;
-  \item \code{false} otherwise (i.e., if the point is strictly outside).
+  \item \code{"IN"}  — the point lies strictly inside the triangle;
+  \item \code{"ON"}  — the point lies on one of its sides;
+  \item \code{"OUT"} — the point lies strictly outside.
 \end{itemize}
 
 \medskip
 
-This function is useful for geometric conditions, filtering, or region-based constructions.
+An optional tolerance parameter \code{EPS} may be provided.
+If omitted, the global tolerance \code{tkz.epsilon} is used.
 
-\vspace{1em}
+\medskip
 
-\begin{minipage}{.5\textwidth}
-\directlua{
- init_elements()
- function pos (T, pt)
-    if T : in_out (pt) then return "in"
-   else return "out" end
-   end
-  z.A = point(1, 1)
-  z.B = point(8, 0)
-  z.C = point(2, 5)
-  z.X = point(4, 2)
-  z.Y = point(5, 4)
-  T.ABC = triangle(z.A, z.B, z.C)
-  strX, strY = pos(T.ABC, z.X), pos(T.ABC, z.Y)}
-  \begin{center}
-    \begin{tikzpicture}[scale = .75]
-      \tkzGetNodes
-      \tkzDrawPolygons(A,B,C)
-      \tkzDrawPoints(A,B,C,X,Y)
-      \tkzLabelPoints(A,B)
-      \tkzLabelPoints[above](C)
-      \tkzLabelPoint(X){$X$ \tkzUseLua{strX}}
-      \tkzLabelPoint(Y){$Y$ \tkzUseLua{strY}}
-    \end{tikzpicture}
-  \end{center}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
- init_elements()
- function pos (T, pt)
-    if T : in_out (pt) then return "in"
-   else return "out" end
-   end
-  z.A = point(1, 1)
-  z.B = point(8, 0)
-  z.C = point(2, 5)
-  z.X = point(4, 2)
-  z.Y = point(5, 4)
-  T.ABC = triangle(z.A, z.B, z.C)
-  strX, strY = pos(T.ABC, z.X),
-               pos(T.ABC, z.Y)}
-\end{tkzexample}
-\end{minipage}
+The classification is based on barycentric coordinates
+and is numerically robust.
+
+\medskip
+
+This method provides a unified and explicit classification model,
+consistent with other geometric objects such as
+\code{line:position()} and \code{circle:position()}.
+
+
+
+\subsubsection{Method \tkzMeth{triangle}{in\_out(pt)}; Deprecated}
+\label{ssub:_triangle_in__out_pt}
+
+
+This method is kept for backward compatibility.
+
+It returns a boolean:
+
+\begin{itemize}
+  \item \code{true}  if the point lies inside the triangle
+        or on its boundary;
+  \item \code{false} if the point lies strictly outside.
+\end{itemize}
+
+\medskip
+
+Internally, this method relies on
+\code{triangle:position(pt)} and returns:
+
+\[
+\texttt{position(pt) ~= "OUT"}
+\]
+
+\medskip
+
+For new developments, the use of
+\code{triangle:position(pt)} is recommended.
+
+
+\subsubsection{Method \tkzMeth{triangle}{on\_triangle(pt)}; Deprecated}
+\label{ssub:method_triangle_on_triangle}
+
+This method is kept for backward compatibility.
+
+
+\medskip
+
+\texttt{Returns: }
+\begin{itemize}
+  \item \code{"inside"} if \code{pt} lies strictly inside the triangle;
+  \item \code{"on\_edge"} if \code{pt} lies on one of the sides of the triangle;
+  \item \code{"outside"} otherwise.
+\end{itemize}
+
+
+
 
 \subsubsection{Method \tkzMeth{triangle}{check\_equilateral()}}
 \label{ssub:_triangle_check__equilateral}
@@ -860,7 +905,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{The result is a real}
+\subsection{Returns a real number}
 
 \subsubsection{Method \tkzMeth{triangle}{barycentric\_coordinates(pt)}}
 \label{ssub:_triangle_barycentric__coordinates_pt}
@@ -1001,12 +1046,12 @@ arbitrary points, independently of any triangle object.
 \subsubsection{Method \tkzMeth{triangle}{trilinear\_to\_d}}
 \label{ssub:triangle_trilinear_to_d}
 
-\texttt{Purpose:}
+\texttt{Purpose: }
 Convert a trilinear triple \((x:y:z)\) into a proportional triple \((p,q,r)\) related to the perpendicular distances from a point to the triangle sides \(BC,CA,AB\).
 The method uses the current triangle side lengths \(a,b,c\) and area \(\Delta\).
 
 \medskip
-\texttt{Interest:}
+\texttt{Interest: }
 Trilinear coordinates are a natural system for locating points defined by geometric relations involving the sides of a triangle
 (e.g., incenters, excenters, Gergonne or Nagel points, centers of conics, etc.).
 Many formulas in triangle geometry are expressed in trilinears, but practical geometric constructions often require
@@ -1057,7 +1102,7 @@ where \(\Delta\) is the area of the triangle computed with Heron’s formula.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsection{The result is a point}
+\subsection{Returns  a point}
 
 \subsubsection{Method \tkzMeth{triangle}{point(r)}}
 \label{ssub:method_triangle_point_r}
@@ -2371,7 +2416,7 @@ Consider the excircles $J_A$, $J_B$, and $J_C$ of a triangle, and the external A
 %%%%%%%%%%%  Lines %%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{The result is a line}
+\subsection{Returns  a line}
 \subsubsection{Method \tkzMeth{triangle}{symmedian\_line(n)}}
 \label{ssub:method_imeth_triangle_symmedian__line}
 
@@ -2716,7 +2761,7 @@ The second argument \code{arg} can be:
 
 \medskip
 
-This method is used, for example, in the construction of the symmedian point (see section~\ref{ssub:method_triangle_lemoine_point}).
+This method is used, for example, in the construction of the symmedian point (see Section~\ref{ssub:method_triangle_lemoine_point}).
 
 \vspace{1em}
 \begin{minipage}{.5\textwidth}
@@ -3085,7 +3130,7 @@ The \textbf{Brocard axis} is the straight line passing through the \textbf{symme
 
 This line has several remarkable properties:
 \begin{itemize}
-  \item It is \texttt{perpendicular} to the \texttt{Lemoine axis} (see section~\ref{ssub:method_triangle_lemoine__line}).
+  \item It is \texttt{perpendicular} to the \texttt{Lemoine axis} (see Section~\ref{ssub:method_triangle_lemoine__line}).
   \item It is the \texttt{isogonal conjugate} of the \texttt{Kiepert hyperbola}.
 \end{itemize}
 
@@ -3157,7 +3202,7 @@ The method \tkzMeth{triangle}{simson\_line(pt)} returns this line (as a \code{li
 %%%%%% Circles %%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{The result is a circle}
+\subsection{Returns  a circle}
 \subsubsection{Method \tkzMeth{triangle}{euler\_circle()}} %(fold)
 \label{ssub:method_triangle_euler_circle}
 
@@ -3173,7 +3218,7 @@ It passes through the following nine notable points of any triangle $ABC$:
 \end{itemize}
 
 
-This circle was described by \textbf{Euler} in 1765 and further studied by \textbf{Feuerbach}, who proved that it is tangent to the triangle’s incircle and excircles.
+This circle was described by \texttt{Euler} in 1765 and further studied by \texttt{Feuerbach}, who proved that it is tangent to the triangle’s incircle and excircles.
 
 \medskip
 
@@ -3264,7 +3309,7 @@ Its properties are as follows:
 \end{itemize}
 
 
-Geometrically, the contact triangle can also be seen as the \textbf{pedal triangle} of the incenter (see section~\ref{ssub:method_triangle_pedal}) or as the \textbf{tangential triangle} (see section~\ref{ssub:method_triangle_medial}).
+Geometrically, the contact triangle can also be seen as the \textbf{pedal triangle} of the incenter (see Section~\ref{ssub:method_triangle_pedal}) or as the \textbf{tangential triangle} (see Section~\ref{ssub:method_triangle_medial}).
 
 \medskip
 
@@ -4466,7 +4511,7 @@ Feuerbach points.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{The result is a triangle}
+\subsection{Returns  a triangle}
 \subsubsection{Method \tkzMeth{triangle}{medial()}} %(fold)
 \label{ssub:method_triangle_medial}
 
@@ -5275,7 +5320,7 @@ z.Xc = T.ABC:macbeath():get()}
 %%%%%%%%%%%%%%%%%%%%
 
 
-\subsection{The result is a conic}
+\subsection{Returns a conic}
 
 As the code is relatively large, I've avoided including the \tkzNamePack{tkz-euclide} part in most of the examples. You can find the complete code in the source of this document in the file \code{TKZdoc-elements-triangle.tex}.
 

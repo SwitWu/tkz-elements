@@ -282,16 +282,98 @@ function conic:inter_Hy_line(pa, pb)
 end
 
 -- Fonction pour déterminer si un point est à l'intérieur ou à l'extérieur de la conique
-function conic:in_out(pt)
+-- ============================================================
+-- 1) API COMPATIBLE : in_out -> boolean (historique)
+-- ============================================================
+function conic:in_out(pt, EPS)
+	EPS = EPS or tkz.epsilon
 	local e = self.e
-	if math.abs(e - 1) < tkz.epsilon then -- Parabole
-		return PA_in_out(self, pt)
-	elseif self.e > 1 then -- Hyperbole
-		return HY_in_out(self, pt)
-	elseif self.e < 1 then -- Ellipse
-		return EL_in_out(self, pt)
+	if math.abs(e - 1) <= EPS then        -- parabola
+		return PA_in_out(self, pt, EPS)     -- boolean
+	elseif e > 1 then                     -- hyperbola
+		return HY_in_out(self, pt, EPS)     -- boolean
+	else                                  -- ellipse
+		return EL_in_out(self, pt, EPS)     -- boolean
 	end
 end
+
+
+-- ============================================================
+-- 2) NOUVELLE API : position -> "IN" | "ON" | "OUT"
+-- ============================================================
+function conic:position(pt, EPS)
+	EPS = EPS or tkz.epsilon
+	local e = self.e
+	if math.abs(e - 1) <= EPS then
+		return PA_position_(self, pt, EPS)
+	elseif e > 1 then
+		return HY_position_(self, pt, EPS)
+	else
+		return EL_position_(self, pt, EPS)
+	end
+end
+
+
+-- ============================================================
+-- Ellipse : position
+-- (on utilise le même principe que ton EL_in_out, mais avec ON)
+-- ============================================================
+function EL_position_(CO, pt, EPS)
+	EPS = EPS or tkz.epsilon
+
+	local d = point.abs(pt - CO.center)
+	local L = line(CO.center, pt)
+	local x, y = intersection(L, CO)
+	if x == false then return "OUT" end
+
+	local dx = point.abs(x - CO.center)
+	if y ~= false then
+		local dy = point.abs(y - CO.center)
+		if dy < dx then dx = dy end
+	end
+
+	local diff = d - dx
+	if math.abs(diff) <= EPS then return "ON" end
+	if diff < -EPS then return "IN" else return "OUT" end
+end
+
+
+-- ============================================================
+-- Parabola/Hyperbola : position
+-- Convention : "IN" si pt est entre les 2 intersections sur la corde
+-- ============================================================
+local function AX_position_(CO, pt, EPS)
+	EPS = EPS or tkz.epsilon
+
+	local D  = CO.major_axis
+	local Dp = D:ortho_from(pt)
+	local x, y = intersection(Dp, CO)
+
+	if x == false then return "OUT" end
+	if y == false then
+		return (point.abs(pt - x) <= EPS) and "ON" or "OUT"
+	end
+
+	-- test ON (utile si pt est calculé et tombe sur la conique)
+	if point.abs(pt - x) <= EPS or point.abs(pt - y) <= EPS then
+		return "ON"
+	end
+
+	local chord = line(x, y)
+	return chord:on_segment(pt, EPS) and "IN" or "OUT"
+end
+
+function PA_position_(PA, pt, EPS) return AX_position_(PA, pt, EPS) end
+function HY_position_(HY, pt, EPS) return AX_position_(HY, pt, EPS) end
+
+
+-- ============================================================
+-- 3) (Option) rendre "ON" compatible avec l'ancien booléen
+--    Si tu veux que ON compte comme IN pour l'ancien monde :
+-- ============================================================
+-- function conic:on_conic(pt, EPS)
+--   return self:position(pt, EPS) == "ON"
+-- end
 
 -- Fonction pour obtenir l'orthoptique de la conique
 function conic:orthoptic()

@@ -24,6 +24,8 @@ local modules = {
 	"triangle",
 	"utils",
 	"vector",
+	"function",
+	"param_function",
 }
 
 for _, name in ipairs(modules) do
@@ -53,7 +55,7 @@ require("tkz_elements_tkz.lua")
 function init_elements()
 local tables_to_clear = {
 	"A","C","CO","L","M","O","P","PA","LP",
-	"Q","R","RP","S","T","V","z",
+	"Q","R","RP","S","T","V","z","F","PF",
 }
 
 	for _, name in ipairs(tables_to_clear) do

@@ -1,0 +1,281 @@
+%--------------------------------------------------------------------
+\newpage
+\section{Class \tkzClass{fct}}
+\label{sec:class_fct}
+
+The \tkzClass{fct} class represents a real-valued function
+\[
+x \longmapsto f(x),
+\]
+defined and evaluated in Lua. A \tkzClass{fct} object encapsulates either
+(i) a numerical expression (given as a string in the variable \texttt{x}),
+or (ii) a callable Lua function, together with methods for evaluation,
+sampling, and geometric construction.
+
+By convention, function objects are stored in a Lua table named
+\tkzVar{fct}{F}. Although this name is not mandatory, using \texttt{F} is
+strongly recommended for consistency across examples and documentation.
+Each entry of \texttt{F} associates a symbolic name (such as \texttt{fa})
+with an object of class \tkzClass{fct}. If a custom table name is used, it
+must be initialized manually. The \tkzFct{tkz-elements}{init\_elements()}
+function will reset the \texttt{F} table if it has already been defined.
+
+\paragraph{Mathematical expressions.}
+All expressions defining a \tkzClass{fct} object are evaluated using standard
+Lua rules. A \tkzClass{fct} object can be evaluated at a real number, sampled on an
+interval, converted into a \tkzClass{path} (for drawing with TikZ), or exported
+to a data file.
+
+\paragraph{Important.}
+In function and parametric function definitions
+(\tkzClass{fct} and \tkzClass{pfct}),
+expressions must be written using standard mathematical notation.
+The Lua prefix \texttt{math.} must \emph{not} be used.
+
+In contrast, in all other methods and Lua code fragments of
+\tkzNamePack{tkz-elements},
+standard Lua syntax applies, and the use of the prefix \texttt{math.}
+is required whenever a Lua mathematical function is called. For convenience, users may define local aliases in their Lua code, such as
+\code{local sin, cos, pi = math.sin, math.cos, math.pi}.
+
+
+\medskip
+Correct:
+\begin{verbatim}
+sin(x), exp(-x^2)
+\end{verbatim}
+
+Incorrect (in \tkzClass{fct} and \tkzClass{pfct}):
+\begin{verbatim}
+math.sin(x), math.exp(-x^2)
+\end{verbatim}
+
+\subsection{Methods of the class fct}
+The \tkzClass{fct} class offers a compact set of methods, centered around:
+\emph{(i)} creating a function object, \emph{(ii)} evaluating it, and
+\emph{(iii)} producing a \tkzClass{path} or a data file.
+
+\vspace{1em}
+
+\bgroup
+  \small
+  \captionof{table}{fct methods.}\label{fct:methods}
+  \begin{tabular}{ll}
+  \toprule
+  \textbf{Methods} & \texttt{Reference} \\
+  \midrule
+  \textbf{Creation} & \\
+  \midrule
+  \tkzFct{fct}{new(expr\_or\_fn)}              & [\ref{ssub:method_fct_new}] \\
+  \tkzFct{fct}{compile(expr)}                 & [\ref{ssub:method_fct_compile}] \\
+  \midrule
+  \textbf{Reals / evaluation} & \\
+  \midrule
+  \tkzMeth{fct}{eval(x)}                     & [\ref{ssub:method_fct_value}] \\
+  \midrule
+  \textbf{Points / Paths} & \\
+  \midrule
+  \tkzMeth{fct}{point(x)}                     & [\ref{ssub:method_fct_point}] \\
+  \tkzMeth{fct}{path(xmin,xmax,n)}            & [\ref{ssub:method_fct_path}] \\
+  \bottomrule
+  \end{tabular}
+\egroup
+
+%-------------------- details ---------------------------------------
+\subsubsection{Constructor \tkzFct{fct}{new(expr\_or\_fn)}}
+\label{ssub:method_fct_new}
+
+\texttt{Description: }Creates a function object from either a Lua expression
+(string) or a callable Lua function. When a string is provided, it represents
+an expression in the variable \texttt{x}, evaluated using standard Lua rules
+(therefore requiring \texttt{math.} prefixes).
+
+\texttt{Arguments: }\par
+\begin{itemize}
+\item \code{expr\_or\_fn}: either
+  \begin{itemize}
+    \item a string representing an expression in \texttt{x}, or
+    \item a callable Lua function \texttt{f(x)}.
+  \end{itemize}
+\end{itemize}
+
+\texttt{Returns: } a \tkzClass{fct} object.
+
+\texttt{Example:}
+\begin{verbatim}
+\directlua{
+  init_elements()
+  F.f = fct:new("x*math.exp(-x^2)+1")
+  tex.print(F.f:value(0))
+}
+\end{verbatim}
+
+\subsubsection{Function \tkzFct{fct}{compile(expr)}}
+\label{ssub:method_fct_compile}
+
+\texttt{Description: }Compiles an expression and returns a callable Lua function
+(or wraps it into a \tkzClass{fct}, depending on the implementation). This is a
+low-level helper mainly intended for internal use.
+
+\texttt{Argument: } \code{expr} (string, expression in variable \texttt{x}). \qquad
+\texttt{Returns: } a callable function or a \tkzClass{fct} object (depending on implementation).
+
+\subsubsection{Method \tkzMeth{fct}{eval(x)}}
+\label{ssub:method_fct_value}
+
+\texttt{Description: }Evaluates the function at the real number \code{x}.
+
+\texttt{Returns: } a number (which may be \texttt{nan} or infinite if the expression is not defined).
+
+\begin{verbatim}
+  init_elements()
+  F.fa = fct("sin(x) + x")
+  PA.curve = F.fa:path(-2, 5, 200)
+  z.A = F.fa:point(1.3)
+  tex.print(F.fa:eval(math.pi/2))
+\end{verbatim}
+
+
+\subsubsection{Method \tkzMeth{fct}{point(x)}}
+\label{ssub:method_fct_point}
+
+\texttt{Description: }Constructs the point $(x,f(x))$ associated with the function.
+This method provides a direct bridge between numerical evaluation and geometric
+construction.
+
+\texttt{Returns: } a \tkzClass{point}.
+
+\texttt{Example: }
+\begin{verbatim}
+  init_elements()
+  F.fa = fct("sin(x)+x")
+  PA.curve = F.fa:path(-2, 5, 200)
+  z.A = F.fa:point(1.5)
+  % or z.A = point(1.3, F.fa:eval(1.3) )
+\end{verbatim}
+
+\subsubsection{Method \tkzMeth{fct}{path(xmin,xmax,n)}}
+\label{ssub:method_fct_path}
+
+\texttt{Description: }Samples the function on $[xmin,xmax]$ using \code{n}
+subdivisions and returns a \tkzClass{path}. Invalid values are skipped (depending
+on the internal policy).
+
+\texttt{Returns: } a \tkzClass{path}.
+
+
+\texttt{Example: }
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  F.fa = fct("sin(x) + x")
+  PA.curve = F.fa:path(-1, 5, 200)
+  z.A = F.fa:point(math.pi/2)
+}
+\begin{tikzpicture}[scale=.75,gridded]
+  \tkzInit[xmin=-1,xmax=5,ymin=-1,ymax=2]
+  \tkzDrawX\tkzDrawY
+  \tkzGetNodes
+  \tkzDrawCoordinates[smooth,blue,thick](PA.curve)
+  \tkzDrawPoint[red](A)
+  \tkzDrawPointsOnGraph[blue]{0,1,2}{fa}
+  \tkzDrawPointOnGraph[red]{-1}{fa}
+\end{tikzpicture}
+\end{tkzexample}
+
+%--------------------------------------------------------------------
+\subsection{Macros \tkzMacro{tkz-elements}{tkzDrawPointOnGraph} and
+\tkzMacro{tkz-elements}{tkzDrawPointsOnGraph}}
+
+These macros allow drawing points on the graph of a function defined
+in the module system.
+
+The function must already exist in the module table \texttt{F}.
+
+%--------------------------------------------------------------------
+
+\subsubsection{Macro \tkzMacro{tkz-elements}{tkzDrawPointOnGraph}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+\tkzDrawPointOnGraph[<TikZ options>]{<x>}{<name>}
+\end{verbatim}
+
+\paragraph{Description}
+This macro draws a point belonging to the graph of a real function stored
+in the module \texttt{F}.
+
+The drawn point has coordinates
+\[
+(x,\; f(x)),
+\]
+where \texttt{f} denotes the function object \texttt{F.<name>}.
+
+\paragraph{Arguments}
+\begin{itemize}
+  \item \texttt{<TikZ options>} (optional): graphical options applied to the point
+  \item \texttt{<x>}: abscissa of the point
+  \item \texttt{<name>}: name of the function stored in \texttt{F}
+\end{itemize}
+
+\paragraph{Example}
+\begin{verbatim}
+\tkzDrawPointOnGraph[blue]{4}{fa}
+\end{verbatim}
+
+%--------------------------------------------------------------------
+\subsubsection{Macro \tkzMacro{tkz-elements}{tkzDrawPointsOnGraph}}
+
+\paragraph{Syntax}
+\begin{verbatim}
+\tkzDrawPointsOnGraph[<TikZ options>]{<x1,x2,...,xn>}{<name>}
+\end{verbatim}
+
+\paragraph{Description}
+This macro draws several points belonging to the graph of a real function
+stored in the module \texttt{fct}.
+
+For each value \(x_i\) in the list, a point of coordinates
+\[
+(x_i,\; f(x_i))
+\]
+is computed and drawn.
+
+\paragraph{Arguments}
+\begin{itemize}
+  \item \texttt{<TikZ options>} (optional): graphical options applied to all points
+  \item \texttt{<x1,x2,...,xn>}: comma-separated list of abscissas
+  \item \texttt{<name>}: name of the function stored in \texttt{F}
+\end{itemize}
+
+\paragraph{Example}
+\begin{verbatim}
+\tkzDrawPointsOnGraph[red]{-2,0,2,3,5}{fa}
+\end{verbatim}
+
+\paragraph{Remarks}
+\begin{itemize}
+  \item These macros assume that the function is already defined in the module
+        \texttt{F}.
+  \item All evaluations are performed in Lua.
+  \item The macros are compatible with paths drawn using
+        \texttt{\textbackslash tkzDrawCoordinates}.
+\end{itemize}
+
+\texttt{Example: }
+\begin{tkzexample}[latex=.4\textwidth]
+\directlua{
+  init_elements()
+  F.fa = fct("x*exp(-x^2)+1")
+  PA.curve = F.fa:path(-3, 5, 20)
+}
+\begin{tikzpicture}[gridded]
+  \tkzInit[xmin=-3,xmax=5,ymin=-1,ymax=2]
+  \tkzDrawX\tkzDrawY
+  \tkzDrawCoordinates[smooth,cyan](PA.curve)
+  \tkzDrawPointsOnGraph[red]{-2,0,2,3,5}{fa}
+  \tkzDrawPointOnGraph[blue]{1}{fa}
+\end{tikzpicture}
+\end{tkzexample}
+\endinput

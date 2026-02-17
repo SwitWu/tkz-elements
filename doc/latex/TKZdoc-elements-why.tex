@@ -122,7 +122,7 @@ For instance, suppose \code{T} is a table that associates the triangle object wi
 
 \begin{mybox}
 \begin{verbatim}
- T.excentral     = T.ABC : excentral ()
+ T.excentral = T.ABC:excentral()
 \end{verbatim}
 \end{mybox}
 
@@ -192,11 +192,11 @@ This transformation requires an object as a parameter. The method automatically 
 
 \begin{mybox}{}
 \begin{verbatim}
-  C.apo   = C.ortho : inversion (C.euler)
+  C.apo   = C.ortho:inversion(C.euler)
 \end{verbatim}
 \end{mybox}
 
-Now that all relevant points have been defined, it is time to begin drawing the geometric paths. To do this, the corresponding nodes must first be created. This is precisely the role of the macro \tkzMacro{tkz-elements}{tkzGetNodes} (see Section~\ref{ssub:points_transfer}).
+Now that all relevant points have been defined, it is time to begin drawing the geometric paths. To do this, the corresponding nodes must first be created. This is precisely the role of the macro \tkzMacro{tkz-elements}{tkzGetNodes}.
 
 The subsequent section exclusively deals with drawings, and is managed by \tkzNamePack{tkz-euclide}.
 

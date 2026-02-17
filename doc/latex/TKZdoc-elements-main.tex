@@ -14,7 +14,7 @@
 ]{tkz-doc}
 %\overfullrule=5pt
 \gdef\tkznameofpack{tkz-elements}
-\gdef\tkzversionofpack{4.50c}
+\gdef\tkzversionofpack{5.00c}
 \gdef\tkzdateofpack{\today}
 \gdef\tkznameofdoc{tkz-elements.pdf}
 \let\tkzversionofdoc\tkzversionofpack
@@ -188,19 +188,68 @@
 % end misc
 %<--------------------------------------------------------------------------->
 % Generate a new TOC
-\DeclareNewTOC[%
-   type=overview,
-   listname={Overview}]{stoc}
+%----------------------------------------------------------
+% Mini-TOC "Overview" (stoc) with styled parts
+%----------------------------------------------------------
+%----------------------------------------------------------
+% Mini-TOC "Overview" (stoc) : now includes \part + \section
+%----------------------------------------------------------
+%==========================================================
+% Mini-TOC "Overview" (stoc)
+%==========================================================
 
+\DeclareNewTOC[
+  type=overview,
+  listname={Overview}
+]{stoc}
+
+%----------------------------------------------------------
+% Save original KOMA macros
+%----------------------------------------------------------
+
+\NewCommandCopy{\AddPartTocEntry}{\addparttocentry}
 \NewCommandCopy{\AddSectionTocEntry}{\addsectiontocentry}
-\renewcommand{\addsectiontocentry}[2]{
-   \AddSectionTocEntry{#1}{#2}
-   \addxcontentsline{stoc}{section}[{#1}]{#2}
- }
- \BeforeStartingTOC[stoc]{
-   \DeclareTOCStyleEntry[beforeskip=0pt]{section}{section}
- }
-% end new toc
+
+%----------------------------------------------------------
+% Mirror \part into stoc (+ blank line after)
+%----------------------------------------------------------
+
+\renewcommand{\addparttocentry}[2]{%
+  \AddPartTocEntry{#1}{#2}%
+  \addxcontentsline{stoc}{part}[{#1}]{#2}%
+  \addtocontents{stoc}{\protect\addvspace{\baselineskip}}%
+}
+
+%----------------------------------------------------------
+% Mirror \section into stoc
+%----------------------------------------------------------
+
+\renewcommand{\addsectiontocentry}[2]{%
+  \AddSectionTocEntry{#1}{#2}%
+  \addxcontentsline{stoc}{section}[{#1}]{#2}%
+}
+
+%----------------------------------------------------------
+% Style of the Overview (stoc)
+%----------------------------------------------------------
+
+\BeforeStartingTOC[stoc]{%
+
+  % PART entries — code style
+  \DeclareTOCStyleEntry[
+    beforeskip=.6\baselineskip,
+    entryformat=\ttfamily\bfseries,
+    pagenumberformat=\ttfamily\bfseries,
+    linefill=\hfill
+  ]{part}{part}
+
+  % SECTION entries — compact
+  \DeclareTOCStyleEntry[
+    beforeskip=0pt
+  ]{section}{section}
+}
+%==========================================================
+%--------------------------------------------------------------------------------------------------------------------
 
 \hbadness=10000
 %<--------------------------------------------------------------------------->
@@ -214,7 +263,7 @@
 
 
 \defoffile{
-	This document gathers notes on \tkzNamePack{\tkznameofpack}, an initial version of a \tkzname{Lua} library designed to handle all necessary computations for constructing objects in Euclidean geometry. The document must be compiled with Lua\LATEX.\\
+	This document gathers notes on \tkzNamePack{\tkznameofpack}, a comprehensive \tkzname{Lua} library designed to handle all necessary computations for constructing objects in Euclidean geometry. The document must be compiled with Lua\LATEX.\\
 
 	With \tkzNamePack{tkz-elements}, all definitions and calculations are carried out exclusively in Lua, following an object-oriented programming model. Core geometric entities such as points, lines, triangles, and conics are implemented as object classes.\\
 	Once the computations are complete, graphical rendering is typically handled using \tkzNamePack{tkz-euclide}, although you may also use \TIKZ{} directly if desired.\\
@@ -226,7 +275,7 @@
 
 \vspace*{4em}
 
-\lefthand\ Acknowledgements: I received much valuable advices, remarks, corrections  from \\ \tkzimp{Nicolas Kisselhoff}, \tkzimp{David Carlisle}, \tkzimp{Roberto Giacomelli} and \tkzimp{Qrrbrbirlbel}.\\
+\lefthand\ Acknowledgements: I received much valuable advice, remarks, and corrections  from \\ \tkzimp{Nicolas Kisselhoff}, \tkzimp{David Carlisle}, \tkzimp{Roberto Giacomelli} and \tkzimp{Qrrbrbirlbel}.\\
 Special thanks to \tkzimp{Wolfgang Büchel} for his invaluable contribution in correcting the examples.
 
 \vspace*{1em}
@@ -289,6 +338,8 @@ vector & \hyperref[vector:methods]{see table}   \\
 matrix & \hyperref[matrix:methods]{see table} \\
 angle & \hyperref[angle:methods]{see table}     \\
 list\_point & \hyperref[list_point:methods]{see table}     \\
+fct & \hyperref[fct:methods]{see table}     \\
+pfct & \hyperref[pfct:methods]{see table}     \\
 \end{tabular}
 \section*{Metamethods Overview}
 \begin{tabular}{ll}
@@ -298,13 +349,16 @@ point  & \hyperref[point:methods]{see table}  \\
 occs   & \hyperref[occs:methods]{see table}   \\
 vector & \hyperref[vector:methods]{see table} \\
 matrix & \hyperref[matrix:methods]{see table} \\
-path & \hyperref[path:methods]{see table} \\
+path   & \hyperref[path:methods]{see table} \\
 \end{tabular}
 \clearpage
 \tableofcontents
 
 \clearpage
 \newpage
+
+\part{Geometry Core}
+
 \input{TKZdoc-elements-beginning.tex}
 \input{TKZdoc-elements-structure.tex}
 \input{TKZdoc-elements-why.tex}
@@ -312,6 +366,8 @@ path & \hyperref[path:methods]{see table} \\
 \input{TKZdoc-elements-convention.tex}
 \input{TKZdoc-elements-organization.tex}
 \input{TKZdoc-elements-coordinates.tex}
+\input{TKZdoc-elements-eps.tex}
+\input{TKZdoc-elements-foundations.tex}
 \input{TKZdoc-elements-classes.tex}
 \input{TKZdoc-elements-classes-point.tex}
 \input{TKZdoc-elements-classes-line.tex}
@@ -324,21 +380,35 @@ path & \hyperref[path:methods]{see table} \\
 \input{TKZdoc-elements-classes-rectangle.tex}
 \input{TKZdoc-elements-classes-parallelogram.tex}
 \input{TKZdoc-elements-classes-regular.tex}
+
+\part{Algebra and Tools}
+
 \input{TKZdoc-elements-classes-vectors.tex}
 \input{TKZdoc-elements-classes-matrices.tex}
 \input{TKZdoc-elements-classes-path.tex}
 \input{TKZdoc-elements-classes-list-point.tex}
 \input{TKZdoc-elements-classes-angle.tex}
 \input{TKZdoc-elements-intersection.tex}
-\input{TKZdoc-elements-macros.tex}
 \input{TKZdoc-elements-constants.tex}
 \input{TKZdoc-elements-tkz.tex}
 \input{TKZdoc-elements-utils.tex}
 \input{TKZdoc-elements-maths.tex}
+
+\part{Lua and Integration}
+
+
 \input{TKZdoc-elements-lua.tex}
-\input{TKZdoc-elements-indepthstudy.tex}
 \input{TKZdoc-elements-transfers.tex}
+\input{TKZdoc-elements-macros-transfert.tex}
+\input{TKZdoc-elements-classes-fct.tex}
+\input{TKZdoc-elements-classes-pfct.tex}
 \input{TKZdoc-elements-metapost.tex}
+
+
+\part{Mathematical and Computational Foundations}
+ \input{TKZdoc-elements-CMGE.tex}
+
+
 
 \clearpage\newpage
 \small\printindex

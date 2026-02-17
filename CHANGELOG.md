@@ -1,3 +1,81 @@
+## [2026/02/17 — version 5.00c]
+
+### Docs
+- Major Documentation Restructuring
+- Global Reorganization
+     The documentation is now structured into **four coherent parts**:
+
+     1.  **Geometry Core**
+     2.  **Algebra and Tools**
+     3.  **Lua and Integration**
+     4.  **Mathematical and Computational Foundations**
+
+     This restructuring improves conceptual clarity and clearly separates
+     geometric theory from implementation details.
+
+- New Sections
+     -   Added subsection **"Special Characters and Catcodes"**
+     -   Added new section:
+     -   **Computational Model and Geometric Engine**
+
+### Added
+- **line**
+      -   Added method `where_on_line`.
+-   New Classes
+      -   Added class `fct` (function)
+      -   Added class `pfct` (parametric function)
+      - Standard tables introduced:
+             -   `F` → functions
+             -   `PF` → parametric functions
+      -   Added class `list_point`
+
+### Changed
+-  Unified Geometric Position Model
+     - A major harmonization of geometric relation methods has been introduced.
+- Standardized Return Values
+
+   All geometric position methods now consistently return:
+   -   `"ON"`, `"IN"`, `"OUT"`
+   -   or relation-specific classifications (e.g. `"TANGENT"`,
+       `"DISJOINT"`, etc.)
+   Boolean wrappers remain available for backward compatibility.
+
+- **line** New & Updated Methods
+     -   `line:position(pt)`\ → Returns `"ON"` or `"OUT"`.
+     -   `line:in_out(pt)`\  → Boolean wrapper of `position`.
+     -   `line:path(n)`\  → Parameter `n` is now documented.
+
+- **circle**
+    -  `circle:position(obj)` now accepts **generic objects**:
+    -   Relation names are now consistently uppercase:
+        - `point`      `IN`, `ON`, `OUT`
+        - `line`       `DISJOINT`, `TANGENT`, `INTERSECT`
+        -  `circle`     Extended circle--circle classification
+
+- **Triangle**
+    -  `on_triangle`
+    -   New Attributes
+         -   `alpha_` , `beta_`,  `gamma_`,  `orientation`,  `cross`
+
+- **angle**  Major development and stabilization.
+      -   `value` and `deg` are now **attributes**\ (no longer methods).
+
+- **Path System**
+      -   `path:count()` is now documented.
+      -   `tkzSetCountFromPath` is now documented.
+      -   Improved integration between `list_point` and `path`.
+
+###  New Macros (Graph Support)
+
+- For `fct` and `pfct`:
+
+     -   `\tkzDrawPointOnGraph`
+     -   `\tkzDrawPointsOnGraph`
+     -    `\tkzDrawPointOnParamGraph`
+     -    `\tkzDrawPointsOnParamGraph`
+
+------------------------------------------------------------------------
+
 ## [2026/01/25 — version 4.50c]
 ### Added
 - **angle**
@@ -210,7 +288,7 @@
 - **path**
    - `get(i)` to extract point of path
 - **triangle**
-   - modification class triangle : confused test points, collinearity test
+   - modification class triangle: confused test points, collinearity test
    - remove function triangle:c_ll_p
 - **tkz**
    - `tkz.approx(x, y)`   comparison of two real numbers
@@ -239,7 +317,7 @@
 - **line**
   - `side_line` This method assigns a value of -1, 0, or 1 to a given point depending on its position in the plane relative to the line.
   - `on_line` = `in_out_line`
-  - `on_segment` = `in_out_segment`
+  -   `in_out_segment` = `on_segment`
 ### Changed
 - **circle**
   - `common_tangent` Complete rewriting of the procedure, which now takes into account the position of circles and, above all, adds an option to choose between external tangents and internal tangents when they exist.

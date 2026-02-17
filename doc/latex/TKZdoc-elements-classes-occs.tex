@@ -53,7 +53,7 @@ The new abscissa axis is automatically computed to ensure orthonormality.
   \captionof{table}{Attributes of an \texttt{occs} object.}\label{occs:attributes}
   \begin{tabular}{ll}
     \toprule
-    \textbf{Attribute} & \textbf{Description}  \\
+    \texttt{Attribute} & \textbf{Description}  \\
     \midrule
     \tkzAttr{occs}{type}       & Object type name, always \texttt{"occs"} \\
     \tkzAttr{occs}{origin}     & The new origin point                     \\
@@ -154,12 +154,15 @@ This class provides the following methods:
 \captionof{table}{occs methods.}\label{occs:methods}
 \begin{tabular}{ll}
 \toprule
-\textbf{Methods} & \textbf{Reference}   \\
+\textbf{Methods} & \texttt{Reference}   \\
 \midrule
-\textbf{Creation} &    \\
+\texttt{Constructor} &    \\
 \midrule
-  \tkzMeth{occs}{occs(dir, origin)} & Note\footnote{occs(L, pt) (short form, recommended)};  [\ref{occs:new}; \ref{ssub:example_attributes_of_occs}] \\
-  \tkzMeth{occs}{coordinates(pt)}  & [\ref{occs:coordinates}] \\
+\tkzMeth{occs}{occs(dir, origin)} & Note\footnote{occs(L, pt) (short form, recommended)};  [\ref{occs:new}; \ref{ssub:example_attributes_of_occs}] \\
+\midrule
+\texttt{Methods Returning a Real Number} &    \\
+\midrule
+\tkzMeth{occs}{coordinates(pt)}  & [\ref{occs:coordinates}] \\
 \bottomrule
 \end{tabular}
 \egroup

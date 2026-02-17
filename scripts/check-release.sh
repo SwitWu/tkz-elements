@@ -31,29 +31,37 @@ require_nonempty() {
   fi
 }
 
-# ---------- Extraction ref (date + "version X.YZa") ----------
+# ---------- Extraction ref (date + version) ----------
 extract_ref() {
   [[ -f "$REF_STY" ]] || die "Référence introuvable: $REF_STY"
-  local line date ver_words
+  local line date ver_num ver_words
   line=$(grep -E '\\Provides(Package|ExplPackage)' "$REF_STY" | head -n1 || true)
   require_nonempty "$line" "Impossible de trouver \\Provides... dans: $REF_STY"
 
   if print -r -- "$line" | grep -q "\\ProvidesExplPackage"; then
+    # \ProvidesExplPackage{pkg}{YYYY/MM/DD}{<version>}{desc}
     date=$(print -r -- "$line" | sed -nE 's/.*\{([0-9]{4}\/[0-9]{2}\/[0-9]{2})\}.*/\1/p' | head -n1)
-    ver_words=$(print -r -- "$line" | sed -nE 's/.*\{([Vv]ersion[[:space:]]*[0-9]+\.[0-9]+[a-z]?)\}.*/\1/p' | head -n1)
+    # Extraire la 3e argument { ... } puis prendre uniquement le numéro X.YZa
+    ver_num=$(print -r -- "$line" \
+      | sed -nE 's/^.*\\ProvidesExplPackage\{[^}]*\}\{[^}]*\}\{([^}]*)\}.*$/\1/p' \
+      | head -n1 \
+      | grep -oE '[0-9]+\.[0-9]+[a-z]?' \
+      | head -n1 || true)
   else
     date=$(print -r -- "$line" | sed -nE 's/.*\[([0-9]{4}\/[0-9]{2}\/[0-9]{2}).*/\1/p' | head -n1)
-    ver_words=$(print -r -- "$line" \
+    # \ProvidesPackage{pkg}[YYYY/MM/DD <anything>]
+    # On récupère le contenu [...] puis on prend uniquement le numéro X.YZa (accepte v4.50c, version 4.50c, 4.50c)
+    ver_num=$(print -r -- "$line" \
       | sed -nE 's/.*\[(.*)\].*/\1/p' \
-      | sed -nE 's/.*([Vv]ersion[[:space:]]*[0-9]+\.[0-9]+[a-z]?).*/\1/p' \
-      | head -n1)
+      | grep -oE '[0-9]+\.[0-9]+[a-z]?' \
+      | head -n1 || true)
   fi
 
   require_nonempty "$date" "Date non trouvée dans: $REF_STY"
-  require_nonempty "$ver_words" "Version non trouvée (format «version X.YZa») dans: $REF_STY"
+  require_nonempty "$ver_num" "Version non trouvée (attendu: X.YZa) dans: $REF_STY"
 
-  local ver_num ver_short
-  ver_num="${ver_words#version }"; ver_num="${ver_num#Version }"
+  local ver_short
+  ver_words="version ${ver_num}"
   ver_short="v${ver_num}"
   date="${date//-//}"
 
@@ -68,6 +76,7 @@ check_versions_dates() {
   local ver_words="${rest%%|*}"
   local tail="${rest#*|}"
   local ver_short="${tail%%|*}"
+  local ver_num="${tail#*|}"
 
   print "\n— Vérification date & version —"
   print "Référence   : $date  |  $ver_words  (alt: $ver_short)"
@@ -85,6 +94,8 @@ check_versions_dates() {
       found_ver=1
     elif grep -qi -- "$ver_short" "$f"; then
       found_ver=1
+    elif grep -qi -- "$ver_num" "$f"; then
+      found_ver=1
     fi
 
     if (( found_date && found_ver )); then
@@ -92,7 +103,7 @@ check_versions_dates() {
     else
       ok=0
       (( ! found_date )) && print "  [!!] $f — date manquante: $date"
-      (( ! found_ver  )) && print "  [!!] $f — version manquante: $ver_words (ou $ver_short)"
+      (( ! found_ver  )) && print "  [!!] $f — version manquante: $ver_words (ou $ver_short ou $ver_num)"
     fi
   done
 
@@ -162,7 +173,7 @@ Usage:
 Sans option : vérifie la cohérence date/version ET normalise les permissions.
 
 Réglages :
-  REF_STY      : fichier .sty de référence (date + "version X.YZa")
+  REF_STY      : fichier .sty de référence (date + version X.YZa)
   CHECK_FILES  : fichiers où vérifier date & version
   EXEC_GLOBS   : motifs des scripts autorisés exécutables (0755)
   PRUNE_DIRS   : répertoires exclus du check de permissions (ex: .git)

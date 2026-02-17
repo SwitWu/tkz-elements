@@ -19,16 +19,38 @@ setmetatable(path, {
 	end,
 })
 
+-- function path.__add(p1, p2)
+	-- local result = {}
+	-- for _, pt in ipairs(p1) do
+	-- 	result[#result + 1] = pt
+	-- end
+	-- for _, pt in ipairs(p2) do
+	-- 	result[#result + 1] = pt
+	-- end
+	-- return path:new(result)
+-- end
+
+
 function path.__add(p1, p2)
 	local result = {}
 	for _, pt in ipairs(p1) do
 		result[#result + 1] = pt
 	end
-	for _, pt in ipairs(p2) do
-		result[#result + 1] = pt
+
+	if #p1 > 0 and #p2 > 0 and p1[#p1] == p2[1] then
+		for i = 2, #p2 do
+			result[#result + 1] = p2[i]
+		end
+	else
+		for _, pt in ipairs(p2) do
+			result[#result + 1] = pt
+		end
 	end
+
 	return path:new(result)
 end
+
+
 
 function path.__unm(p)
 	local result = {}
@@ -174,6 +196,7 @@ function path:get_rawpair_list()
 	end
 	return result
 end
+
 function path:count()
 	return #self
 end

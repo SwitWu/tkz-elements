@@ -48,7 +48,7 @@ V.v1 = vector(z.A, z.B)
   \captionof{table}{Vector attributes.}\label{vector:attributes}
   \begin{tabular}{ll}
   \toprule
-  \textbf{Attributes}      & \textbf{Reference}\\
+  \texttt{Attributes}      & \texttt{Reference}\\
   \midrule
   \tkzAttr{vector}{tail}     &  \\
   \tkzAttr{vector}{head}     &  [\ref{ssub:attributes_vector_head}] \\
@@ -214,22 +214,22 @@ This attribute is very useful for working with the \code{\^{}} and \code{..} met
 
 \vspace{1em}
 \bgroup
-  \catcode`_=12
-  \small
-  \captionof{table}{Methods of the class vector.}\label{vector:metamethods}
-  \begin{tabular}{ll}
-  \toprule
-   \textbf{Metamethods} & \textbf{Reference} \\
-   \midrule
-  \tkzMeta{vector}{add(u,v)}   & [\ref{ssub:method_vector_add}]  \\
-  \tkzMeta{vector}{sub(u,v)}   & [\ref{ssub:method_vector_sub}]  \\
-  \tkzMeta{vector}{unm(u)} & [\ref{ssub:method_vector_unm}] \\
-  \tkzMeta{vector}{mul(k,u)}   & [\ref{ssub:method_vector_mul}]        \\
-  \tkzMeta{vector}{pow(k,u)}   & [\ref{ssub:method_vector_det}]        \\
-  \tkzMeta{vector}{concat(k,u)}& [\ref{ssub:method_vector_dot}]        \\
-  \bottomrule
-    \end{tabular}
-  \egroup
+\catcode`_=12
+\small
+\captionof{table}{Methods of the class vector.}\label{vector:metamethods}
+\begin{tabular}{ll}
+\toprule
+\texttt{Metamethods} & \texttt{Reference} \\
+\midrule
+\tkzMeta{vector}{add(u,v)}   & [\ref{ssub:method_vector_add}]  \\
+\tkzMeta{vector}{sub(u,v)}   & [\ref{ssub:method_vector_sub}]  \\
+\tkzMeta{vector}{unm(u)}     & [\ref{ssub:method_vector_unm}] \\
+\tkzMeta{vector}{mul(k,u)}   & [\ref{ssub:method_vector_mul}]        \\
+\tkzMeta{vector}{pow(k,u)}   & [\ref{ssub:method_vector_det}]        \\
+\tkzMeta{vector}{concat(k,u)}& [\ref{ssub:method_vector_dot}]        \\
+\bottomrule
+  \end{tabular}
+\egroup
 
 
 
@@ -251,7 +251,7 @@ z.C  = point(3, 2)
 z.D  = point(4, 1)
 V.AB = vector(z.A, z.B)
 V.CD = vector(z.C, z.D)
-V.AE = V.AB + V.CD  % possible V.AB : add (V.CD)
+V.AE = V.AB + V.CD  % possible V.AB:add(V.CD)
 z.E  = V.AE.head % we recover the final point (head)
 \end{verbatim}
 
@@ -372,7 +372,7 @@ Instead of the power, which wouldn't make sense here, we're talking about the de
 then |V.u ^ V.v = xa * yb -  xb * ya|
 \end{mybox}
 
-remark : |u ^ v = u.norm * v.norm * sin(u,v)|
+remark: |u ^ v = u.norm * v.norm * sin(u,v)|
 
 \subsubsection{Method \tkzMeth{vector}{..}}
 \label{ssub:method_vector_dot}
@@ -384,7 +384,7 @@ Instead of the concatenation, which wouldn't make sense here, we're talking abou
 then |V.u .. V.v = xa * xb +  ya * yb|
 \end{mybox}
 
-remark : |V.u .. V.v = V.u.norm * V.v.norm * cos(V.u,V.v)|
+remark: |V.u .. V.v = V.u.norm * V.v.norm * cos(V.u,V.v)|
 
 
 We're going to use the two last methods . We can determine the cosine and sine of the angle using the dot product and determinant expressed in the direct orthonormal frame used by the package.
@@ -445,34 +445,60 @@ The code required to display the angle measurement is as follows:
   The main methods provided by the \tkzClass{vector} class are summarised below.
 
 \medskip
- \bgroup
- \catcode`_=12
- \small
- \captionof{table}{Methods of the class vector.}\label{vector:methods}
- \begin{tabular}{ll}
- \toprule
-   \textbf{Methods} & \textbf{Reference} \\
-   \midrule
-  \tkzMeth{vector}{new(pt, pt)}    & Note\footnote{vector(pt, pt) (short form, recommended)}; \ref{sub:creating_a_vector}                                        \\
-  \tkzMeth{vector}{is\_zero([EPS])} & \\
-  \tkzMeth{vector}{is\_parallel(v,[EPS])} & \\
-  \tkzMeth{vector}{is\_orthogonal(v,[EPS])} & \\
-  \tkzMeth{vector}{get()}   & \\
-  \tkzMeth{vector}{add(v)}      & \\
-  \tkzMeth{vector}{scale(d)}    & \\
-  \tkzMeth{vector}{dot(v)}      &\\
-   \tkzMeth{vector}{cross(v)}    &\\
-  \tkzMeth{vector}{normalize()}   & [\ref{ssub:method_vector_normalize}]     \\
-   \tkzMeth{vector}{angle\_to(v)} & \\
-  \tkzMeth{vector}{at (pt)}         & [\ref{ssub:method_vector_at}]            \\
-  \tkzMeth{vector}{rotate(\tkzVar{$\theta$})} & \\
-  \tkzMeth{vector}{orthogonal([side],[length])} & \\
-  \bottomrule
-  \end{tabular}
+\bgroup
+\catcode`_=12
+\small
+\captionof{table}{Methods of the class vector.}\label{vector:methods}
+\begin{tabular}{ll}
+\toprule
+\texttt{Methods} & \texttt{Reference} \\
+\midrule
+\texttt{Constructor} & \\
+\midrule
+\tkzMeth{vector}{new(pt, pt)} & Note\footnote{vector(pt, pt) (short form, recommended)}; \ref{sub:creating_a_vector} \\
+\midrule
+\texttt{Methods Returning a Boolean} & \\
+\midrule
+\tkzMeth{vector}{is\_zero([EPS])} & \\
+\tkzMeth{vector}{is\_parallel(v,[EPS])} & \\
+\tkzMeth{vector}{is\_orthogonal(v,[EPS])} & \\
+\midrule
+\texttt{Methods Returning a Point} & \\
+\midrule
+\tkzMeth{vector}{get()}   & \\
+\midrule
+\texttt{Methods Returning a Vector} & \\
+\tkzMeth{vector}{add(v)}        & \\
+\tkzMeth{vector}{scale(d)}      & \\
+\tkzMeth{vector}{dot(v)}        &\\
+\tkzMeth{vector}{cross(v)}      &\\
+\tkzMeth{vector}{normalize()}   & [\ref{ssub:method_vector_normalize}]     \\
+\tkzMeth{vector}{angle\_to(v)}  & \\
+\tkzMeth{vector}{at (pt)}       & [\ref{ssub:method_vector_at}]            \\
+\tkzMeth{vector}{rotate(\tkzVar{$\theta$})} & \\
+\tkzMeth{vector}{orthogonal([side],[length])} & \\
+\bottomrule
+\end{tabular}
 \egroup
 
 
-\subsection{Example of methods}
+\subsection{Returns a boolean}
+
+\subsubsection{Predicates: \tkzMeth{vector}{is\_zero}, \tkzMeth{vector}{is\_parallel}, \tkzMeth{vector}{is\_orthogonal}}
+
+\begin{verbatim}
+if V:is_zero() then ... end
+if V:is_parallel(W) then ... end
+if V:is_orthogonal(W) then ... end
+\end{verbatim}
+
+These methods test basic geometric relations between vectors, using an optional
+tolerance \tkzVar{EPS}, which defaults to \tkzVar{tkz.epsilon}. They are convenient
+when deciding whether two directions should be treated as parallel or orthogonal
+in numerical computations.
+
+\subsection{Returns a vector}
+
 
 \subsubsection{Method \tkzMeth{vector}{normalize()}}
 \label{ssub:method_vector_normalize}
@@ -555,17 +581,5 @@ with the same tail:
 \end{tkzexample}
 
 
-\subsubsection{Predicates: \tkzMeth{vector}{is\_zero}, \tkzMeth{vector}{is\_parallel}, \tkzMeth{vector}{is\_orthogonal}}
-
-\begin{verbatim}
-if V:is_zero() then ... end
-if V:is_parallel(W) then ... end
-if V:is_orthogonal(W) then ... end
-\end{verbatim}
-
-These methods test basic geometric relations between vectors, using an optional
-tolerance \tkzVar{EPS}, which defaults to \tkzVar{tkz.epsilon}. They are convenient
-when deciding whether two directions should be treated as parallel or orthogonal
-in numerical computations.
 
 \endinput

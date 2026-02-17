@@ -5,7 +5,7 @@ The variable \tkzVar{line}{L} holds a table used to store line objects. It is op
 However, for consistency and readability, it is recommended to use \tkzVar{line}{L}. The function \tkzFct{tkz-elements}{init\_elements()} reinitializes this table automatically.
 
 
-\subsection{Creating a Line}
+\subsection{Creating a line}
 \label{sub:creating_a_line}
 
 To define a line passing through two known points, use the following constructor:
@@ -37,7 +37,7 @@ A line object provides access to the following attributes:
   \captionof{table}{Line attributes.}\label{line:attributes}
   \begin{tabular}{lll}
   \toprule
-  \textbf{Attribute}   & \textbf{Meaning} & \textbf{Reference}\\
+  \texttt{Attribute}   & \textbf{Meaning} & \texttt{Reference}\\
   \midrule
   \tkzAttr{line}{type} & Always \code{"line"}           &           \\
   \tkzAttr{line}{pa}   & First point (e.g., \code{z.A})   &           \\
@@ -75,7 +75,7 @@ A line object provides access to the following attributes:
   sl = L.ab.slope
   len = L.ab.length}
 \begin{center}
-\begin{tikzpicture}[scale = .5 ]
+\begin{tikzpicture}[scale = .5]
    \tkzGetNodes
    \tkzDrawPoints(a,b,m,e,r,s,w)
    \tkzLabelPoints(a,b)
@@ -128,79 +128,62 @@ Here's the list of methods for the \tkzNameObj{line} object. The results can be 
 \captionof{table}{Methods of the class line.(part 1)}\label{line:methods part 1}
 \begin{tabular}{ll}
 \toprule
-\textbf{Methods} & \textbf{Reference}  \\
+\texttt{Methods} & \texttt{Reference}  \\
 \midrule
 
-\textbf{Constructor} & \\
+\texttt{Constructor} & \\
 \tkzMeth{line}{new(pt, pt)} &Note\footnote{line(pt, pt) (short form, recommended)}; [\ref{sub:creating_a_line}; \ref{ssub:method_line_new_pt_pt}] \\
 
 \midrule
-
-\textbf{Real-valued Methods} & \\
+\texttt{Methods Returning a Real Number} & \\
 \midrule
 \tkzMeth{line}{distance(pt)}  &  [\ref{ssub:method_line_distance}] \\
 \midrule
 
-\textbf{Boolean Methods} & \\
-\midrule
-\tkzMeth{line}{in\_out(pt)}  & [\ref{ssub:method_in_out};\ref{ssub:in_out_for_a_line}] \\
-\tkzMeth{line}{in\_out\_segment(pt)} & [\ref{ssub:method_line_in_out_segment} \\
-\tkzMeth{line}{on\_line(pt)}  & idem \\
-\tkzMeth{line}{on\_segment(pt)} & idem \\
+\texttt{Methods Returning a Boolean} & \\
+
+\tkzMeth{line}{on\_line(pt)}  & [\ref{ssub:method_on_line}] \\
+\tkzMeth{line}{on\_segment(pt)} & [\ref{ssub:method_on_segment}] \\
 \tkzMeth{line}{is\_parallel(L)}  & [\ref{ssub:method_line_is_parallel}]  \\
 \tkzMeth{line}{is\_orthogonal(L)}  & [\ref{ssub:method_line_is_orthogonal}] \\
 \tkzMeth{line}{is\_equidistant(pt)}  & [\ref{ssub:method_line_is_equidistant}]\\
 \midrule
 
-\textbf{Points Methods} & \\
+\texttt{Methods Returning a String} & \\
 \midrule
-\tkzMeth{line}{get(n)}     & [\ref{ssub:method_line_get}] \\
-\tkzMeth{line}{random()}     & [  \ref{ssub:method_line_random}] \\
-\tkzMeth{line}{gold\_ratio()}  &  [\ref{ssub:methode_imeth_line_gold__ratio}; \ref{sub:the_figure_pappus_circle}  ]  \\
 
-\tkzMeth{line}{normalize()}  &  [ \ref{ssub:normalize}]  \\
-\tkzMeth{line}{normalize\_inv()}  & [\ref{ssub:normalize}]\\
-\tkzMeth{line}{barycenter(r,r)}    &   [\ref{ssub:barycenter_with_a_line}] \\
-\tkzMeth{line}{point(r)}   &   [\ref{ssub:method_point}] \\
-\tkzMeth{line}{midpoint()}    & [\ref{ssub:method_line_midpoint}]  \\
-\tkzMeth{line}{harmonic\_int(pt)}   &  [\ref{ssub:method_line_harmonic_int}] \\
-\tkzMeth{line}{harmonic\_ext(pt)}  & [\ref{ssub:method_line_harmonic_ext}] \\
-\tkzMeth{line}{harmonic\_both(r)}  & [\ref{ssub:harmonic_both}] \\
-\tkzMeth{line}{harmonic(mode, pt)}  & [\ref{ssub:harmonic}] \\
-\tkzMeth{line}{report(d,pt)}    &[\ref{ssub:method_report}]\\
-\tkzMeth{line}{collinear\_at(pt,k)}  & [ex. \ref{ssub:method_line_collinear__at}]\\
-  \midrule
+\tkzMeth{line}{position(pt)}  & [\ref{ssub:method_line_position}] \\
+\tkzMeth{line}{position\_segment(pt)} & [\ref{ssub:method_line_position_segment} \\
+\tkzMeth{line}{where\_on\_line(pt)}  &  [\ref{ssub:method_line_where_on_line}] \\
+\midrule
 
-    \textbf{Line Constructors} & \\
-  \midrule
+\texttt{Methods Returning a Point} & \\
+\midrule
+\tkzMeth{line}{get(n)}       & [\ref{ssub:method_line_get}] \\
+\tkzMeth{line}{random()}     & [\ref{ssub:method_line_random}] \\
+\tkzMeth{line}{gold\_ratio()}&  [\ref{ssub:methode_imeth_line_gold__ratio}; \ref{sub:the_figure_pappus_circle}]  \\
 
-\tkzMeth{line}{ll\_from(pt)}  & [\ref{ssub_line_from_a_defined_line}] \\
+\tkzMeth{line}{normalize()}        & [\ref{ssub:normalize}]\\
+\tkzMeth{line}{normalize\_inv()}   & [\ref{ssub:normalize}]\\
+\tkzMeth{line}{barycenter(r,r)}    & [\ref{ssub:barycenter_with_a_line}]\\
+\tkzMeth{line}{point(r)}           & [\ref{ssub:method_point}]\\
+\tkzMeth{line}{midpoint()}         & [\ref{ssub:method_line_midpoint}]\\
+\tkzMeth{line}{harmonic\_int(pt)}  & [\ref{ssub:method_line_harmonic_int}]\\
+\tkzMeth{line}{harmonic\_ext(pt)}  & [\ref{ssub:method_line_harmonic_ext}]\\
+\tkzMeth{line}{harmonic\_both(r)}  & [\ref{ssub:harmonic_both}]\\
+\tkzMeth{line}{harmonic(mode, pt)} & [\ref{ssub:harmonic}]\\
+\tkzMeth{line}{report(d,pt)}       & [\ref{ssub:method_report}]\\
+\tkzMeth{line}{collinear\_at(pt,k)}& [ex. \ref{ssub:method_line_collinear__at}]\\
+\midrule
+
+\texttt{Methods Returning a Line} & \\
+\midrule
+\tkzMeth{line}{ll\_from(pt)}    & [\ref{ssub_line_from_a_defined_line}] \\
 \tkzMeth{line}{ortho\_from(pt)} & [\ref{ssubline_ortho_from}] \\
-\tkzMeth{line}{mediator()} & Note  Note\footnote{You may use \tkzMeth{perpendicular\_bisector} as a synonym.} ; [\ref{ssub:method_line_mediator}]\\
-
+\tkzMeth{line}{mediator()}     & Note\footnote{You may use \tkzMeth{perpendicular\_bisector} as a synonym.} ; [\ref{ssub:method_line_mediator}]\\
 \tkzMeth{line}{swap\_line()}  & [\ref{ssub:method_line_swap__line} ; \ref{ssub:intersection_line_parabola_explained}] \\
 
 \tkzMeth{line}{orthogonal\_at()} & \ref{ssub:method_line_orthogonal__at} \\
-  \midrule
-
-\textbf{Triangle Constructors} & \\
-\midrule
-\tkzMeth{line}{equilateral(<'swap'>)}    &  Note\footnote{By default, triangles are oriented positively (counter-clockwise). Use \code{"swap"} for clockwise orientation.};  [\ref{ssub:method_line_equilateral};  \ref{ssub:object_rotation}]  \\
-
-\tkzMeth{line}{isosceles(d,<'swap'>)}& [\ref{ssub:method_line_isosceles}]\\
-
-\tkzMeth{line}{two\_angles(an,an)} &Note \footnote{The given side is between the two angles} [\ref{ssub:triangle_with_two__angles}] \\
-
-\tkzMeth{line}{school(<'swap'>)}   &[\ref{ssub:method_imeth_line_school_swap}] \\
-
-\tkzMeth{line}{half(<'swap'>)}      & [\ref{ssub:method_imeth_line_half_swap}]\\
-
-\tkzMeth{line}{s\_s(r,r<,'swap'>)}  &  [\ref{ssub:triangle_with_three_given_sides}] \\
-
-\tkzMeth{line}{sa\_(r,an<,'swap'>)}  &  [\ref{ssub:_line_sas_d_an}]  \\
-\tkzMeth{line}{\_as(r,an<,'swap'>)}  &  [\ref{ssub:_line__as_d_an_swap}]  \\
-\tkzMeth{line}{a\_s(r,an<,'swap'>)}  &  [\ref{ssub:_line_a__s_d_an_swap}]\\
-\tkzMeth{line}{s\_a(r,an<,'swap'>)}  &  [\ref{ssub:_line_sa}]\\
 \bottomrule
 \end{tabular}
 \egroup
@@ -213,41 +196,51 @@ Here's the list of methods for the \tkzNameObj{line} object. The results can be 
 \captionof{table}{Methods of the class line.(part 2)}\label{line:methods part 2}
 \begin{tabular}{lll}
 \toprule
-\textbf{Methods} & \textbf{Reference} & \\
+\texttt{Methods} & \texttt{Reference} & \\
 \midrule
-\textbf{Sacred triangles Constructors}&\\
+\texttt{Methods Returning a Triangle} & \\
+\midrule
+\tkzMeth{line}{equilateral(<'swap'>)}    &  Note\footnote{By default, triangles are oriented positively (counter-clockwise). Use \code{"swap"} for clockwise orientation.};  [\ref{ssub:method_line_equilateral};  \ref{ssub:object_rotation}]  \\
+
+\tkzMeth{line}{isosceles(d,<'swap'>)}& [\ref{ssub:method_line_isosceles}]\\
+
+\tkzMeth{line}{two\_angles(an,an)} &Note \footnote{The given side is between the two angles} [\ref{ssub:triangle_with_two__angles}] \\
+\tkzMeth{line}{school(<'swap'>)}     & [\ref{ssub:method_imeth_line_school_swap}] \\
+\tkzMeth{line}{half(<'swap'>)}       & [\ref{ssub:method_imeth_line_half_swap}]\\
+\tkzMeth{line}{s\_s(r,r<,'swap'>)}   & [\ref{ssub:triangle_with_three_given_sides}] \\
+\tkzMeth{line}{sa\_(r,an<,'swap'>)}  & [\ref{ssub:_line_sas_d_an}]  \\
+\tkzMeth{line}{\_as(r,an<,'swap'>)}  & [\ref{ssub:_line__as_d_an_swap}]  \\
+\tkzMeth{line}{a\_s(r,an<,'swap'>)}  & [\ref{ssub:_line_a__s_d_an_swap}]\\
+\tkzMeth{line}{s\_a(r,an<,'swap'>)}  & [\ref{ssub:_line_sa}]\\
+\midrule
+\texttt{Methods Returning a Sacred Triangle}&\\
 \midrule
 \tkzMeth{line}{gold(<'swap'>)}   &  [\ref{ssub:method_line_gold}] \\
-    \tkzMeth{line}{golden(<'swap'>)}  & or sublime [\ref{ssub:method_line_golden}] \\
-\tkzMeth{line}{golden\_gnomon(<'swap'>)}  &    [\ref{ssub:method_line_golden__gnomon}] \\
-
+\tkzMeth{line}{golden(<'swap'>)}  & or sublime [\ref{ssub:method_line_golden}] \\
+\tkzMeth{line}{golden\_gnomon(<'swap'>)} & [\ref{ssub:method_line_golden__gnomon}] \\
 \tkzMeth{line}{pythagoras(<'swap'>)} & or egyptian [\ref{ssub:_line_egyptian}] \\
-
 \midrule
-\textbf{Circles Constructors} &\\
+\texttt{Methods Returning a Circle} &\\
 \midrule
-
 \tkzMeth{line}{circle()}  &  \\
 \tkzMeth{line}{apollonius(r)}  &  [\ref{ssub:apollonius_circle_ma_mb_k}] \\
 \tkzMeth{line}{LPP} & or c\_l\_pp(pt, pt) [\ref{ssub:c_l_pp}]  \\
 \tkzMeth{line}{LLP} & or c\_ll\_p(L, pt) [\ref{ssub:method_c__ll__p}]  \\
 \tkzMeth{line}{LLL(L, L)} & [\ref{ssub:method_LLL}]  \\
-
 \midrule
-\textbf{Squares Constructors}&\\
+\texttt{Methods Returning a Square}&\\
 \midrule
 \tkzMeth{line}{square()}  &  Note \footnote{ |_,_,z.C,z.D = S.AB:get()|}; [\ref{ssub:object_rotation}] \\
 \midrule
-\textbf{Transformations} &\\
+\texttt{Methods Returning a Object} &\\
 \midrule
 \tkzMeth{line}{reflection(obj)}  &  [\ref{ssub:reflection_of_object}] \\
 \tkzMeth{line}{translation(obj)} & [\ref{ssub:example_translation}] \\
 \tkzMeth{line}{projection(obj)}  &  [\ref{ssub:example_projection_of_several_points}]\\
-
 \tkzMeth{line}{projection\_ll(L, pts)}  & [\ref{ssub:method_line_projection__ll}] \\
 \tkzMeth{line}{affinity\_ll(L, k, pts)}  &  [\ref{ssub:method_line_affinity}] \\
 
-\textbf{Path} &\\
+\texttt{Methods Returning a Path} &\\
 \midrule
 \tkzMeth{line}{path(n)}  &  [\ref{ssub:line_path}] \\
 \bottomrule
@@ -276,7 +269,7 @@ It is preferable to use syntax such as \code{L.xx} and it's also preferable to u
 \end{center}
 \end{tkzexample}
 
-\subsection{The result is a number}
+\subsection{Returns a real number}
 
 Only one method in this category
 
@@ -312,14 +305,21 @@ This method gives the distance from a point to a straight line.
 \end{center}
 \end{tkzexample}
 
-\subsection{The result is a boolean}
+\subsection{Returns a boolean}
 
 
 
-\subsubsection{Method \tkzMeth{line}{in\_out(pt)}} %(fold)
-\label{ssub:method_in_out}
+ \subsubsection{Method \tkzMeth{line}{on\_line(pt)}} %(fold)
+\label{ssub:method_on_line}
+%
+This method is a boolean wrapper of \tkzMeth{line}{position(pt)}.
 
-This method shows whether a point belongs to a straight line. The method can be called with |L:on_line(pt)|
+It returns \code{true} if the point lies on the line and \code{false} otherwise.
+
+The method can also be called using \code{L:on\_line(pt)}.
+
+\texttt{Note: }
+This method is kept for backward compatibility.
 
 \vspace{1em}
 
@@ -327,7 +327,7 @@ This method shows whether a point belongs to a straight line. The method can be 
 \directlua{
   init_elements()
   local  function calc_distance(L, p)
-    if L:in_out(p) then
+    if L:on_line(p) then
       return point.abs(p - L.pa) / L.length
     else
       return 0
@@ -352,10 +352,28 @@ This method shows whether a point belongs to a straight line. The method can be 
 \end{center}
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{line}{in\_out\_segment(pt)}} %(fold)
-\label{ssub:method_line_in_out_segment}
 
-Variant of the previous method; indicates whether a point is on or off a segment. Possible |on_segment(pt)|.
+
+%
+\subsubsection{Method \tkzMeth{line}{on\_segment(pt)}} %(fold)
+\label{ssub:method_on_segment}
+
+Variant of the previous method; indicates whether a point is on or off a segment.
+
+
+Boolean wrapper of \tkzMeth{line}{position\_segment(pt)}.
+
+\texttt{Returns: } \code{true} if \tkzMeth{line}{position\_segment(pt)} returns \code{"ON"},
+and \code{false} otherwise.
+
+\texttt{Note: } Kept for backward compatibility.
+
+\texttt{Returns: }
+
+\begin{itemize}
+  \item \code{true} if the point lies on the segment $[pa,pb]$,
+  \item \code{false} otherwise.
+\end{itemize}
 
 \vspace{1em}
 
@@ -363,10 +381,10 @@ Variant of the previous method; indicates whether a point is on or off a segment
 \directlua{
   init_elements()
   local  function inseg(L, p)
-    if L:in_out_segment(p) then
-      return "in"
+    if L:on_segment(p) then
+      return "IN"
     else
-      return "out"
+      return "OUT"
     end
   end
   z.A = point(0, 0)
@@ -476,8 +494,93 @@ Is a point equidistant from the two points that define the line?
 \end{center}
 \end{tkzexample}
 
-\subsection{The result is a point}
+\subsection{Returns a string}
 
+\subsubsection{Method \tkzMeth{line}{position(obj[,EPS])}}
+\label{ssub:method_line_position}
+
+This method classifies the relative position between the current line and another object.
+The returned value is a \emph{symbolic string} whose meaning depends on the type of \code{obj}.
+All tests are performed with a numerical tolerance.
+
+\medskip
+\textbf{Arguments:}
+\begin{itemize}
+  \item \code{obj}: a \tkzClass{point}, \tkzClass{line}, or \tkzClass{circle};
+  \item \code{EPS} (optional): numerical tolerance. If omitted, \code{tkz.epsilon} is used.
+\end{itemize}
+
+\medskip
+\textbf{Returns:}
+\begin{itemize}
+  \item If \code{obj} is a \tkzClass{point}: returns \code{"ON"} if the point lies on the line (within tolerance),
+        otherwise \code{"OUT"}.
+  \item If \code{obj} is a \tkzClass{line}: returns the result of \code{line\_line\_position\_(self,obj,EPS)}.
+  \item If \code{obj} is a \tkzClass{circle}: returns the result of \code{line\_circle\_position\_(self,obj,EPS)}.
+\end{itemize}
+
+\medskip
+\textbf{Note:}
+The method is a dispatcher based on \code{getmetatable(obj)} and uses \code{tkz.epsilon} by default.
+
+
+\subsubsection{Method \tkzMeth{line}{position\_segment(pt)}}
+\label{ssub:method_line_position_segment}
+
+This method determines the position of a point relative to the segment
+$[pa,pb]$ defined by the line object.
+
+\texttt{Arguments: } \code{pt}: a point.
+
+\texttt{Returns: }
+\begin{itemize}
+  \item \code{"ON"} if the point lies on the segment (within tolerance),
+  \item \code{"OUT"} otherwise.
+\end{itemize}
+
+\texttt{Note: } The method uses the numerical tolerance \code{tkz.epsilon}.
+
+
+\subsubsection{Method \tkzMeth{line}{where\_on\_line(pt)}}
+\label{ssub:method_line_where_on_line}
+
+This method determines the \emph{oriented position} of a point \code{pt} along a line,
+considered as oriented from its first defining point \code{pa} to its second one
+\code{pb}.
+
+\medskip
+
+The method assumes that the line is oriented from \code{pa} to \code{pb}.
+It first checks whether the point lies on the line (within a tolerance).
+If this is not the case, the method returns \code{nil}.
+
+
+\medskip
+
+\paragraph{Arguments.}
+\begin{itemize}
+  \item \code{pt}: a point.
+\end{itemize}
+
+\paragraph{Returns.}
+\begin{itemize}
+  \item \code{"BEFORE"} if \code{pt} lies on the line \emph{before} \code{pa};
+  \item \code{"BETWEEN"} if \code{pt} lies on the segment $[pa,pb]$ (i.e.\ between \code{pa} and \code{pb});
+  \item \code{"AFTER"} if \code{pt} lies on the line \emph{after} \code{pb};
+  \item \code{nil} if \code{pt} does not lie on the line.
+\end{itemize}
+
+\paragraph{Notes.}
+\begin{itemize}
+  \item Reversing the order of the defining points \code{pa} and \code{pb}
+  reverses the meaning of ``BEFORE'' and ``AFTER''.
+  \item The method uses a numerical tolerance \code{tkz.epsilon}.
+\end{itemize}
+
+
+
+
+\subsection{Returns a point}
 
 
 \subsubsection{Method \tkzMeth{line}{get()}}
@@ -550,7 +653,7 @@ It generalizes the idea of “reporting a length” on a line segment. Depending
 
 \texttt{Alias: } The synonym \code{point\_at\_distance} is provided for readability, especially when the geometrical intent is to “locate a point at a given distance along a direction”.
 
-\texttt{Returned value :}
+\texttt{Returned value: }
 A new \tkzname{point} object corresponding to the computed location.
 
 
@@ -953,7 +1056,7 @@ The method returns a point belonging to the segment.
 
 
 %%================================
-\subsection{The result is a line}
+\subsection{Returns a line}
 %%================================
 
 \subsubsection{Method \tkzMeth{line}{ll\_from(pt)}} %(fold)
@@ -1208,7 +1311,7 @@ This is particularly relevant when direction-sensitive operations (e.g., project
 \end{tikzpicture}
 \end{tkzexample}
 
-\subsection{The result is a triangle}
+\subsection{Returns a triangle}
 
 \subsubsection{Method \tkzMeth{line}{equilateral(<'swap'>)}}
 \label{ssub:method_line_equilateral}
@@ -1621,7 +1724,7 @@ When two triangles are possible, the method returns the one with the larger angl
 \egroup
 \end{center}
 
-\subsection{The result is a sacred triangle}
+\subsection{Returns a sacred triangle}
 
 The names attributed to these triangles are traditional or symbolic and may differ from those used in standard mathematical literature.
 
@@ -1840,7 +1943,7 @@ It is one of the most fundamental triangles in Euclidean geometry and appears in
 \end{tkzexample}
 \end{minipage}
 
-\subsection{The result is a circle}
+\subsection{Returns a circle}
 
 
 
@@ -1939,7 +2042,7 @@ This method is presented in the document \tkzname{Euclidean Geometry} presented 
   L.SI = tkz.bisector(z.S, z.A, z.D)
   z.P = L.SI:point(-1)
   local centers,
-   throughs, n = L.AB:LLP(L.CD, z.P)
+  throughs, n = L.AB:LLP(L.CD, z.P)
   tkz.nodes_from_paths(centers, throughs)
 }
 \begin{center}
@@ -1967,9 +2070,9 @@ This method is presented in the document \tkzname{Euclidean Geometry} presented 
   z.B = point(6, 0)
   z.C = point(4.5, 6)
   T.ABC = triangle(z.A, z.B, z.C)
-  L.AB = line(z.A,z.B)
-  L.AC = line(z.A,z.C)
-  L.med = L.AB : mediator ()
+  L.AB = line(z.A, z.B)
+  L.AC = line(z.A, z.C)
+  L.med = L.AB:mediator ()
   z.M = L.AB.mid
   z.x, z.y = get_points(L.med)
   z.H = L.AB:projection(z.C)
@@ -2261,16 +2364,16 @@ The method returns the reflected object across the line. Support for additional 
 \end{center}
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{line}{path}: Creating a path}
+\subsubsection{Method \tkzMeth{line}{path(n)}: Creating a path}
 \label{ssub:line_path}
 
-A line object can be sampled into a sequence of two points using the method \tkzMeth{line}{path}. This is typically used to create TikZ-compatible paths or intermediate constructions. This \tkzname{path}
+A line object can be sampled into a sequence of two points using the method \tkzMeth{line}{path(n)}. $n$ indicates the number of segments between the two ends of the segment. This is typically used to create TikZ-compatible paths or intermediate constructions. This \tkzname{path}
 exists mainly for compatibility and association with other \tkzname{paths}.
 \medskip
 
 \texttt{Note: }
 
-By default, only the two endpoints are used to define the path. This is suitable for filling or clipping regions. For smooth curves, a larger number of subdivisions is recommended.
+By default, only the two endpoints are used to define the path, c'est à dire $n = 1$. This is suitable for filling or clipping regions. For smooth curves, a larger number of subdivisions is recommended.
 
 \medskip
 
@@ -2289,7 +2392,29 @@ You can then draw the path using:
 \end{verbatim}
 \end{mybox}
 
+or draw the points with
+
+\begin{mybox}
+\begin{verbatim}
+\tkzDrawPointsFromPath[red,size=2](PA.line)
+\end{verbatim}
+\end{mybox}
+
 \texttt{Examples}
+Three points and four intervals !
+
+\begin{tkzexample}[latex = .5\textwidth]
+\directlua{
+ z.A = point(0, 0)
+ z.B = point(6, 4)
+ L.AB = line(z.A, z.B)
+ PA.AB = L.AB:path(3)
+ }
+\begin{tikzpicture}
+\tkzDrawCoordinates[blue](PA.AB)
+\tkzDrawPointsFromPath[red,size=2](PA.AB)
+\end{tikzpicture}
+\end{tkzexample}
 
 Given three points, let's look at how, using the \tkzname{path} method, we can draw the triangle defined by these three points. In this case, only the two ends of each side are required:
 

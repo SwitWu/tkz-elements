@@ -4,7 +4,7 @@
 The \tkzVar{circle}{C} variable is a table reserved for storing circle objects. Although its use is optional and any valid variable name may be used (e.g., \code{Circles}), it is strongly recommended to adopt the standard name \texttt{C} to ensure consistency and readability. If a custom variable is used, it must be initialized manually. The \tkzFct{tkz-elements}{init\_elements()} function will reset the \texttt{circle}{C} table if it has already been defined.
 
 
-\subsubsection{Creating a Circle}
+\subsubsection{Creating a circle}
 \label{ssub:creating_a_circle}
 A circle is defined by two points:
 \begin{itemize}
@@ -31,7 +31,7 @@ A circle object stores various geometric attributes that can be accessed for fur
   \captionof{table}{Circle attributes.}\label{circle:attributes}
   \begin{tabular}{ll}
   \toprule
-  \textbf{Attributes}         & \textbf{Meaning / Reference}                \\
+  \texttt{Attributes}         & \texttt{Reference}                \\
   \midrule
   \tkzAttr{circle}{type}      &  Type of circle, always "circle"            \\
   \tkzAttr{circle}{center}    &  Center of the circle                       \\
@@ -137,120 +137,106 @@ The circle class offers a wide range of methods, which can be grouped according 
 \vspace{1em}
 
 \bgroup
-  \small
-  \captionof{table}{Circle methods.}\label{circle:methods}
-  \begin{tabular}{ll}
-  \toprule
-  \textbf{Methods} & \textbf{Reference}   \\
-  \midrule
-  \textbf{Creation} &    \\
-  \midrule
-  \tkzFct{circle}{new(O,A)} & Note\footnote{circle(pt, pt) (short form, recommended)}; [\ref{ssub:method_circle_new}; \ref{ssub:creating_a_circle}]\\
-  \tkzFct{circle}{radius(O,r)} & Deprecated; See  [\ref{ssub:method_circle_radius}]\\
-  \tkzFct{circle}{diameter(A,B)} & Deprecated; See  [\ref{ssub:method_circle_diameter}]  \\
-  \midrule
-   \textbf{Reals} &\\
-  \midrule
+\small
+\captionof{table}{Circle methods.}\label{circle:methods}
+\begin{tabular}{ll}
+\toprule
+\texttt{Methods} & \texttt{Reference}   \\
+\midrule
+\texttt{Constructor} & \\
+\midrule
+\tkzFct{circle}{new(O,A)} & Note\footnote{circle(pt, pt) (short form, recommended)}; [\ref{ssub:method_circle_new}; \ref{ssub:creating_a_circle}]\\
+\tkzFct{circle}{radius(O,r)} & Deprecated; See  [\ref{ssub:method_circle_radius}]\\
+\tkzFct{circle}{diameter(A,B)} & Deprecated; See  [\ref{ssub:method_circle_diameter}]\\
+\midrule
+\texttt{Methods Returning a Real Number} & \\
+\midrule
+\tkzMeth{circle}{power(pt)}& \ref{ssub:power}] \\
+\midrule
+\texttt{Methods Returning a String} & \\
+\midrule
+\tkzMeth{circle}{circles\_position(C1)}  & [\ref{ssub:circles_position}] \\
+\tkzMeth{circle}{position(obj)} & [\ref{ssub:circle_position}]\\
+\tkzMeth{circle}{lines\_position(L)} & [\ref{ssub:method_circle_lines_position}]\\
+\midrule
+\texttt{Methods Returning a Boolean} & \\
+\midrule
+\tkzMeth{circle}{is\_tangent(L)} & [\ref{ssub:method_circle_is_tangent}]  \\
+\tkzMeth{circle}{is\_secant(L)} & [\ref{ssub:method_circle_is_secant}]  \\
+\tkzMeth{circle}{is\_disjoint(L)} & [\ref{ssub:method_circle_is_disjoint}]  \\
+\midrule
+\texttt{Methods Returning a Point} & \\
+\midrule
+\tkzMeth{circle}{get(i)} &     [\ref{ssub:method_circle_get}]   \\
+\tkzMeth{circle}{antipode(pt)} & [\ref{ssub:method_circle_antipode}]   \\
+\tkzMeth{circle}{midarc(pt,pt)} &  [\ref{ssub:method_circle_midarc}]\\
+\tkzMeth{circle}{point(r)} & [\ref{ssub:method_circle_point}]\\
+\tkzMeth{circle}{random\_pt(<'inside'>)}  & [\ref{ssub:method_imeth_circle_random_inside}]\\
+\tkzMeth{circle}{inversion(obj)} & [\ref{ssub:inversion}; \ref{par:inversion_circle} \ref{par:inversion_line}]\\
+\tkzMeth{circle}{inversion\_neg(obj)} & [\ref{ssub:inversion_neg}]\\
+\tkzMeth{circle}{internal\_similitude(C)}  &  [\ref{ssub:method_circle_internal__similitude}]\\
+\tkzMeth{circle}{external\_similitude(C)} &  [\ref{ssub:method_circle_external__similitude}] \\
+\tkzMeth{circle}{similitude(mode, C)} &  [\ref{ssub:similitude}] \\
 
-  \tkzMeth{circle}{power(pt)}& \ref{ssub:power} ] \\
-  \midrule
-  \textbf{Strings} &\\
-  \midrule
-  \tkzMeth{circle}{circles\_position(C1)}  & [\ref{ssub:circles_position}] \\
-  \midrule
-  \textbf{Booleans} &\\
-  \midrule
-
-  \tkzMeth{circle}{in\_out(pt)} &  [\ref{ssub:in_out_for_circle_and_disk}]  \\
-  \tkzMeth{circle}{in\_out\_disk(pt)} &  [\ref{ssub:in_out_for_circle_and_disk}] \\
-  \tkzMeth{circle}{on\_circle(pt)} & idem \\
-  \tkzMeth{circle}{in\_disk(pt)} & idem \\
-  \tkzMeth{circle}{in\_disk\_strict(pt)} & idem \\
-  \tkzMeth{circle}{out\_disk\_strict(pt)} & idem \\
-  \tkzMeth{circle}{is\_tangent(L)} & [\ref{ssub:method_circle_is_tangent}]  \\
-  \tkzMeth{circle}{is\_secant(L)} & [\ref{ssub:method_circle_is_secant}]  \\
-  \tkzMeth{circle}{is\_disjoint(L)} & [\ref{ssub:method_circle_is_disjoint}]  \\
-  \tkzMeth{circle}{line\_position(L)} & [\ref{ssub:method_circle_line_position}]\\
-  \tkzMeth{circle}{lines\_position(L)} & [\ref{ssub:method_circle_lines_position}]\\
-
-  \textbf{Points} &\\
-  \midrule
-  \tkzMeth{circle}{get(i)} &     [\ref{ssub:method_circle_get}]   \\
-  \tkzMeth{circle}{antipode(pt)} & [\ref{ssub:method_circle_antipode}]   \\
-  \tkzMeth{circle}{midarc(pt,pt)} &  [\ref{ssub:method_circle_midarc}]\\
-  \tkzMeth{circle}{point(r)} & [\ref{ssub:method_circle_point}]\\
-  \tkzMeth{circle}{random\_pt(<'inside'>)}  & [\ref{ssub:method_imeth_circle_random_inside}]\\
-  \tkzMeth{circle}{inversion(obj)} & [\ref{ssub:inversion}; \ref{par:inversion_circle}; \ref{par:inversion_line}]\\
-  \tkzMeth{circle}{inversion\_neg(obj)} & [\ref{ssub:inversion_neg}]\\
-
-  \tkzMeth{circle}{internal\_similitude(C)}  &  [\ref{ssub:method_circle_internal__similitude}]\\
-  \tkzMeth{circle}{external\_similitude(C)} &  [\ref{ssub:method_circle_external__similitude}] \\
-  \tkzMeth{circle}{similitude(mode, C)} &  [\ref{ssub:similitude}] \\
-
-  \tkzMeth{circle}{radical\_center(C1<,C2>)} & [\ref{ssub:radical_center} ]  \\
- \tkzMeth{circle}{pole(L)} & [\ref{ssub:method_circle_pole}]\\
- \midrule
-   \textbf{Lines}  & \\
-  \midrule
-  \tkzMeth{circle}{radical\_axis(C)} &   [ \ref{ssub:method_circle_radical__axis_c} ; \ref{par:radical_axis_v1}; \ref{par:radical_axis_v2}; \ref{par:radical_axis_v3}; \ref{par:radical_axis_v4} ]  \\
-  \tkzMeth{circle}{tangent\_at(pt)} &  [\ref{ssub:method_circle_tangent__at_pt}] \\
-  \tkzMeth{circle}{tangent\_from(pt)}&  [\ref{ssub:method_circle_tangent__from_pt}] \\
- \tkzMeth{circle}{tangent\_parallel(L)}&  [\ref{ssub:method_circle_tangent_parallel}] \\
-
-  \tkzMeth{circle}{common\_tangent(C)}&  [\ref{ssub:common_tangent} ] \\
-  \tkzMeth{circle}{polar()} & [\ref{ssub:method_circle_polar_pt}] \\
-   \bottomrule
-    \end{tabular}
-  \egroup
-
-\newpage
-  \bgroup
-  \small
-  \captionof{table}{Circle methods.}\label{circle:methods 2}
-  \begin{tabular}{ll}
-  \toprule
-   \textbf{Circles}&\\
-  \midrule
-  \tkzMeth{circle}{orthogonal\_from(pt)}   & [\ref{ssub:method_circle_orthogonal_from_pt}]  \\
-  \tkzMeth{circle}{orthogonal\_through(pta,ptb)}&  [\ref{ssub:method_circle_orthogonal_through}]\\
-  \tkzMeth{circle}{midcircle(C)}  & [\ref{ssub:midcircle}; \ref{midcircle_diameter}] \\
-  \tkzMeth{circle}{radical\_circle(C1<,C2>)} &  [\ref{ssub:radical_circle}] \\
-  \tkzMeth{circle}{CPP(pt,pt)} & [\ref{ssub:method_c__c__pp}] \\
-  \tkzMeth{circle}{CCP(C,pt)} &[\ref{ssub:method_c_cc_p}]  \\
-  \tkzMeth{circle}{CLP(L,pt,<'inside'>)} & [\ref{ssub:method_c_lc_p}]  \\
-  \tkzMeth{circle}{CLL}& \ref{ssub:method_c_cll}\\
-  \tkzMeth{circle}{CCL}(C2, L) & \ref{ssub:CCL}\\
-  \tkzMeth{circle}{CCC(C2, C3[, opts])} &  \ref{ssub:CCC}\\
-  \tkzMeth{circle}{CCC\_gergonne}(C2, C3) &  \ref{ssub:CCC_gergonne}\\
- \textbf{Path} & \textbf{Reference}     \\
-   \tkzMeth{circle}{path(pt,pt,nb)} &[\ref{ssub:circle_path}]  \\
-   \bottomrule
-  \end{tabular}
+\tkzMeth{circle}{radical\_center(C1<,C2>)} & [\ref{ssub:radical_center}]  \\
+\tkzMeth{circle}{pole(L)} & [\ref{ssub:method_circle_pole}]\\
+\midrule
+\texttt{Methods Returning a Line}  & \\
+\midrule
+\tkzMeth{circle}{radical\_axis(C)} &   [ \ref{ssub:method_circle_radical__axis_c} ; \ref{par:radical_axis_v1}; \ref{par:radical_axis_v2}; \ref{par:radical_axis_v3}; \ref{par:radical_axis_v4}]  \\
+\tkzMeth{circle}{tangent\_at(pt)} &  [\ref{ssub:method_circle_tangent__at_pt}] \\
+\tkzMeth{circle}{tangent\_from(pt)}&  [\ref{ssub:method_circle_tangent__from_pt}] \\
+\tkzMeth{circle}{tangent\_parallel(L)}&  [\ref{ssub:method_circle_tangent_parallel}] \\
+\tkzMeth{circle}{common\_tangent(C)}&  [\ref{ssub:common_tangent}] \\
+\tkzMeth{circle}{polar()} & [\ref{ssub:method_circle_polar_pt}] \\
+\bottomrule
+\end{tabular}
 \egroup
 
- \bgroup
-  \catcode`_=12
-  \small
-  \captionof{table}{Auxiliary functions for circle construction.}\label{circle:functions}
-  \begin{tabular}{ll}
-  \toprule
-  \textbf{Functions} & \textbf{Reference}     \\
-  \midrule
+\newpage
+\bgroup
+\small
+\captionof{table}{Circle methods}\label{circle:methods 2}
+\begin{tabular}{ll}
+\toprule
+\texttt{Methods Returning a Circle}&\\
+\midrule
+\tkzMeth{circle}{orthogonal\_from(pt)}  & [\ref{ssub:method_circle_orthogonal_from_pt}]\\
+\tkzMeth{circle}{orthogonal\_through(pta,ptb)}&  [\ref{ssub:method_circle_orthogonal_through}]\\
+\tkzMeth{circle}{midcircle(C)}  & [\ref{ssub:midcircle}; \ref{midcircle_diameter}] \\
+\tkzMeth{circle}{radical\_circle(C1<,C2>)} &  [\ref{ssub:radical_circle}] \\
+\tkzMeth{circle}{CPP(pt,pt)} & [\ref{ssub:method_c__c__pp}] \\
+\tkzMeth{circle}{CCP(C,pt)} &[\ref{ssub:method_c_cc_p}]  \\
+\tkzMeth{circle}{CLP(L,pt,<'inside'>)} & [\ref{ssub:method_c_lc_p}]  \\
+\tkzMeth{circle}{CLL}& \ref{ssub:method_c_cll}\\
+\tkzMeth{circle}{CCL}(C2, L) & \ref{ssub:CCL}\\
+\tkzMeth{circle}{CCC(C2, C3[, opts])} &  \ref{ssub:CCC}\\
+\tkzMeth{circle}{CCC\_gergonne}(C2, C3) &  \ref{ssub:CCC_gergonne}\\
+\texttt{Methods Returning a Path} &     \\
+\tkzMeth{circle}{path(pt,pt,nb)} &[\ref{ssub:circle_path}]  \\
+\bottomrule
+\end{tabular}
+\egroup
 
-  \tkzFct{circle}{through(pt,r,<angle>)} &  See [\ref{ssub:function_code_through_and_code_diameter}] \\
+\bgroup
+\catcode`_=12
+\small
+\captionof{table}{Auxiliary functions for circle construction.}\label{circle:functions}
+\begin{tabular}{ll}
+\toprule
+\texttt{Functions Returning two Points} &      \\
+\midrule
+\tkzFct{circle}{through(pt,r,<angle>)} &  See [\ref{ssub:function_code_through_and_code_diameter}] \\
 
-  \tkzFct{circle}{diameter(pt,pt,<'swap'> or <angle>)}&  See [\ref{ssub:function_code_through_and_code_diameter}] \\
+\tkzFct{circle}{diameter(pt,pt,<'swap'> or <angle>)}&  See [\ref{ssub:function_code_through_and_code_diameter}] \\
 
-
-  \bottomrule
-  \end{tabular}
+\bottomrule
+\end{tabular}
 \egroup
 
 
 
 Each method can be called using the dot syntax, such as \code{C.OA:antipode(z.P)} or \code{C.OA:radical\_axis(C1)}. Deprecated methods are retained for compatibility but should be avoided in new code.
-
-
 
 \subsubsection{Method \tkzMeth{circle}{new}(pt, pt)}
 \label{ssub:method_circle_new}
@@ -421,7 +407,7 @@ A circle is defined by two points at the ends of one of its diameters.
 \end{center}
 \end{tkzexample}
 
-\subsection{The result is a boolean}
+\subsection{Returns a boolean value}
 
 \subsubsection{Method \tkzMeth{circle}{is\_tangent(L)}}
 \label{ssub:method_circle_is_tangent}
@@ -545,44 +531,69 @@ see the example above
 \end{center}
 \end{minipage}
 
-\subsubsection{Method \tkzMeth{circle}{in\_out} for circle and disk}
-\label{ssub:in_out_for_circle_and_disk}
+%--------------------------------------------------------------------
+\subsubsection{Method \tkzMeth{circle}{position(obj)}}
+\label{ssub:circle_position}
 
-These two methods determine the position of a point relative to a circle or the closed disk it defines. Si nécessaire, pour toutes les fonctions suivantes, vous pouvez ajuster la précision pour déterminer les résultats à l'aide d'un argument optionnel. Par défaut cette précision est liée à la variable globale \verb|tkz.epsilon = 1e-8|
+This method determines the geometric relation between a circle and another object.
+An optional argument \code{EPS} may be provided to adjust the numerical tolerance.
+By default, \code{EPS} is the global value \tkzVar{tkz}{tkz.epsilon}.
 
 \medskip
+\texttt{Syntax:}
 
-Given a point and a circle \code{C}, the result is a string among the following values:
+\verb|result = C:position(obj [, EPS])|
+
+\medskip
+\texttt{Supported object types and return values}
+
 \begin{itemize}
-  \item \code{"in"} — the point lies strictly inside the circle,
-  \item \code{"out"} — the point lies strictly outside the circle,
-  \item \code{"on"} — the point lies exactly on the circumference (only with \code{in\_out()}, not \code{in\_out\_disk()}).
+
+\item \textbf{Point}
+
+Returns one of:
+\begin{itemize}
+\item \code{"IN"}  — point strictly inside the disk,
+\item \code{"ON"}  — point on the circumference,
+\item \code{"OUT"} — point outside the disk.
 \end{itemize}
 
-\textbf{Differences between the two methods:}
+\item \textbf{Line}
 
+Returns one of:
 \begin{itemize}
-  \item \code{in\_out()} detects all three positions: inside, on, or outside the circle.
-  \item \code{in\_out\_disk()} treats the boundary as inside: it returns only \code{"in"} or \code{"out"}.
+\item \code{"DISJOINT"} — no intersection,
+\item \code{"TANGENT"}  — exactly one common point,
+\item \code{"SECANT"}   — two intersection points.
 \end{itemize}
 
-For circles and disks, different methods allow you to check the relative position of a point.
-The general method \code{in\_out(p)} is shared with other objects: it simply returns whether the point lies on the boundary or outside/inside.
-In addition, a few specialized methods are provided for circles:
+\item \textbf{Circle}
+
+Returns one of:
+\begin{itemize}
+\item \code{"DISJOINT\_EXT"} — exterior disjoint circles,
+\item \code{"TANGENT\_EXT"}  — exterior tangency,
+\item \code{"SECANT"}        — two intersections,
+\item \code{"TANGENT\_INT"}  — interior tangency,
+\item \code{"DISJOINT\_INT"} — one circle strictly inside the other,
+\item \code{"CONCENTRIC"}    — same center, different radii,
+\item \code{"COINCIDENT"}    — identical circles.
+\end{itemize}
+
+\end{itemize}
+
+\medskip
+\texttt{Remarks}
 
 \begin{itemize}
- \item \code{on\_circle(p)} Same as \code{in\_out(p)}   restricted to the boundary.
- It returns true only if the point lies on the circle (distance to the center equal to the radius within tolerance).
- \item \code{in\_disk(p)}   Same as \code{in\_out\_disk(p)} (legacy alias).
- It returns true if the point is inside or on the closed disk, otherwise false.
- \item \code{in\_disk\_strict(p)}   Returns true only if the point lies strictly inside the disk (distance to the center < radius). Points on the boundary are excluded.
- \item \code{out\_disk\_strict(p)}   Returns true only if the point lies strictly outside the disk (distance to the center > radius).
- Points on the boundary are excluded.
+\item Returned values are symbolic uppercase strings.
+\item Results are tolerance-aware.
+\item Unsupported object types raise an error.
 \end{itemize}
 
 \vspace{1em}
 
-\begin{verbatim}
+\begin{tkzexample}[latex=.5\textwidth]
 \directlua{
   init_elements()
   z.O = point(0, 0)
@@ -591,78 +602,58 @@ In addition, a few specialized methods are provided for circles:
   z.N = point(-2, 2)
   z.M = point(1, 0)
   z.P = point(2, 1)
-  BCm = C.OA:in_out(z.M)
-  BDm = C.OA:in_out_disk(z.M)
-  BCn = C.OA:in_out(z.N)
-  BDn = C.OA:in_out_disk(z.N)
-  BCp = C.OA:in_out(z.P)
-  BDp = C.OA:in_out_disk(z.P)}
-\end{verbatim}
 
-
-  \begin{verbatim}
-  \def\tkzPosPoint#1#2#3#4{%
-  \tkzLabelPoints(O,M,N,P)
-     \ifthenelse{\equal{\tkzUseLua{#1}}{true}}{
-     \tkzLabelPoint[below=#4pt,font=\scriptsize](#2){on  the #3}}{%
-     \tkzLabelPoint[below=#4pt,font=\scriptsize](#2){out  the #3}}}
-  \begin{tikzpicture}
-  \tkzGetNodes
-  \tkzDrawSegments[dashed](O,M O,N O,P)
-  \tkzDrawCircle(O,A)
-  \tkzDrawPoints(O,M,N,P)
-  \tkzPosPoint{BCm}{M}{circle}{8}
-  \tkzPosPoint{BCn}{N}{circle}{8}
-  \tkzPosPoint{BCp}{P}{circle}{8}
-  \tkzPosPoint{BDm}{M}{disk}{14}
-  \tkzPosPoint{BDn}{N}{disk}{14}
-  \tkzPosPoint{BDp}{P}{disk}{14}
-  \end{tikzpicture}
-  \end{verbatim}
-
-\directlua{
-init_elements()
-z.O = point(0, 0)
-z.A = point(1 ,2)
-C.OA = circle(z.O, z.A)
-z.N = point(-2, 2)
-z.M = point(1, 0)
-z.P = point(2, 1)
-BCm = C.OA:in_out(z.M)
-BDm = C.OA:in_out_disk(z.M)
-BCn = C.OA:in_out(z.N)
-BDn = C.OA:in_out_disk(z.N)
-BCp = C.OA:in_out(z.P)
-BDp = C.OA:in_out_disk(z.P)}
-\def\tkzPosPoint#1#2#3#4{%
-\tkzLabelPoints(O,M,N,P)
-   \ifthenelse{\equal{\tkzUseLua{#1}}{true}}{
-   \tkzLabelPoint[below=#4pt,font=\scriptsize](#2){on  the #3}}{%
-   \tkzLabelPoint[below=#4pt,font=\scriptsize](#2){out  the #3}}
+  PCm = C.OA:position(z.M)
+  PDm = C.OA:position_disk(z.M)
+  PCn = C.OA:position(z.N)
+  PDn = C.OA:position_disk(z.N)
+  PCp = C.OA:position(z.P)
+  PDp = C.OA:position_disk(z.P)
 }
+
+\def\tkzPosPoint#1#2#3#4{%
+  \tkzLabelPoints(O,M,N,P)
+  \tkzLabelPoint[below=#4pt,
+  font=\scriptsize](#2){\tkzUseLua{#1} on the #3}%
+}
+
 \begin{center}
   \begin{tikzpicture}
   \tkzGetNodes
   \tkzDrawSegments[dashed](O,M O,N O,P)
   \tkzDrawCircle(O,A)
   \tkzDrawPoints(O,M,N,P)
-  \tkzPosPoint{BCm}{M}{circle}{8}
-  \tkzPosPoint{BCn}{N}{circle}{8}
-  \tkzPosPoint{BCp}{P}{circle}{8}
-  \tkzPosPoint{BDm}{M}{disk}{14}
-  \tkzPosPoint{BDn}{N}{disk}{14}
-  \tkzPosPoint{BDp}{P}{disk}{14}
+
+  \tkzPosPoint{PCm}{M}{circle}{8}
+  \tkzPosPoint{PCn}{N}{circle}{8}
+  \tkzPosPoint{PCp}{P}{circle}{8}
+
+  \tkzPosPoint{PDm}{M}{disk}{14}
+  \tkzPosPoint{PDn}{N}{disk}{14}
+  \tkzPosPoint{PDp}{P}{disk}{14}
   \end{tikzpicture}
 \end{center}
+\end{tkzexample}
 
 
+\subsubsection{Method \tkzMeth{circle}{in\_out} for circle and disk; Deprecated}
+\label{ssub:in_out_for_circle_and_disk}
+
+The following methods
+\code{in\_out()}, \code{in\_out\_disk()},
+\code{in\_disk(p)},  \code{in\_out\_disk(p)},
+\code{in\_disk\_strict(p)} and
+\code{out\_disk\_strict(p)}  have been replaced by \code{position} and  \code{position\_disk}. See [\ref{ssub:circle_position}]
+
+\texttt{Note: } They still exist, but it is preferable to use \code{position}.
 
 \subsubsection{Method \tkzMeth{circle}{line\_position(L)}}
 \label{ssub:method_circle_line_position}
 
 \texttt{Purpose: }
 
-This method classifies the relative position of a line with respect to a circle.
+This method classifies the position of a line relative to a circle.
+
 It returns whether the line is \texttt{disjoint}, \texttt{tangent} or \texttt{secant}.
 
 \medskip
@@ -678,9 +669,9 @@ It returns whether the line is \texttt{disjoint}, \texttt{tangent} or \texttt{se
 
 A string describing the relative position of the line:
 \begin{itemize}
-  \item \texttt{"disjoint"} — no intersection between line and circle,
-  \item \texttt{"tangent"} — line tangent to the circle (one point in common),
-  \item \texttt{"secant"} — line intersecting the circle at two points.
+  \item \texttt{"DISJOINT"} — no intersection between line and circle,
+  \item \texttt{"TANGENT"} — line tangent to the circle (one point of contact),
+  \item \texttt{"SECANT"} — line intersecting the circle at two points.
 \end{itemize}
 
 \medskip
@@ -717,7 +708,7 @@ A string describing the relative position of the line:
 \texttt{Purpose: }
 
 This method determines the relative position of a circle with respect to two lines.
-It analyses which angular or strip sectors are touched by the circle depending on whether the lines are parallel or secant.
+It analyzes which angular or strip sectors are touched by the circle depending on whether the lines are parallel or secant.
 The result is returned as a list of integers corresponding to the sectors intersected by the circle.
 
 \texttt{Syntax: } \verb|sectors = C:lines_position(L1, L2 [, mode])|
@@ -814,7 +805,7 @@ For parallel lines:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{The result is a real}
+\subsection{Returns a real number}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{Method \tkzMeth{circle}{power(pt)}}
@@ -910,8 +901,7 @@ This value can be used for algebraic computations or to test point inclusion via
 \end{minipage}
 
 
-\subsection{The result is a string}
-\label{sub:the_result_is_a_string}
+\subsection{Returns a string}
 
 \subsubsection{Method \tkzMeth{circle}{circles\_position}}
 \label{ssub:circles_position}
@@ -977,7 +967,7 @@ if position == "inside tangent" then color = "orange" else color = "blue" end}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{The result is a point}
+\subsection{Returns a point}
 
 \subsubsection{Method \tkzMeth{circle}{get()}}
 \label{ssub:method_circle_get}
@@ -1298,7 +1288,7 @@ This point is useful for constructions involving inversion, coaxal systems, and 
  L.rAB = C.Aa:radical_axis(C.Bb)
  L.rAC = C.Aa:radical_axis(C.Cc)
  L.rBC = C.Bb:radical_axis(C.Cc)
- z.w = C.Aa :radical_center(C.Bb, C.Cc)
+ z.w = C.Aa:radical_center(C.Bb, C.Cc)
  z.x1, z.y1 = L.rAB:get()
  z.x2, z.y2 = L.rAC:get()
  z.x3, z.y3 = L.rBC:get()
@@ -1391,7 +1381,7 @@ the pole is an \emph{ideal point} on the perpendicular to \(L\) through \(O\).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{The result is a line}
+\subsection{Returns a line}
 
 \subsubsection{Method \tkzMeth{circle}{tangent\_at(pt)}}
 \label{ssub:method_circle_tangent__at_pt}
@@ -1987,7 +1977,7 @@ Radical axis v4
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsection{The result is a circle}
+\subsection{Returns a circle}
 
 \subsubsection{Method \tkzMeth{circle}{orthogonal\_from(pt)}}
 \label{ssub:method_circle_orthogonal_from_pt}
@@ -2591,8 +2581,8 @@ This radical circle is the unique midcircle in this case: it swaps the two origi
   C.BP = circle(z.B, z.P)
   z.R, z.S = intersection(L.AB,C.BP)
   z.U, z.V = intersection(L.AB,C.AO)
-  C.SV = circle :diameter(z.S, z.V)
-  C.UR = circle :diameter(z.U, z.R)
+  C.SV = circle:diameter(z.S, z.V)
+  C.UR = circle:diameter(z.U, z.R)
   z.x = C.SV.center
   z.y = C.UR.center
   C.IT = C.AO:midcircle(C.BP)
@@ -2625,8 +2615,8 @@ This radical circle is the unique midcircle in this case: it swaps the two origi
    C.BP = circle(z.B, z.P)
    z.R, z.S = intersection(L.AB,C.BP)
    z.U, z.V = intersection(L.AB,C.AO)
-   C.SV = circle :diameter(z.S, z.V)
-   C.UR = circle :diameter(z.U, z.R)
+   C.SV = circle:diameter(z.S, z.V)
+   C.UR = circle:diameter(z.U, z.R)
    z.x = C.SV.center
    z.y = C.UR.center
    C.IT = C.AO:midcircle(C.BP)
@@ -2975,7 +2965,7 @@ The \code{inversion} method can be used on a point, a group of points, a line or
 \textbf{Inversion:point} %(fold)
 \label{par:inversion_point}
 
-The result is a point.
+Returns  a point.
 
 \begin{tkzexample}[latex=.5\textwidth]
 \directlua{

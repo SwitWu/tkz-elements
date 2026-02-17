@@ -25,11 +25,11 @@ PA.center = path()
 PA.through = path()
  for t = -0.24, 0.24, 0.004 do
    if (t > - 0.002 and t < 0.002) then else
-       local a = C.PM : point (t)
+       local a = C.PM:point(t)
        L.OI = line (z.O, z.I)
        L.PA = line (z.P, a)
-       local c = intersection (L.OI, L.PA)
-       L.tgt = C.PM : tangent_at (a)
+       local c = intersection(L.OI, L.PA)
+       L.tgt = C.PM: tangent_at (a)
        local x = intersection(L.tgt, L.OI)
        local o = tkz.bisector(x, a, c).pb
        PA.center:add_point(o)
@@ -94,7 +94,7 @@ As you'll see from the examples, ellipses used to be built by \TIKZ{}, now conic
 is used by the macro \tkzMacro{tkz-elements}{tkzDrawCoordinates}. One advantage of this method is that you can easily draw only part of a conic.
 
 
-\subsection{Creating a Conic}
+\subsection{Creating a conic}
 \label{sub:creating_a_conic}
 
 The \code{conic} class unifies the construction of all classical conic sections: ellipses, parabolas, and hyperbolas. It supersedes the previously available \code{ellipse} class, which is now deprecated.
@@ -121,7 +121,7 @@ Depending on the value of the eccentricity:
 \end{itemize}
 
 \vspace{1em}
-\textbf{Short form.}
+\texttt{Short form: }
 
 The class also supports a short form:
 \begin{mybox}
@@ -130,7 +130,7 @@ CO = conic(z.F, L.dir, e)  -- equivalent to conic:new(...)
 \end{verbatim}
 \end{mybox}
 
-\textbf{Other constructions.}
+\texttt{Other constructions: }
 
 Additional creation methods are also available:
 \begin{itemize}
@@ -151,9 +151,9 @@ Parabolas, hyperbolas, and ellipses share many attributes, though some are speci
 
 The key attributes for this new definition are:
 \begin{itemize}
-  \item \tkzAttr{conic}{Fa} : the focus,
-  \item \tkzAttr{conic}{directrix} : the directrix line,
-  \item \tkzAttr{conic}{e} : the eccentricity.
+  \item \tkzAttr{conic}{Fa}: the focus,
+  \item \tkzAttr{conic}{directrix}: the directrix line,
+  \item \tkzAttr{conic}{e}: the eccentricity.
 \end{itemize}
 
 \vspace{1em}
@@ -177,7 +177,7 @@ Depending on the value of $e$:
   \captionof{table}{Conic attributes.}\label{conic:attributes}
   \begin{tabular}{lll}
   \toprule
-  \textbf{Attributes}   & \textbf{Definition} & \textbf{Reference} \\
+  \texttt{Attributes}   & \textbf{Definition} & \texttt{Reference} \\
   \midrule
   \tkzAttr{conic}{Fa} & main foyer of the conic &\\
   \tkzAttr{conic}{directrix} & directrix of the conic &\\
@@ -856,48 +856,66 @@ The most natural creation method is now the one based on a focus, a directrix, a
 
  Depending on the latter, it is easy to distinguish between parabolas, hyperbolas, and ellipses. The bifocal definition of hyperbolas and ellipses is also available, as well as the one based on three points: the center, a vertex, and a covertex.
 
-  \bgroup
-  \catcode`_=12
-  \small
-  \captionof{table}{Conic methods.}\label{conic:methods}
-  \begin{tabular}{ll}
-  \toprule
-  \textbf{Methods} & \textbf{Reference}     \\
-  \midrule
-  \tkzMeth{conic}{points (ta,tb,nb,<'sawp'>)}  & See  [ \ref{ssub:method_conic_points}]  \\
-  \tkzMeth{conic}{get(i)}& [\ref{ssub:method_conic_get}]\\
-  \tkzMeth{conic}{point(t)}         & [\ref{ssub:method_conic_points}]\\
-  \tkzMeth{conic}{in\_out(pt)}      & [\ref{ssub:method_conic_in_out}] \\
-  \tkzMeth{conic}{tangent\_at(pt)}  & [\ref{ssub:method_conic_tangent_at}]  \\
-  \tkzMeth{conic}{tangent\_from(pt)}& [\ref{ssub:method_conic_tangent_from}] \\
-  \tkzMeth{conic}{orthoptic\_curve()}& [\ref{ssub:method_conic_orthoptic}] \\
-  \tkzMeth{conic}{path(pt, pt, nb, swap)} &  [\ref{ssub:conic_path}]   \\
-  \tkzMeth{conic}{asymptotes()} &  [\ref{ssub:conic_asymptotes}]   \\
-  \bottomrule
-  \end{tabular}
-  \egroup
+\bgroup
+\catcode`_=12
+\small
+\captionof{table}{Conic methods.}\label{conic:methods}
+\begin{tabular}{ll}
+\toprule
+\texttt{Methods} & \texttt{Reference}     \\
+\midrule
+\texttt{Constructor} &    \\
+\midrule
+\tkzMeth{conic}{new (pt, L , e)  } &  CO = conic: new ( focus, directrix,eccentricity )\\
+\midrule
+\texttt{Methods Returning a Point}&\\
+\midrule
+\tkzMeth{conic}{get(i)}& [\ref{ssub:method_conic_get}]\\
+\tkzMeth{conic}{point(t)}         & [\ref{ssub:method_conic_points}]\\
+\midrule
+\texttt{Methods Returning a String}&\\
+\midrule
+\tkzMeth{conic}{position(pt)}      & [\ref{ssub:method_conic_position}] \\
+\midrule
+\texttt{Methods Returning a Boolean}&\\
+\midrule
+\tkzMeth{conic}{in\_out(pt)}      & [\ref{ssub:method_conic_in_out}] \\
+\midrule
+\texttt{Methods Returning a Line}&\\
+\midrule
+\tkzMeth{conic}{tangent\_at(pt)}  & [\ref{ssub:method_conic_tangent_at}]  \\
+\tkzMeth{conic}{tangent\_from(pt)}& [\ref{ssub:method_conic_tangent_from}] \\
+\tkzMeth{conic}{asymptotes()} &  [\ref{ssub:conic_asymptotes}]   \\
+\midrule
+\tkzMeth{conic}{orthoptic\_curve()}& [\ref{ssub:method_conic_orthoptic}] \\
+\midrule
+\texttt{Methods Returning a Path}&\\
+\midrule
+\tkzMeth{conic}{path(pt, pt, nb, swap)} &  [\ref{ssub:conic_path}]   \\
+\tkzMeth{conic}{points(ta,tb,nb,<'sawp'>)}  & See  [ \ref{ssub:method_conic_points}]  \\
+\bottomrule
+\end{tabular}
+\egroup
 
-  \bgroup
-  \catcode`_=12
-  \small
-  \captionof{table}{Conic functions.}\label{conic:functions}
-  \begin{tabular}{ll}
-  \toprule
-  \textbf{Functions} & \textbf{Reference}     \\
-  \midrule
-  \tkzMeth{conic}{new (pt, L , e)  } &  CO = conic: new ( focus, directrix, eccentricity )   \\
-  \tkzFct{conic}{PA\_dir(pt,pt,pt)} & [\ref{ssub:pa_dir}] \\
-  \tkzFct{conic}{PA\_focus(L,pt,pt)}& [\ref{ssub:_igfct_math_pa__focus}] \\
-  \tkzFct{conic}{HY\_bifocal(pt,pt,pt or r)}& [\ref{ssub:_igfct_math_hy__bifocal}] \\
-  \tkzFct{conic}{EL\_bifocal(pt,pt,pt or r)}& [\ref{ssub:_igfct_math_el__bifocal}] \\
-  \tkzFct{conic}{EL\_points(L,pt,pt)}&[\ref{ssub:_math_el__points}] \\
-  \tkzFct{matrix}{search\_ellipse(s1, s2, s3, s4, s5)}&[\ref{ssub:search_ellipse}]\\ \tkzFct{conic}{test\_ellipse(pt,t)}&[\ref{ssub:function_test_ellipse}] \\
-  \tkzFct{conic}{search\_center\_ellipse(t)}&[\ref{ssub:function_search_center_ellipse}] \\
-  \tkzFct{conic}{ellipse\_axes\_angle(t)} &[\ref{ssub:function_ellipse_axes_angle}] \\
-
-  \bottomrule
-  \end{tabular}
-  \egroup
+\bgroup
+\catcode`_=12
+\small
+\captionof{table}{Conic functions.}\label{conic:functions}
+\begin{tabular}{ll}
+\toprule
+\texttt{Functions} & \texttt{Reference}     \\
+\midrule
+\tkzFct{conic}{PA\_dir(pt,pt,pt)} & [\ref{ssub:pa_dir}] \\
+\tkzFct{conic}{PA\_focus(L,pt,pt)}& [\ref{ssub:_igfct_math_pa__focus}] \\
+\tkzFct{conic}{HY\_bifocal(pt,pt,pt or r)}& [\ref{ssub:_igfct_math_hy__bifocal}] \\
+\tkzFct{conic}{EL\_bifocal(pt,pt,pt or r)}& [\ref{ssub:_igfct_math_el__bifocal}] \\
+\tkzFct{conic}{EL\_points(L,pt,pt)}&[\ref{ssub:_math_el__points}] \\
+\tkzFct{matrix}{search\_ellipse(s1, s2, s3, s4, s5)}&[\ref{ssub:search_ellipse}]\\\tkzFct{conic}{test\_ellipse(pt,t)}&[\ref{ssub:function_test_ellipse}] \\
+\tkzFct{conic}{search\_center\_ellipse(t)}&[\ref{ssub:function_search_center_ellipse}] \\
+\tkzFct{conic}{ellipse\_axes\_angle(t)} &[\ref{ssub:function_ellipse_axes_angle}] \\
+\bottomrule
+\end{tabular}
+\egroup
 
 \subsubsection{Method \tkzMeth{conic}{get()}}
   \label{ssub:method_conic_get}
@@ -1408,110 +1426,149 @@ For instance, the segment \( HQ' = \frac{b}{a} HQ \), and the angle relation \( 
 \end{center}
 \end{minipage}
 
-\subsubsection{Method \tkzMeth{conic}{in\_out}}
-\label{ssub:method_conic_in_out}
+\subsubsection{Method \tkzMeth{conic}{position(pt[,EPS])}}
+\label{ssub:method_conic_position}
 
-This method checks the relative position of a point with respect to the conic.
-It returns a boolean value indicating whether the point lies inside or outside the conic, depending on the conic type and the point's location.
-This can be used, for example, to test inclusion within an ellipse or determine whether a point lies in the exterior region of a hyperbola.
+This method determines the relative position of a point with respect to a conic.
+
+\medskip
+
+It takes a point \code{pt} and an optional tolerance \code{EPS}.
+If omitted, the global tolerance \code{tkz.epsilon} is used.
+
+\medskip
+
+The method returns one of the following strings:
+\begin{itemize}
+  \item \code{"IN"}  — the point lies in the interior region;
+  \item \code{"ON"}  — the point lies on the conic (within tolerance);
+  \item \code{"OUT"} — the point lies in the exterior region.
+\end{itemize}
+
+\medskip
+
+The behaviour depends on the conic type:
+\begin{itemize}
+  \item Ellipse (\(e < 1\)) — interior region is bounded;
+  \item Parabola (\(e = 1\)) — interior is the convex side;
+  \item Hyperbola (\(e > 1\)) — interior corresponds to the region
+        between the two branches.
+\end{itemize}
+
+\medskip
+
+\noindent\texttt{Compatibility note: }
+If a boolean test is required (for example in legacy code),
+one may use:
+\[
+\texttt{CO:position(P) ~= "OUT"}
+\]
+which is true for both \code{"IN"} and \code{"ON"}.
 
 \vspace{1em}
 
-\begin{minipage}{.5\textwidth}
+\texttt{Example: }
+
+
+\begin{minipage}{.50\textwidth}
 \begin{verbatim}
 \directlua{
  init_elements()
- z.A = point(0, 0)
- z.B = point(4, -2)
- L.dir = line(z.A, z.B)
- z.F = point(2, 2)
+ z.A = point(0,0)
+ z.B = point(4,-2)
+ L.dir = line(z.A,z.B)
+ z.F = point(2,2)
+
  CO.EL = conic(z.F, L.dir, 0.8)
- CO.PA = conic(z.F, L.dir, 1)
+ CO.PA = conic(z.F, L.dir, 1.0)
  CO.HY = conic(z.F, L.dir, 1.2)
- PA.EL = CO.EL:points(0, 1, 50)
- PA.PA = CO.PA:points(-5, 5, 50)
- PA.HY = CO.HY:points(-5, 5, 50)
- z.L = point(-2, 4)
- Lel = tostring(CO.EL:in_out(z.L))
- Lpa = tostring(CO.PA:in_out(z.L))
- Lhy = tostring(CO.HY:in_out(z.L))
- z.M = point(-1, 5)
- Mel = tostring(CO.EL:in_out(z.M))
- Mpa = tostring(CO.PA:in_out(z.M))
- Mhy = tostring(CO.HY:in_out(z.M))
- z.N = point(0, 6)
- Nel = tostring(CO.EL:in_out(z.N))
- Npa = tostring(CO.PA:in_out(z.N))
- Nhy = tostring(CO.HY:in_out(z.N))
- z.O = point(1, 7)
- Oel = tostring(CO.EL:in_out(z.O))
- Opa = tostring(CO.PA:in_out(z.O))
- Ohy = tostring(CO.HY:in_out(z.O))}
+
+ PA.EL = CO.EL:points(0,1,60)
+ PA.PA = CO.PA:points(-5,5,60)
+ PA.HY = CO.HY:points(-5,5,60)
+
+ z.L = point(-2,4)
+ z.M = point(-1,5)
+ z.N = point(0,6)
+ z.O = point(1,7)
+
+ Lel = CO.EL:position(z.L)
+ Lpa = CO.PA:position(z.L)
+ Lhy = CO.HY:position(z.L)
+
+ Mel = CO.EL:position(z.M)
+ Mpa = CO.PA:position(z.M)
+ Mhy = CO.HY:position(z.M)
+
+ Nel = CO.EL:position(z.N)
+ Npa = CO.PA:position(z.N)
+ Nhy = CO.HY:position(z.N)
+
+ Oel = CO.EL:position(z.O)
+ Opa = CO.PA:position(z.O)
+ Ohy = CO.HY:position(z.O)
+}
 \end{verbatim}
 \end{minipage}
-\begin{minipage}{.5\textwidth}
+\begin{minipage}{.50\textwidth}
 \directlua{
  init_elements()
- z.A = point(0, 0)
- z.B = point(4, -2)
- L.dir = line(z.A, z.B)
- z.F = point(2, 2)
- CO.EL = conic(z.F, L.dir, 0.8)
- CO.PA = conic(z.F, L.dir, 1)
- CO.HY = conic(z.F, L.dir, 1.2)
- PA.EL = CO.EL:points(0, 1, 50)
- PA.PA = CO.PA:points(-5, 5, 50)
- PA.HY = CO.HY:points(-5, 5, 50)
- z.L = point(-2, 4)
- Lel = tostring(CO.EL:in_out(z.L))
- Lpa = tostring(CO.PA:in_out(z.L))
- Lhy = tostring(CO.HY:in_out(z.L))
- z.M = point(-1, 5)
- Mel = tostring(CO.EL:in_out(z.M))
- Mpa = tostring(CO.PA:in_out(z.M))
- Mhy = tostring(CO.HY:in_out(z.M))
- z.N = point(0, 6)
- Nel = tostring(CO.EL:in_out(z.N))
- Npa = tostring(CO.PA:in_out(z.N))
- Nhy = tostring(CO.HY:in_out(z.N))
- z.O = point(1, 7)
- Oel = tostring(CO.EL:in_out(z.O))
- Opa = tostring(CO.PA:in_out(z.O))
- Ohy = tostring(CO.HY:in_out(z.O))}
-\begin{center}
-  \begin{tikzpicture}[scale=.6]
-    \tkzGetNodes
-    \tkzDrawCoordinates[smooth](PA.EL)
-    \tkzDrawCoordinates[smooth](PA.PA)
-    \tkzDrawCoordinates[smooth](PA.HY)
-    \tkzDrawPoints(L)
-    \tkzLabelPoint(L){$L$:(\tkzUseLua{Lel};\tkzUseLua{Lpa};\tkzUseLua{Lhy})}
-    \tkzDrawPoints(M)
-    \tkzLabelPoint(M){$M$:(\tkzUseLua{Mel};\tkzUseLua{Mpa};\tkzUseLua{Mhy})}
-    \tkzDrawPoints(N)
-    \tkzLabelPoint(N){$N$:(\tkzUseLua{Nel};\tkzUseLua{Npa};\tkzUseLua{Nhy})}
-    \tkzDrawPoints(O)
-    \tkzLabelPoint(O){$N$:(\tkzUseLua{Oel};\tkzUseLua{Opa};\tkzUseLua{Ohy})}
-  \end{tikzpicture}
-\end{center}
-\end{minipage}
+ z.A = point(0,0)
+ z.B = point(4,-2)
+ L.dir = line(z.A,z.B)
+ z.F = point(2,2)
 
-\begin{verbatim}
-\begin{tikzpicture}
+ CO.EL = conic(z.F, L.dir, 0.8)
+ CO.PA = conic(z.F, L.dir, 1.0)
+ CO.HY = conic(z.F, L.dir, 1.2)
+
+ PA.EL = CO.EL:points(0,1,60)
+ PA.PA = CO.PA:points(-5,5,60)
+ PA.HY = CO.HY:points(-5,5,60)
+
+ z.L = point(-2,4)
+ z.M = point(-1,5)
+ z.N = point(0,6)
+ z.O = point(1,7)
+
+ Lel = CO.EL:position(z.L)
+ Lpa = CO.PA:position(z.L)
+ Lhy = CO.HY:position(z.L)
+
+ Mel = CO.EL:position(z.M)
+ Mpa = CO.PA:position(z.M)
+ Mhy = CO.HY:position(z.M)
+
+ Nel = CO.EL:position(z.N)
+ Npa = CO.PA:position(z.N)
+ Nhy = CO.HY:position(z.N)
+
+ Oel = CO.EL:position(z.O)
+ Opa = CO.PA:position(z.O)
+ Ohy = CO.HY:position(z.O)
+}
+\begin{center}
+\begin{tikzpicture}[scale=.6]
   \tkzGetNodes
   \tkzDrawCoordinates[smooth](PA.EL)
   \tkzDrawCoordinates[smooth](PA.PA)
   \tkzDrawCoordinates[smooth](PA.HY)
-  \tkzDrawPoints(L)
+  \tkzDrawPoints(L,M,N,O)
+
   \tkzLabelPoint(L){$L$:(\tkzUseLua{Lel};\tkzUseLua{Lpa};\tkzUseLua{Lhy})}
-  \tkzDrawPoints(M)
   \tkzLabelPoint(M){$M$:(\tkzUseLua{Mel};\tkzUseLua{Mpa};\tkzUseLua{Mhy})}
-  \tkzDrawPoints(N)
   \tkzLabelPoint(N){$N$:(\tkzUseLua{Nel};\tkzUseLua{Npa};\tkzUseLua{Nhy})}
-  \tkzDrawPoints(O)
-  \tkzLabelPoint(O){$N$:(\tkzUseLua{Oel};\tkzUseLua{Opa};\tkzUseLua{Ohy})}
+  \tkzLabelPoint(O){$O$:(\tkzUseLua{Oel};\tkzUseLua{Opa};\tkzUseLua{Ohy})}
 \end{tikzpicture}
-\end{verbatim}
+\end{center}
+\end{minipage}
+
+
+\subsubsection{Method \tkzMeth{conic}{in\_out}; Deprecated}
+\label{ssub:method_conic_in_out}
+
+This method is kept for backward compatibility.
+
 
 \subsubsection{Method \tkzMeth{conic}{orthoptic}}
 \label{ssub:method_conic_orthoptic}
@@ -2107,7 +2164,7 @@ This approach replaces older constructions that manually derived parameters step
  z.u = (z.C - z.K):orthogonal(2):at(z.K)
  z.v = (z.C - z.K):orthogonal(-2):at(z.K)
  L.dir = line(z.u, z.v)
-   % axis : ortho_from (z.K)
+   % axis:ortho_from (z.K)
  z.r = (z.C - z.Kp):orthogonal(2):at(z.Kp)
  z.s = (z.C - z.Kp):orthogonal(-2):at(z.Kp)
    % CO      = conic(z.F,L.dir,e)
@@ -2489,7 +2546,7 @@ If the conic is not an hyperbola, an error is raised.
 \tkzGetNodes
 \tkzDrawCoordinates[smooth,cyan](curve)
 \tkzDrawCoordinates[smooth,cyan](curveb)
-\tkzDrawPointOnCurve[mark=ball,ball color=red](X)
+\tkzDrawPoint[mark=ball,ball color=red](X)
 \tkzDrawLines[purple](A,B F,K)
 \tkzDrawLines[red,thick,add=0 and 1](u1,v1 u2,v2)
 \tkzDrawPoints(A,B,F,K,S)

@@ -35,7 +35,7 @@ while providing a set of convenience methods adapted to geometric workflows.
 \captionof{table}{\texttt{list\_point} attributes.}\label{list_point:attributes}
 \begin{tabular}{lll}
 \toprule
-\textbf{Attribute} & \textbf{Meaning} & \textbf{Reference} \\
+\textbf{Attribute} & \textbf{Meaning} & \texttt{Reference} \\
 \midrule
 \tkzAttr{list\_point}{n} &  [\ref{ssub:attr_list_point_n}] \\
 \tkzAttr{list\_point}{items} & [\ref{ssub:attr_list_point_items}] \\
@@ -104,19 +104,34 @@ the \tkzVar{list\_point}{LP} table.
 \captionof{table}{\texttt{list\_point} methods.}\label{list_point:methods}
 \begin{tabular}{ll}
 \toprule
-\textbf{Method}  & \textbf{Reference} \\
+\texttt{Method}  & \texttt{Reference} \\
+\midrule
+\texttt{Constructor} &    \\
 \midrule
 \tkzMeth{list\_point}{new(...)}   & [\ref{ssub:meth_list_point_new}] \\
+\midrule
+\texttt{Methods Returning a Integer Number}&\\
+\midrule
 \tkzMeth{list\_point}{len()}      & [\ref{ssub:meth_list_point_len}] \\
-\tkzMeth{list\_point}{get(i)}     & [\ref{ssub:meth_list_point_get}] \\
-\tkzMeth{list\_point}{unpack()}   & [\ref{ssub:meth_list_point_unpack}] \\
+\midrule
+\texttt{Methods Returning a Point}&\\
+\midrule\tkzMeth{list\_point}{get(i)}     & [\ref{ssub:meth_list_point_get}] \\
+\tkzMeth{list\_point}{barycenter()}& [\ref{ssub:meth_list_point_barycenter}]\\
+\midrule
+\texttt{Methods Returning a List\_Point}&\\
+\midrule
 \tkzMeth{list\_point}{add(p)}     & [\ref{ssub:meth_list_point_add}] \\
 \tkzMeth{list\_point}{extend(pl)} & [\ref{ssub:meth_list_point_extend}] \\
+\tkzMeth{list\_point}{map(f)}     & [\ref{ssub:meth_list_point_map}] \\
+\midrule
+\tkzMeth{list\_point}{unpack()}   & [\ref{ssub:meth_list_point_unpack}] \\
+
+
 \tkzMeth{list\_point}{clear()}    & [\ref{ssub:meth_list_point_clear}] \\
 \tkzMeth{list\_point}{foreach(f)} & [\ref{ssub:meth_list_point_foreach}] \\
-\tkzMeth{list\_point}{map(f)}     & [\ref{ssub:meth_list_point_map}] \\
+
 \tkzMeth{list\_point}{bbox()}     & [\ref{ssub:meth_list_point_bbox}] \\
-\tkzMeth{list\_point}{barycenter()}& [\ref{ssub:meth_list_point_barycenter}]\\
+
 \tkzMeth{list\_point}{to\_path()}& [\ref{ssub:meth_list_point_to_path}] \\
 \bottomrule
 \end{tabular}
@@ -138,6 +153,22 @@ Returns the point at index \code{i}.
 Returns all points as separate values using \code{table.unpack}.
 This method is useful when interfacing with functions expecting individual point arguments.
 
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+init_elements()
+LP = list_point()
+LP:add(point(0,0))
+LP:add(point(1,0))
+LP:add(point(1,1))
+z.A, z.B, z.C = LP:unpack()
+}
+\begin{center}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
 
 % --------------------------------------------------------------------
 \subsection{Modification methods}

@@ -147,7 +147,7 @@ function midpoints_cycle_(...)
 end
 
 
--- depreciated remove ellipse
+-- Deprecated remove ellipse
 function get_points(obj)
 	-- Map of object types to their respective point keys
 	local point_map = {

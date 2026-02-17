@@ -124,12 +124,24 @@ end
 -- -------------------------------------------------------------------------
 
 -- export as path (x1,y1) -- (x2,y2) ...
-function list_point:to_path()
+function point:to_tikz()
+  return "(" .. self.re .. "," .. self.im .. ")"
+end
+
+function list_point:to_tikz_path()
   local t = {}
-  for _, p in ipairs(self) do
-    t[#t + 1] = p:to_tikz()
+  for i = 1, self:len() do
+    t[#t + 1] = self:get(i):to_tikz()
   end
   return table.concat(t, " -- ")
+end
+
+function list_point:as_path()
+  local P = path()
+  for i = 1, self:len() do
+    P:add_point(self:get(i))
+  end
+  return P
 end
 
 return list_point

@@ -3,7 +3,7 @@
 
 \subsection{Introduction to Lua with LaTeX}
 
-\tkzEngine{\LUALATEX} is a variant of LaTeX that integrates Lua as a scripting language. This enables :
+\tkzEngine{\LUALATEX} is a variant of LaTeX that integrates Lua as a scripting language. This enables:
 
 \begin{itemize}
   \item Perform advanced calculations.
@@ -18,13 +18,13 @@ In \tkzNamePack{tkz-elements}, I only use two ways of integrating code into \tkz
 \begin{itemize}
   \item  Lua code block with \tkzMacro{lualatex}{directlua}. Note\footnote{You can use the \tkzEnv{luacode}{luacode} environment, after loading the package of the same name. The  \tkzEnv{tkz-elements}{tkzelements} environment can also be used.}
 
-  Lua code can be executed directly in a document using \tkzMacro{lualatex}{directlua} :
+  Lua code can be executed directly in a document using \tkzMacro{lualatex}{directlua}:
 
   |\directlua{tex.print(math.exp(1))}| -->  \directlua{tex.print(math.exp(1))}
 
   \item  Loading an external Lua file:
 
-  You can write a separate Lua script  and load it with : \tkzFct{lua}{dofile}, \tkzFct{lua}{loadfile} or \tkzFct{lua}{require}. Each of these functions has its own advantages, depending on the circumstances; initially, we'll be focusing on the first two.
+  You can write a separate Lua script  and load it with: \tkzFct{lua}{dofile}, \tkzFct{lua}{loadfile} or \tkzFct{lua}{require}. Each of these functions has its own advantages, depending on the circumstances; initially, we'll be focusing on the first two.
 
  \emph{dofile:}   Immediately executes a Lua file. Equivalent to loadfile(filename)()
 
@@ -33,7 +33,7 @@ In \tkzNamePack{tkz-elements}, I only use two ways of integrating code into \tkz
 \emph{require:} Loads a Lua module once (via package.loaded) and executes it; uses package.path to search for the file.
 
 
-Examples are provided in this documentation, which you can see :
+Examples are provided in this documentation, which you can see:
 
  [\ref{sec:work_organization}] |\directlua{dofile("lua/sangaku.lua")}|
 
@@ -46,9 +46,65 @@ With \tkzEnv{luacode}{luacode} environment, you need to use two hyphens.
 
 The next subsection describes some of the differences between \TeX{} and LuaTeX{} for special characters and catcodes.
 
+\subsection{Special Characters and Catcodes in \tkzNamePack{Lua\TeX}} % (fold)
+\label{sub:special_characters_and_catcodes}
+
+\tkzHand{\textcolor{red}{Warning}}:
+Working with \tkzNamePack{Lua\TeX} exposes deep differences between how Lua and \TeX{} handle characters—especially special characters—and how category codes (catcodes) are assigned and interpreted.
+
+\subsubsection{What Are Catcodes in \LaTeX?} % (fold)
+\label{ssub:what_are_catcodes}
+
+In \LaTeX{}, every character is associated with a \emph{category code}, or \emph{catcode}, which determines how \TeX{} interprets it during input processing.
+
+
+\begin{tabular}{lll}
+\toprule
+ \textbf{Character} & \textbf{Catcode} & \textbf{Meaning} \\
+ \midrule
+ \verb|\| & 0 & Escape character (starts a control sequence) \\
+\verb|{| & 1 & Begin group \\
+\verb|}| & 2 & End group \\
+\verb|#| & 6 & Macro parameter \\
+\verb|^| & 7 & Superscript (in math mode) \\
+\verb|%| & 14 & Comment character \\
+ \bottomrule
+ \end{tabular}
+
+
+These catcodes can change dynamically within a macro or document. This flexibility is powerful, but also risky when interfacing with Lua.
+
+% subsubsection what_are_catcodes (end)
+
+\subsubsection{Lua Does Not Understand Catcodes} % (fold)
+\label{sub:lua_does_not_understand_catcodes}
+
+Lua interprets strings as sequences of bytes or UTF-8 code points. It has \emph{no concept of catcodes}. When Lua sends content to \TeX{} using \tkzMacro{lualatex}{directlua}, the interpretation is performed by \TeX{} according to the current catcode settings.
+
+This discrepancy leads to common issues:
+
+\begin{itemize}
+  \item Special characters such as \verb|#|, \verb|%|, or \verb|^| are not escaped, which can break the \LaTeX{} parser.
+  \item Control sequences may be misinterpreted if \verb|\| is improperly used or redefined.
+  \item Group delimiters (\verb|{| and \verb|}|) inserted from Lua may be incorrectly parsed, especially when injected into macros using \tkzFct{lualatex}{tex.sprint}.
+\end{itemize}
+
+% subsubsection lua_does_not_understand_catcodes (end)
+
+\subsubsection{Typical Problem Examples} % (fold)
+\label{ssub:typical_problems}
+
+\begin{itemize}
+  \item \textbf{Hash (\#)}: Printing \verb|\mycmd{#1}| from Lua may raise an error if \verb|#| does not have catcode 6 or is not escaped correctly.
+  \item \textbf{Newlines (\texttt{\textbackslash n})}: Lua uses \verb|\n| for line breaks, which are not valid in TeX input unless passed through \tkzMacro{latex}{scantokens}.
+  \item \textbf{Percent (\%)}:  The \% (percent) symbol is special to both (La)TeX and Lua, but in very different ways. In (La)TeX, it's the default comment character. In Lua, it's one of the "magic" characters in pattern matching operations. (Lua's other "magic" characters are |^$()[]*+-?]|.)
+
+\end{itemize}
+
+
 \subsection{Interaction between Lua and LaTeX}
 
-\tkzEngine{\LUALATEX} allows you to interact with LaTeX, in particular via :
+\tkzEngine{\LUALATEX} allows you to interact with LaTeX, in particular via:
 
 \begin{itemize}
 \item \code{|tex.print()|}: displays text in LaTeX.
@@ -88,19 +144,19 @@ The name you assign to a variable must follow certain rules:
  What types of values can be assigned to a variable? Here's a list of the simplest:
 
 \begin{itemize}
-    \item \textbf{nil} : undefined value.
-    \item \textbf{boolean} : \texttt{true} or \texttt{false}.
-    \item \textbf{number} : double-precision floating-point numbers (reals).
-    \item \textbf{string} : strings.
-    \item \textbf{table} : associative data structures(key-value) and arrays.
-    \item \textbf{function} : anonymous or named functions.
+    \item \textbf{nil}: undefined value.
+    \item \textbf{boolean}: \texttt{true} or \texttt{false}.
+    \item \textbf{number}: double-precision floating-point numbers (reals).
+    \item \textbf{string}: strings.
+    \item \textbf{table}: associative data structures(key-value) and arrays.
+    \item \textbf{function}: anonymous or named functions.
 \end{itemize}
 
 \subsubsection{Dynamically}
 
 The type is defined by the assigned value. So when \code{|x = 5|} then the type of \code{x} is \code{number}, but if \code{|x = true|} then its type changes to \code{boolean}.
 
-\tkzRHand This warning was issued earlier concerning classes and variables reserved by the \tkzNamePack{tkz-elements}. For example, you cannot use : \code{circle} with $circle = ...$ which would result in losing the use of the class \tkzClass{circle}. Similarly, $C= 1$ would result in the loss of the contents of the table \tkzVar{circle}{C}.
+\tkzRHand This warning was issued earlier concerning classes and variables reserved by the \tkzNamePack{tkz-elements}. For example, you cannot use: \code{circle} with $circle = ...$ which would result in losing the use of the class \tkzClass{circle}. Similarly, $C= 1$ would result in the loss of the contents of the table \tkzVar{circle}{C}.
 
 \subsubsection{Scope and block}
 
@@ -492,7 +548,7 @@ One solution for these two cases is to define a macro \tkzname{pc} which replace
  \makeatother
 \end{verbatim}
 
-The code becomes :
+The code becomes:
 
 
 \begin{verbatim}
@@ -817,7 +873,7 @@ The "sugar syntax" in Lua refers to syntactic elements that make the language mo
   \item  Method calls with ":"\\
  \code{ obj:method(arg)} Is sugar for: \code{ obj.method(obj, arg)}
 
- The : implicitly passes obj as the first argument (self), which is very helpful in object-oriented programming.
+ The ":" implicitly passes obj as the first argument (self), which is very helpful in object-oriented programming.
 
 
   \item   Table field access with "."\\
@@ -864,14 +920,14 @@ Lua is useful for advanced calculations that LaTeX alone cannot handle efficient
   for i = 1, 10 do
     somme = somme + i
   end
-  tex.print("Somme de 1 à 10 : " .. somme)}
+  tex.print("Sum of 1 to 10: " .. somme)}
 \end{tkzexample}
 %
 
 \subsubsection{Example: Fibonacci}
 
  \vspace{1em}
-  Calcul du terme de rang $10$
+  Calculation of the rank term $10$
 
 \vspace{1em}
 \begin{tkzexample}[latex = .4\textwidth]
@@ -885,8 +941,8 @@ Lua is useful for advanced calculations that LaTeX alone cannot handle efficient
      return fibonacci(n - 1) + fibonacci(n - 2)
    end
  end}
-    Le terme de rang $10$ de la suite de
-    Fibonacci est
+    The term of rank $10$ in the Fibonacci sequence
+    is
     \(u_{10}=\directlua{tex.print(
     fibonacci(10))}\)
 \end{tkzexample}

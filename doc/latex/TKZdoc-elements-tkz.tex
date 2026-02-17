@@ -33,7 +33,7 @@ This avoids having to define \code{L.AB = line(z.A, z.B)} and then access \code{
   \captionof{table}{Functions.}\label{misc}
   \begin{tabular}{ll}
   \toprule
-  \textbf{Functions} & \textbf{Reference}\\
+  \textbf{Functions} & \texttt{Reference}\\
   \midrule
   \tkzFct{tkz}{tkz.length(z1, z2) }   &  [\ref{sub:length_of_a_segment}]  \\
   \tkzFct{tkz}{tkz.midpoint(z1, z2)} &  [\ref{sub:midpoint_and_midpoints}] \\
@@ -282,9 +282,9 @@ constant
 
 For convenience, the value of~$\tau$ is available to the user as
 
-\begin{quote}
-\code{tkz.tau = 2 * math.pi}
-\end{quote}
+
+\verb|tkz.tau = 2 * math.pi|
+
 
 This constant is particularly useful when dealing with normalized or
 periodic angles.  For instance:
@@ -452,14 +452,14 @@ init_elements()
    z.c = point(0, 3)
    z.d = point(2, -2)
    local angle = point.arg(z.b - z.a)
-   tex.print('slope of (ab) : '..tostring(angle)..'\\\\')
-   tex.print('slope normalized of (ab) : '..tostring(tkz.angle_normalize(angle))..'\\\\')
+   tex.print('slope of (ab): '..tostring(angle)..'\\\\')
+   tex.print('slope normalized of (ab): '..tostring(tkz.angle_normalize(angle))..'\\\\')
    local angle    = point.arg (z.c-z.a)
-   tex.print('slope of (ac) : '..tostring(angle)..'\\\\')
-   tex.print('slope normalized of (ac) : '..tostring(tkz.angle_normalize(angle))..'\\\\')
+   tex.print('slope of (ac): '..tostring(angle)..'\\\\')
+   tex.print('slope normalized of (ac): '..tostring(tkz.angle_normalize(angle))..'\\\\')
    local angle    = point.arg (z.d-z.a)
-   tex.print('slope of (ad) : '..tostring(angle)..'\\\\')
-   tex.print('slope normalized of (ad) : '..tostring(tkz.angle_normalize(angle))..'\\\\')
+   tex.print('slope of (ad): '..tostring(angle)..'\\\\')
+   tex.print('slope normalized of (ad): '..tostring(tkz.angle_normalize(angle))..'\\\\')
 }
 \end{Verbatim}
 \directlua{%
@@ -469,14 +469,14 @@ z.b = point(-3, -3)
 z.c = point(0, 3)
 z.d = point(2, -2)
 local angle = point.arg (z.b-z.a)
-tex.print('slope of (ab) : '..tostring(angle)..'\\\\')
-tex.print('slope normalized of (ab) : '..tostring(tkz.angle_normalize(angle))..'\\\\')
+tex.print('slope of (ab): '..tostring(angle)..'\\\\')
+tex.print('slope normalized of (ab): '..tostring(tkz.angle_normalize(angle))..'\\\\')
 local angle = point.arg (z.c-z.a)
-tex.print('slope of (ac) : '..tostring(angle)..'\\\\')
-tex.print('slope normalized of (ac) : '..tostring(tkz.angle_normalize(angle))..'\\\\')
+tex.print('slope of (ac): '..tostring(angle)..'\\\\')
+tex.print('slope normalized of (ac): '..tostring(tkz.angle_normalize(angle))..'\\\\')
 local angle = point.arg (z.d-z.a)
-tex.print('slope of (ad) : '..tostring(angle)..'\\\\')
-tex.print('slope normalized of (ad) : '..tostring(tkz.angle_normalize(angle))..'\\\\')
+tex.print('slope of (ad): '..tostring(angle)..'\\\\')
+tex.print('slope normalized of (ad): '..tostring(tkz.angle_normalize(angle))..'\\\\')
 }
 
 \begin{minipage}{.5\textwidth}
@@ -715,7 +715,7 @@ end
 \end{verbatim}
 \end{mybox}
 
-This code replaces :
+This code replaces:
 
 \begin{mybox}
 \begin{verbatim}
@@ -742,7 +742,7 @@ end
 \end{verbatim}
 \end{mybox}
 
-This code replaces :
+This code replaces:
 
 \begin{mybox}
 \begin{verbatim}
@@ -1180,7 +1180,7 @@ between two bounds, using a specified step (similar to the Python \texttt{range}
 \directlua{
 local T = tkz.range(5, 1, -1)
 for i, v in ipairs(T) do
-  tex.print(string.format("Value i : v))
+  tex.print(string.format("Value i: v))
 end
 }
 \end{tkzexample}

@@ -15,6 +15,7 @@ function in_out_(a, b, c, pt, EPS)-- nil (absent or fals or true)
 		return (x >= -EPS and y >= -EPS and z >= -EPS)
 end
 
+
 function in_out_strict_(a, b, c, pt, EPS)-- nil (absent or fals or true)
 	EPS  = EPS or tkz.epsilon
 	local x, y, z = barycentric_coordinates_(a, b, c, pt)

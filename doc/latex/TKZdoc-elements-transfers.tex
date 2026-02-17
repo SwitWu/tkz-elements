@@ -1,59 +1,145 @@
+%--------------------------------------------------------------------
 \newpage
 \section{Transfers}
+\label{sec:transfers}
 
-\subsection{From Lua to tkz-euclide or TikZ}
+The \tkzNamePack{tkz-elements} package strictly separates
+\emph{mathematical computation} from \emph{graphical rendering}.
+All geometric objects are created and manipulated internally in Lua,
+while drawing is performed by \tkzNamePack{TikZ} or
+\tkzNamePack{tkz-euclide}.
 
-This section explains how to transfer values from Lua to TeX/TikZ, including points, booleans, numeric values, and functional data. Some examples are advanced and can be explored in a second reading.
+A \emph{transfer} is the explicit operation that communicates data
+between the Lua computational layer and the \TeX\ rendering layer.
 
+\medskip
+Conceptually, the architecture may be summarized as:
 
-\subsubsection{Points transfer}
-\label{ssub:points_transfer}
+\begin{center}
+Computation (Lua) $\longrightarrow$ Transfer $\longrightarrow$ Rendering (TikZ/\TeX)
+\end{center}
 
-The necessary definitions and calculations are performed with the primitive \tkzMacro{lualatex}{directlua}\footnote{Or inside the \tkzEnv{tkz-elements}{tkzelements} environment}. Then, we execute the macro \tkzcname{tkzGetNodes}, which transforms the affixes of the table |z| into TikZ nodes. The drawing can then be done with plain \TIKZ{} or \tkzNamePack{tkz-euclide}.
+Objects remain invisible to \TeX\ until they are explicitly transferred.
+This design guarantees numerical robustness and a clear separation
+between computation and presentation.
 
-If you wish to use another package for plotting, you must define a custom macro similar to \tkzMacro{tkz-elements}{tkzGetNodes} that interprets the contents of the |z| table. You don't need to understand the following code to use the package. You only need to know that if |z.A| is defined, then the macro below will create a node named |A|.
+%--------------------------------------------------------------------
+\subsection{Conceptual Overview}
 
+Three types of transfer mechanisms are available in
+\tkzNamePack{tkz-elements}:
 
-See the section In-depth Study \ref{sec:in_depth_study} for more explanation.
+\begin{enumerate}
+\item Immediate transfer via the \TeX\ input stream;
+\item Object-based transfer through dedicated macros;
+\item File-based transfer via external data files.
+\end{enumerate}
 
-Point names may include the underscore  |_| and the macro \tkzMacro{tkz-elements}{tkzGetNodes} for automatic conversion to names with \tkzname{prime} or \tkzname{double prime}. (See  the next example)
+Each mechanism serves a different purpose depending on the size
+and nature of the data being communicated.
 
-\vspace{1em}
+\subsection{Object Serialization via \texttt{tostring}}
+\label{subsec:transfers_tostring}
 
-\begin{tkzexample}[latex=7cm]
-  \directlua{
-     init_elements()
-     z.o   = point(0, 0)
-     z.a_1 = point(2, 1)
-     z.a_2 = point(1, 2)
-     z.ap  = z.a_1 + z.a_2
-     z.app = z.a_1 - z.a_2
-  }
+The macro \tkzNameMacro{tkzUseLua} is the basic bridge from Lua to \TeX.
+It evaluates a Lua expression and prints its result into the \TeX\ input stream.
+Internally, it uses Lua's \texttt{tostring()} mechanism:
 
-  \begin{center}
-    \begin{tikzpicture}[ scale = 1.5]
-       \tkzGetNodes
-       \tkzDrawSegments(o,a_1 o,a_2 o,a' o,a'')
-       \tkzDrawSegments[red](a_1,a' a_2,a')
-       \tkzDrawSegments[blue](a_1,a'' a_2,a'')
-       \tkzDrawPoints(a_1,a_2,a',o,a'')
-       \tkzLabelPoints(o,a_1,a_2,a',a'')
-    \end{tikzpicture}
-  \end{center}
+\begin{verbatim}
+\def\tkzUseLua#1{\directlua{tex.sprint(#1)}}
+\end{verbatim}
+
+As a consequence, any \tkzNamePack{tkz-elements} object may define a Lua
+\texttt{\_\_tostring} metamethod to control its textual \TeX\ representation.
+This is used in particular for complex numbers (\tkzClass{point}).
+
+\medskip
+\texttt{Example with a point:}
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(1, -2)
+}
+\tkzUseLua{tostring(z.A)}
 \end{tkzexample}
 
-\subsubsection{Other transfers}
+Thus, the \emph{complex affix} associated with point $A$ is printed using
+Lua’s \texttt{\_\_tostring} metamethod (via \texttt{tostring}).
 
-It is also useful to transfer numerical values (such as lengths or angles) and booleans. For this, we provide the macro \tkzMacro{tkz-elements}{tkzUseLua(...)}:
+\medskip
+\texttt{Example with a matrix: }
+
+The macro \tkzNameMacro{tkzUseLua} prints the \emph{value} of a Lua expression
+as text (internally via \texttt{tostring(<expr>)}).%
+\footnote{Hence objects may customize their inline representation by defining a Lua \texttt{\_\_tostring} metamethod.}
+
+
+\medskip
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  local a, b, c, d = 1, 2, 3, 4
+  M.new = matrix({ { a, b }, { c, d } })}
+  \tkzUseLua{M.new:print()}
+\end{tkzexample}
+
+\texttt{Other cases}
+To transfer \code{nil}, \code{true}, and \code{false}, you must use \code{tostring}, However, you can directly transfer a number or a string of characters.
+
+\begin{verbatim}
+  \tkzUseLua{tostring(nil)}
+  \tkzUseLua{tostring(true)}
+  \tkzUseLua{"TANGENT"}
+  \tkzUseLua{math.pi}
+\end{verbatim}
+%--------------------------------------------------------------------
+\subsection{Immediate Transfer}
+\label{subsec:transfer_immediate}
+
+Immediate transfer occurs when Lua prints data directly into the
+\TeX\ input stream using \texttt{tex.print}.
+
+\subsubsection*{Numerical example}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(3,4)
+  tex.print(point.abs(z.A))
+}
+\end{tkzexample}
+
+The computed value is inserted directly into the document.
+
+\subsubsection*{Boolean example}
+
+\begin{tkzexample}[latex=.5\textwidth]
+
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(3, 0)
+  z.C = point(0, 2)
+  T.ABC = triangle(z.A, z.B, z.C)
+  tex.print(tostring(T.ABC:check_equilateral()))
+}
+\end{tkzexample}
+
+This mechanism allows Lua computations to influence
+\TeX\ logic through conditional statements.
+
+\medskip
+\texttt{Note: } It is possible to choose when to perform the transfer. A macro has been created for this purpose, but you can also create your own: it is called \tkzcname{tkzUseLua}. It is defined as follows:
 
 \begin{mybox}
   \begin{verbatim}
-  \def\tkzUseLua#1{\directlua{tex.print(tostring(#1))}}
+  \def\tkzUseLua#1{\directlua{tex.print(#1)}}
 \end{verbatim}
 \end{mybox}
 
 This macro prints the value of a Lua variable or expression directly into the TeX stream.
 
+\medskip
 \texttt{Example.}
 
  The following Lua code computes whether two lines intersect:
@@ -91,7 +177,7 @@ a point whose affix is: \tkzUseLua{x}
   x = intersection (L.ab, L.cd)}
 
 The intersection of the two lines lies at
-    a point whose affix is:\tkzUseLua{x}
+    a point whose affix is:\tkzUseLua{tostring(x)}
 
 
 \begin{tikzpicture}
@@ -121,164 +207,93 @@ The intersection of the two lines lies at
 \end{center}
   \end{minipage}
 
-\subsubsection{Example 1}
-\label{ssub:example_1}
+%----------------------------------------------
+% ---> INSERT additional custom examples here
+%----------------------------------------------
 
-This example shows how to transfer a Lua-defined function and generate a path of coordinates to be used in a TikZ plot. The main tools involved are Lua's   function \tkzFct{lua}{load}  and the   \tkzNameObj{path} class. See [\ref{ssub:plotting_a_curve}]
+%--------------------------------------------------------------------
+\subsection{Object-Based Transfer}
+\label{subsec:transfer_objects}
+
+Geometric objects stored in Lua tables must be converted
+into TikZ-compatible structures before drawing.
+
+\subsubsection{Transferring points}
+\label{transferring_points}
+
+Points are internally stored as complex affixes.
+The macro \tkzNameMacro{tkzGetNodes} converts them
+into TikZ coordinates.
+
+\begin{tkzexample}[latex=7cm]
+  \directlua{
+     init_elements()
+     z.o   = point(0, 0)
+     z.a_1 = point(2, 1)
+     z.a_2 = point(1, 2)
+     z.ap  = z.a_1 + z.a_2
+     z.app = z.a_1 - z.a_2
+  }
+
+  \begin{center}
+    \begin{tikzpicture}[ scale = 1.5]
+       \tkzGetNodes
+       \tkzDrawSegments(o,a_1 o,a_2 o,a' o,a'')
+       \tkzDrawSegments[red](a_1,a' a_2,a')
+       \tkzDrawSegments[blue](a_1,a'' a_2,a'')
+       \tkzDrawPoints(a_1,a_2,a',o,a'')
+       \tkzLabelPoints(o,a_1,a_2,a',a'')
+    \end{tikzpicture}
+  \end{center}
+\end{tkzexample}
+
+\subsubsection{Transferring paths and curves}
 
 
-\begin{verbatim}
-\makeatletter\let\percentchar\@percentchar\makeatother
+\begin{tkzexample}[latex=.4\textwidth]
 \directlua{
-init_elements()
-function list (f,min,max,nb)
-  PA.tbl = path()
-  for x = min, max, (max - min) / nb do
-     PA.tbl:add_point(point(x, f(x)),5)
-  end
-  return table.concat(PA.tbl)
-end}
-\def\plotcoords#1#2#3#4{%
-\directlua{%
-  f = load (([[
-        return function (x)
-            return (\percentchar s)
-        end
-    ]]):format ([[#1]]), nil, 't', math) ()
-tex.print(list(f,#2,#3,#4))}}
+ init_elements()
+ PF.ex = pfct("(cos(t))^3", "(sin(t))^3")
+ PA.curve = PF.ex:path(0, 2*math.pi, 100)
+ }
 
-\begin{tikzpicture}
-\tkzInit[xmin=1,xmax=3,ymin=0,ymax=2]
-\tkzGrid
-\tkzDrawX[right=3pt,label={$x$}]
-\tkzDrawY[above=3pt,label={$f(x) = \dfrac{1-\mathrm{e}^{-x^2}}{1+\mathrm{e}^{-x^2}}$}]
-\draw[cyan,thick] plot coordinates {\plotcoords{(1-exp(-x^2))/(exp(-x^2)+1)}{-3}{3}{100}};
-\end{tikzpicture}
-\end{verbatim}
-
-
-\makeatletter\let\percentchar\@percentchar\makeatother
-\directlua{
-init_elements()
-function list (f,min,max,nb)
-  PA.tbl = path()
-  for x = min, max, (max - min) / nb do
-     PA.tbl:add_point(point(x, f(x)),5)
-  end
-  return table.concat(PA.tbl)
-end}
-\def\plotcoords#1#2#3#4{%
-\directlua{%
-  f = load (([[
-        return function (x)
-            return (\percentchar s)
-        end
-    ]]):format ([[#1]]), nil, 't', math) ()
-tex.print(list(f,#2,#3,#4))}
-}
 \begin{center}
-  \begin{tikzpicture}
-  \tkzInit[xmin=1,xmax=3,ymin=0,ymax=2]
-  \tkzGrid
-  \tkzDrawX[right=3pt,label={$x$}]
-  \tkzDrawY[above=3pt,label={$f(x) = \dfrac{1-\mathrm{e}^{-x^2}}{1+\mathrm{e}^{-x^2}}$}]
-  \draw[cyan,thick] plot coordinates {\plotcoords{(1-exp(-x^2))/(exp(-x^2)+1)}{-3}{3}{100}};
-  \end{tikzpicture}
-\end{center}
-
-\subsubsection{Example 2}
-
-This example demonstrates how to pass a value (the number of sides) from \TeX{} to Lua using the   \tkzMacro{lualatex}{directlua} primitive. This enables the dynamic creation of regular polygons. This example is based on a answer from egreg.
-\begin{flushright}
-\small
- \href{https://tex.stackexchange.com/questions/729009/how-can-these-regular-polygons-be-arranged-within-a-page/731503#731503}{egreg--tex.stackexchange.com}
-\end{flushright}
-
-\begin{verbatim}
-\directlua{
-  z.I = point(0, 0)
-  z.A = point(2, 0)
-}
-\def\drawPolygon#1{
-\directlua{
-  RP.six = regular_polygon(z.I,z.A,#1)
-  RP.six : name ("P_")
-  }
-\begin{tikzpicture}[scale=.5]
- \def\nb{\tkzUseLua{RP.six.nb}}
- \tkzGetNodes
- \tkzDrawCircles(I,A)
- \tkzDrawPolygon(P_1,P_...,P_\nb)
- \tkzDrawPoints[red](P_1,P_...,P_\nb)
+ \begin{tikzpicture}[scale=2]
+  \tkzDrawCoordinates[smooth,red,fill=orange](PA.curve)
 \end{tikzpicture}
-}
-\foreach [count=\i] \n in {3, 4, ..., 10} {
-  \makebox[0.2\textwidth]{%
-    \begin{tabular}[t]{@{}c@{}}
-      $n=\n$ \\[1ex]
-      \drawPolygon{\n}
-    \end{tabular}%
-  }\ifnum\i=4 \\[2ex]\fi
-}
-\end{verbatim}
+ \end{center}
+\end{tkzexample}
 
-\directlua{
-  z.I = point(0,0)
-  z.A = point(2,0)
-}
-\def\drawPolygon#1{
-\directlua{
-  RP.six   = regular_polygon(z.I,z.A,#1)
-  RP.six : name ("P_")
-  }
-\begin{tikzpicture}[scale=.5]
- \def\nb{\tkzUseLua{RP.six.nb}}
- \tkzGetNodes
- \tkzDrawCircles(I,A)
- \tkzDrawPolygon(P_1,P_...,P_\nb)
- \tkzDrawPoints[red](P_1,P_...,P_\nb)
-\end{tikzpicture}
-}
-\foreach [count=\i] \n in {3, 4, ..., 10} {
-  \makebox[0.2\textwidth]{%
-    \begin{tabular}[t]{@{}c@{}}
-      $n=\n$ \\[1ex]
-      \drawPolygon{\n}
-    \end{tabular}%
-  }\ifnum\i=4 \\[2ex]\fi
-}
+The Lua object is serialized into a coordinate list
+interpreted by TikZ.
 
-\subsubsection{Example 3}
+%----------------------------------------------
+% ---> INSERT advanced fct / pfct examples here
+%----------------------------------------------
+
+%--------------------------------------------------------------------
+\subsubsection{File-Based Transfer}
+
+
+For large datasets or high-resolution curves,
+it may be preferable to generate an external file.
 
 This time, the transfer will be carried out using an external file. The following example is based on this one, but using a table.
 
-\directlua{
- init_elements()
-   z.a = point(1, 0)
-   z.b = point(3, 2)
-   z.c = point(0, 2)
- A,B,C =  tkz.parabola (z.a, z.b, z.c)
+\texttt{Generating a data file: } The file \texttt{tmp.table} is created using the $f$ function.
 
- function f(t0, t1, n)
-  local out=assert(io.open("tmp.table","w"))
-  local y
-  for t = t0,t1,(t1-t0)/n  do
-   y = A*t^2+B*t +C
-   out:write(utils.checknumber(t), " ",
-     utils.checknumber(y), " i\string\n")
-  end
-  out:close()
- end
- }
+The file \texttt{tmp.table} now contains numerical data.
+ \texttt{Using the generated file: } Here, the curve is plotted using \tkzNamePack{TikZ}.
 
-\begin{minipage}{0.55\textwidth}
-\begin{verbatim}
-\directlua{
+
+
+\begin{tkzexample}[latex=.5\textwidth]
+ \directlua{
   init_elements()
    z.a = point(1, 0)
    z.b = point(3, 2)
    z.c = point(0, 2)
-   A,B,C = parabola (z.a, z.b, z.c)
+   A,B,C = tkz.parabola (z.a, z.b, z.c)
 
  function f(t0, t1, n)
   local out=assert(io.open("tmp.table","w"))
@@ -289,8 +304,8 @@ This time, the transfer will be carried out using an external file. The followin
      utils.checknumber(y), " i\string\n")
   end
   out:close()
- end
- }
+ end}
+
 \begin{tikzpicture}
    \tkzGetNodes
    \tkzInit[xmin=-1,xmax=5,ymin=0,ymax=5]
@@ -300,121 +315,58 @@ This time, the transfer will be carried out using an external file. The followin
    \draw[domain=-1:3] plot[smooth]
         file {tmp.table};
 \end{tikzpicture}
-\end{verbatim}
-\end{minipage}
-\begin{minipage}{0.45\textwidth}
-\begin{center}
-  \begin{tikzpicture}
-     \tkzGetNodes
-     \tkzInit[xmin=-1,xmax=5,ymin=0,ymax=5]
-     \tkzDrawX\tkzDrawY
-     \tkzDrawPoints[red,size=2](a,b,c)
-     \directlua{f(-1,3,100)}%
-     \draw[domain=-1:3] plot[smooth] file {tmp.table};
-  \end{tikzpicture}
-\end{center}
-\end{minipage}
+ \end{tkzexample}
 
-\subsubsection{Example 4}
 
-The result is identical to the previous one.
+
+
+
+File-based transfer provides scalability and allows
+interoperability with external plotting tools such as
+\texttt{pgfplots}.
+
+%----------------------------------------------
+% ---> INSERT high-resolution example here
+%----------------------------------------------
+
+%--------------------------------------------------------------------
+\subsection{Dynamic \TeX--Lua Interaction}
+\label{subsec:dynamic_transfer}
+
+Transfers are bidirectional.
+\TeX\ may pass parameters to Lua for computation.
+
+\medskip
 \begin{verbatim}
-\directlua{
-   z.a   = point(1, 0)
-   z.b   = point(3, 2)
-   z.c   = point(0, 2)
-   A,B,C =  parabola (z.a, z.b, z.c)
-
- function f(t0, t1, n)
- local PA.tbl = path()
- for t = t0,t1,(t1-t0)/n  do
-     y = A*t^2+B*t +C
-     local pt = point(t, y)
-     PA.tbl:add_point(pt)
-  end
-  return table.concat (tbl)
-end
+\newcommand{\ComputeSquare}[1]{%
+  \directlua{tex.print(#1 * #1)}%
 }
-\begin{tikzpicture}
-   \tkzGetNodes
-   \tkzDrawX\tkzDrawY
-   \tkzDrawPoints[red,size=2pt](a,b,c)
-   \draw[domain=-2:3,smooth] plot coordinates {\directlua{tex.print(f(-2,3,100))}};
-\end{tikzpicture}
 \end{verbatim}
 
-\subsubsection{Example 5}
-
+\medskip
+Usage:
+\newcommand{\ComputeSquare}[1]{%
+  \directlua{tex.print(#1 * #1)}%
+}
 \begin{verbatim}
-\makeatletter\let\percentchar\@percentchar\makeatother
-\directlua{
-function cellx (start,step,n)
-return start+step*(n-1)
-end
-}
-\def\calcval#1#2{%
-\directlua{
-  f = load (([[
-        return function (x)
-            return (\percentchar s)
-        end
-    ]]):format ([[#1]]), nil, 't', math) ()
-x = #2
-tex.print(string.format("\percentchar.2f",f(x)))}
-}
-\def\fvalues(#1,#2,#3,#4) {%
-\def\firstline{$x$}
-    \foreach \i in {1,2,...,#4}{%
-      \xdef\firstline{\firstline &  \tkzUseLua{cellx(#2,#3,\i)}}}
-\def\secondline{$f(x)=#1$}
-     \foreach \i in {1,2,...,#4}{%
-      \xdef\secondline{\secondline &
-     \calcval{#1}{\tkzUseLua{cellx(#2,#3,\i)}}}}
-\begin{tabular}{l*{#4}c}
-  \toprule
-  \firstline  \\
-  \secondline \\
-  \bottomrule
-  \end{tabular}
-}
-\fvalues(x^2-3*x+1,-2,.25,8)
-\vspace{12pt}
-
+The square of 5 is \ComputeSquare{5}.
 \end{verbatim}
 
-\makeatletter\let\percentchar\@percentchar\makeatother
-\directlua{
-function cellx (start,step,n)
-return start+step*(n-1)
-end
-}
-\def\calcval#1#2{%
-\directlua{
-  f = load (([[
-        return function (x)
-            return (\percentchar s)
-        end
-    ]]):format ([[#1]]), nil, 't', math) ()
-x = #2
-tex.print(string.format("\percentchar.2f",f(x)))}
-}
-\def\fvalues(#1,#2,#3,#4) {%
-\def\firstline{$x$}
-    \foreach \i in {1,2,...,#4}{%
-      \xdef\firstline{\firstline &  \tkzUseLua{cellx(#2,#3,\i)}}}
-\def\secondline{$f(x)=#1$}
-     \foreach \i in {1,2,...,#4}{%
-      \xdef\secondline{\secondline &
-     \calcval{#1}{\tkzUseLua{cellx(#2,#3,\i)}}}}
-\begin{tabular}{l*{#4}c}
-  \toprule
-  \firstline  \\
-  \secondline \\
-  \bottomrule
-  \end{tabular}
-}
-\fvalues(x^2-3*x+1,-2,.25,8)
+\medskip
+The square of 5 is \ComputeSquare{5}.
 
-\subsubsection{Summary}
-The transfer of data between Lua and TeX is a key feature of \tkzNamePack{tkz-elements}, enabling high-precision numerical computations and dynamic figure generation. Whether for plotting curves, testing geometric properties, or generating tables, these tools offer flexibility and power that extend beyond traditional TeX capabilities.
-\endinput
+\medskip
+
+This interaction enables dynamic parameterized geometry,
+where document input directly controls Lua computations.
+
+%----------------------------------------------
+% ---> INSERT dynamic geometry example here
+%----------------------------------------------
+
+\medskip
+Transfers in \tkzNamePack{tkz-elements} may therefore be
+immediate, object-based, or file-based,
+depending on the size and structure of the data.
+This layered architecture ensures a clean separation
+between computation and graphical representation.

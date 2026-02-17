@@ -21,18 +21,16 @@ time and never updated.
 \label{ssub:method_angle_new}
 
 \begin{verbatim}
-local angle = require("tkz_elements_angle")
-
-local alpha  = angle(A, B, C)   -- equivalent to angle:new(A,B,C)
-local beta   = angle(B, C, A)
-local gamma  = angle(C, A, B)
+  local alpha  = angle(z.A, z.B, z.C)   -- equivalent to angle:new(A,B,C)
+  local beta   = angle(z.B, z.C, z.A)
+  local gamma  = angle(z.C, z.A, z.B)
 \end{verbatim}
 
 The three arguments are:
 \begin{itemize}
-  \item \tkzVar{ps} : the vertex of the angle,
-  \item \tkzVar{pa} : the first point defining the first ray,
-  \item \tkzVar{pb} : the second point defining the second ray.
+  \item \tkzVar{ps}: the vertex of the angle,
+  \item \tkzVar{pa}: the first point defining the first ray,
+  \item \tkzVar{pb}: the second point defining the second ray.
 \end{itemize}
 
 \subsection{Attributes}
@@ -45,33 +43,127 @@ The following attributes are stored inside every \tkzClass{angle} object:
 \captionof{table}{Angle attributes.}\label{angle:attributes}
 \begin{tabular}{lll}
 \toprule
-\textbf{Attribute} & \textbf{Meaning} & \textbf{Reference} \\
+\textbf{Attribute} & \textbf{Meaning} & \texttt{Reference} \\
 \midrule
-\tkzAttr{angle}{ps}   & Vertex of the angle & [\ref{ssub:attr_angle_ps}] \\
-\tkzAttr{angle}{pa}   & First defining point (ray $[ps\,pa]$) & [\ref{ssub:attr_angle_pa}] \\
-\tkzAttr{angle}{pb}   & Second defining point (ray $[ps\,pb]$) & [\ref{ssub:attr_angle_pb}] \\
-\tkzAttr{angle}{raw}  & Oriented angle (radians), may be negative & [\ref{ssub:attr_angle_raw}] \\
-\tkzAttr{angle}{norm} & Oriented angle normalised to $[0,2\pi)$ & [\ref{ssub:attr_angle_norm}] \\
+\tkzAttr{angle}{ps}   & Vertex of the angle & [\ref{par:attr_angle_ps}] \\
+\tkzAttr{angle}{pa}   & First defining point (ray $[ps\,pa]$) & [\ref{par:attr_angle_pa}] \\
+\tkzAttr{angle}{pb}   & Second defining point (ray $[ps\,pb]$) & [\ref{par:attr_angle_pb}] \\
+\tkzAttr{angle}{raw}  & Oriented angle (radians), may be negative & [\ref{par:attr_angle_raw}] \\
+\tkzAttr{angle}{value} & Non-oriented angle in the range $[0,\pi]$ & [\ref{par:attr_angle_value}] \\
+\tkzAttr{angle}{deg} & Interior angle in degrees & [\ref{par:attr_angle_deg}] \\
+
 \bottomrule
 \end{tabular}
 \egroup
 
-\paragraph{\tkzAttr{angle}{ps}}\label{ssub:attr_angle_ps}
+\paragraph{\tkzAttr{angle}{ps}}\label{par:attr_angle_ps}
 The vertex (summit) of the angle.
 
-\paragraph{\tkzAttr{angle}{pa}}\label{ssub:attr_angle_pa}
+\paragraph{\tkzAttr{angle}{pa}}\label{par:attr_angle_pa}
 A point defining the first ray $[ps\,pa]$.
 
-\paragraph{\tkzAttr{angle}{pb}}\label{ssub:attr_angle_pb}
+\paragraph{\tkzAttr{angle}{pb}}\label{par:attr_angle_pb}
 A point defining the second ray $[ps\,pb]$.
 
-\paragraph{\tkzAttr{angle}{raw}}\label{ssub:attr_angle_raw}
+\paragraph{\tkzAttr{angle}{raw}}\label{par:attr_angle_raw}
 The oriented angle in radians as returned by \texttt{get\_angle\_(ps,pa,pb)}; it may be negative.
 
-\paragraph{\tkzAttr{angle}{norm}}\label{ssub:attr_angle_norm}
+\paragraph{\tkzAttr{angle}{norm}}\label{par:attr_angle_norm}
 The oriented angle normalised to the interval $[0,2\pi)$.
 
+\paragraph{\tkzAttr{angle}{value}}
+\label{par:attr_angle_value}
+Returns the interior (non-oriented) angle in the range $[0,\pi]$:
+
+\texttt{Example: }
+\begin{tkzexample}[latex=.45\textwidth]
+  \directlua{%
+  init_elements()
+  z.O = point(0, 1)
+  z.T = point(2, 2)
+  C.OT = circle(z.O, z.T)
+  z.M = C.OT:point(.13)
+  A.OTM = angle(z.O, z.T, z.M)
+  tkzA = A.OTM.value}
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawLines(O,T O,M)
+  \tkzDrawCircle(O,T)
+  \tkzDrawPoints(O,T,M)
+  \tkzLabelPoints(O,T,M)
+  \tkzMarkAngle(T,O,M)
+  \tkzLabelAngle[pos=1.5](T,O,M){%
+  \tkzPN[3]{\tkzUseLua{tkzA}}}
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+
+\paragraph{\tkzMeth{angle}{deg}}
+\label{par:attr_angle_deg}
+Returns an interior angle in degrees.
+
+\texttt{Example: }
+
+\begin{tkzexample}[latex=.35\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0,0)
+  z.B = point(3,0)
+  z.C = point(1,2)
+  A.alpha = angle(z.B, z.A, z.C)
+  tex.print("Angle at A = "..A.alpha.deg.." degrees")
+}
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawPoints(A,B,C)
+  \tkzLabelPoints(A,B)
+  \tkzLabelPoints[above](C)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+Also possible:
+
+\begin{verbatim}
+   T.ABC = triangle(z.A, z.B, z.C)
+   local val = T.ABC.alpha_.deg
+\end{verbatim}
+
 All values are numerical scalars and remain fixed once the object is created.
+
+\texttt{Example: }
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.C = point(3, 0)
+  z.B = point(3, 2)
+  T.ABC = triangle(z.A, z.B, z.C)
+  A.A = T.ABC.alpha_
+  A.B = T.ABC.beta_
+  T.C = T.ABC.gamma_
+  tex.print("A(value) = \\", A.A.value)
+  tex.print('\\\\')
+  tex.print("A(raw) = \\", A.A.raw)
+  tex.print('\\\\')
+  tex.print("A(deg) = \\", A.A.deg)}
+
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawPoints(A,B,C)
+  \tkzLabelPoints(A,C)
+  \tkzLabelPoints[above](B)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
 
 \subsection{Methods}
 
@@ -81,7 +173,7 @@ All values are numerical scalars and remain fixed once the object is created.
 \captionof{table}{angle methods.}\label{angle:methods}
 \begin{tabular}{ll}
 \toprule
-\textbf{Methods} & \textbf{Reference} \\
+\textbf{Methods} & \texttt{Reference} \\
 \midrule
 \textbf{Creation} & \\
 \midrule
@@ -90,16 +182,11 @@ All values are numerical scalars and remain fixed once the object is created.
 \textbf{Accessors} & \\
 \midrule
 \tkzMeth{angle}{get()} & [\ref{ssub:method_angle_get}] \\
-\tkzMeth{angle}{value()} & [\ref{ssub:method_angle_value}] \\
-\tkzMeth{angle}{deg()} & [\ref{ssub:method_angle_deg}] \\
 \midrule
 \textbf{Tests} & \\
 \midrule
 \tkzMeth{angle}{is\_direct()} & [\ref{ssub:method_angle_is_direct}] \\
-\midrule
-\textbf{Aliases} & \\
-\midrule
-\tkzMeth{angle}{to\_degrees()} & [\ref{ssub:method_angle_to_degrees}] \\
+
 \bottomrule
 \end{tabular}
 \egroup
@@ -116,54 +203,8 @@ local ps, pa, pb = alpha:get()
 \label{ssub:method_angle_is_direct}
 Returns \verb|true| when the angle is positive (counterclockwise orientation).
 
-\subsubsection{\tkzMeth{angle}{value()}}
-\label{ssub:method_angle_value}
-Returns the interior (non-oriented) angle in the range $[0,\pi]$:
-
-\begin{tkzexample}[latex=.45\textwidth]
-  \directlua{%
-  init_elements()
-  z.O = point(0, 1)
-  z.T = point(2, 2)
-  C.OT = circle(z.O, z.T)
-  z.M = C.OT:point(.13)
-  A.OTM = angle(z.O, z.T, z.M)
-  tkzA = A.OTM:value()}
-\begin{center}
-  \begin{tikzpicture}
-  \tkzGetNodes
-  \tkzDrawLines(O,T O,M)
-  \tkzDrawCircle(O,T)
-  \tkzDrawPoints(O,T,M)
-  \tkzLabelPoints(O,T,M)
-  \tkzMarkAngle(T,O,M)
-  \tkzLabelAngle[pos=1.5](T,O,M){%
-   \tkzPN[3]{\tkzUseLua{tkzA}}}
-\end{tikzpicture}
-  \end{center}
-\end{tkzexample}
 
 
-\subsubsection{\tkzMeth{angle}{deg()}}
-\label{ssub:method_angle_deg}
-Returns the interior angle in degrees.
-
-\subsubsection{\tkzMeth{angle}{to\_degrees()}}
-\label{ssub:method_angle_to_degrees}
-Alias of \texttt{deg()}.
-
-\subsection{Example}
-
-\begin{tkzexample}[latex=.35\textwidth]
-\directlua{
-  init_elements()
-  z.A = point(0,0)
-  z.B = point(3,0)
-  z.C = point(1,2)
-  A.alpha = angle(z.B, z.A, z.C)
-  tex.print("Angle at A = "..A.alpha:deg().." degrees")
-}
-\end{tkzexample}
 
 \medskip
 This class is \emph{experimental} and may evolve in future versions.

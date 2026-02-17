@@ -108,7 +108,8 @@ function matrix.__tostring(A)
 		end
 		k[i] = table.concat(n, " ")
 	end
-	return table.concat(k)
+	-- à la toute fin
+	return table.concat(k, " ; ")
 end
 
 function matrix.__eq(A, B)

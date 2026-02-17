@@ -67,70 +67,76 @@ end
 -----------------------
 -- Result -> boolean
 -----------------------
-
 function circle:on_circle(p, EPS)
-  EPS = EPS or tkz.epsilon
-  local d = point.abs(p - self.center)
-  return math.abs(d - self.radius) <= EPS
+  return on_circle_(self.center, self.through, p, EPS)
 end
 
 function circle:in_disk(p, EPS)
-  EPS = EPS or tkz.epsilon
-  return point.abs(p - self.center) <= self.radius + EPS
+  return in_disk_(self.center, self.through, p, EPS)
 end
 
 function circle:in_disk_strict(p, EPS)
-  EPS = EPS or tkz.epsilon
-  local t = self.radius - EPS
-  if t <= 0 then return false end
-  return point.abs(p - self.center) < t
+  return in_disk_strict_(self.center, self.through, p, EPS)
 end
 
 function circle:out_disk_strict(p, EPS)
-  EPS = EPS or tkz.epsilon
-  return point.abs(p - self.center) > self.radius + EPS
+  return out_disk_strict_(self.center, self.through, p, EPS)
 end
 
--- Aliases (compat)
-circle.in_out = circle.on_circle
-circle.in_out_disk = circle.in_disk
-circle.in_out_disk_strict = circle.in_disk_strict
+circle.in_out              = circle.on_circle
+circle.in_out_disk         = circle.in_disk
+circle.in_out_disk_strict  = circle.in_disk_strict
 
--- Tri-état canonique : "IN", "ON", "OUT"
-function circle:point_position(p)
-  return point_circle_position_(self.center, self.through, p)
+
+function circle:position(obj, EPS)
+  EPS = EPS or tkz.epsilon
+  local mt = getmetatable(obj)
+
+  if mt == point then
+    return circle_point_position_(self, obj, EPS)
+
+  elseif mt == line then
+    return line_circle_position_(obj, self, EPS)
+
+  elseif mt == circle then
+    return circles_position_(self.center, self.radius,
+                             obj.center, obj.radius, EPS)
+  end
+
+  error("Unsupported object in circle:position()")
+end
+
+-- legacy alias (keep for backward compatibility)
+circle.point_position = circle.position
+
+-- Disk (closed): IN / OUT  (boundary counted as IN)
+function circle:position_disk(p, EPS)
+  EPS = EPS or tkz.epsilon
+  local d = point.abs(p - self.center)
+  local r = point.abs(self.through - self.center)
+  if d <= r + EPS then
+    return "IN"
+  else
+    return "OUT"
+  end
 end
 
 -- Boolean shortcuts (same default tolerance)
 function circle:is_disjoint(L)
-  return self:line_position(L) == "disjoint"
+  return self:line_position(L) == "DISJOINT"
 end
 
 function circle:is_tangent(L, EPS)
-  return self:line_position(L, EPS) == "tangent"
+  return self:line_position(L, EPS) == "TANGENT"
 end
 
 function circle:is_secant(L, EPS)
-  return self:line_position(L, EPS) == "secant"
+  return self:line_position(L, EPS) == "SECANT"
 end
 
 function circle:line_position(L, EPS)
-   EPS = EPS or tkz.epsilon
-  -- radius computed from center and through points
-  -- (safer than accessing a stored self.r field)
-  local r = self.radius
-  local d = distance_(L.pa, L.pb, self.center)
-
-  -- classification with tolerance
-  if d > r + EPS then
-    return "disjoint"
-  elseif math.abs(d - r) <= EPS then
-    -- near-tangency treated as tangency
-    return "tangent"
-  else
-    -- secant
-    return "secant"
-  end
+  EPS = EPS or tkz.epsilon
+  return line_position_(self.center, self.radius, L.pa, L.pb, EPS)
 end
 
 -- Relative position between two lines and a circle-
@@ -155,6 +161,24 @@ end
 ------------------------
 -- string --------------
 ------------------------
+function circle:position(obj, EPS)
+  EPS = EPS or tkz.epsilon
+  local mt = getmetatable(obj)
+
+  if mt == point then
+    return circle_point_position_(self, obj, EPS)
+
+  elseif mt == line then
+    return line_circle_position_(obj, self, EPS)
+
+  elseif mt == circle then
+    return circles_position_(self.center, self.radius,
+                             obj.center, obj.radius, EPS)
+  end
+
+  error("Unsupported object in circle:position()")
+end
+
 
 function circle:circles_position(C, EPS)
   return circles_position_(self.center, self.radius, C.center, C.radius, EPS)
@@ -980,12 +1004,27 @@ function circle:CCP(C, p, mode)
   mode = mode or "all"
   local pos = self:circles_position(C)
 
-    if     pos == "outside"         then return solve_outside(self, C, p, mode)
-    elseif pos == "intersect"       then return solve_intersect(self, C, p, mode)
-    elseif pos == "outside tangent" then return solve_outside(self, C, p, mode)
-    elseif pos == "inside tangent"  then return solve_inside_tangent(self, C, p, mode)
-    else                                 return solve_inside(self, C, p, mode)
-    end
+  if     pos == "DISJOINT_EXT"  then
+      return solve_outside(self, C, p, mode)
+
+  elseif pos == "SECANT" then
+      return solve_intersect(self, C, p, mode)
+
+  elseif pos == "TANGENT_EXT" then
+      return solve_outside(self, C, p, mode)
+
+  elseif pos == "TANGENT_INT" then
+      return solve_inside_tangent(self, C, p, mode)
+
+  elseif pos == "DISJOINT_INT" then
+      return solve_inside(self, C, p, mode)
+
+  elseif pos == "CONCENTRIC" or pos == "IDENTICAL" then
+      return false  -- ou gestion spécifique
+
+  else
+      error("Unknown circle position in CCP: "..tostring(pos))
+  end
 end
 
 
@@ -1024,7 +1063,7 @@ function circle:CLP(l, p, which)
     end
   end
 
-  if pos_line == "disjoint" then
+  if pos_line == "DISJOINT" then
     -- (1) P = i
     if p:identity(i) then
       local o1 = midpoint_(p, no)
@@ -1110,7 +1149,7 @@ function circle:CLP(l, p, which)
       return pa_center, pa_through, n
     end
 
-  elseif pos_line == "tangent" then
+  elseif pos_line == "TANGENT" then
     -- (1) P = i
     if p:identity(i) then
       push(os, i)
@@ -1778,25 +1817,23 @@ function circle:CCL(C2, D, EPS)
 
   --------------------------------------------------
 
-  if (posCC == "inside" or posCC == "inside tangent")
-     and posC1L == "disjoint"
+if (posCC == "DISJOINT_INT" or posCC == "TANGENT_INT")
+     and posC1L == "DISJOINT"
   then
     return path:new(), path:new(), 0
 
-  elseif (posCC == "inside" )  and (posC1L == "secant")
-  and ((posC2L == "disjoint") or (posC2L == "secant")) then
-     return self:CCL_ISD(C2,D)
+  elseif (posCC == "DISJOINT_INT") and (posC1L == "SECANT")
+     and ((posC2L == "DISJOINT") or (posC2L == "SECANT")) then
+    return self:CCL_ISD(C2, D)
 
-  elseif posCC == "inside tangent" and posC2L == "tangent" then
-    return self:CCL_ITT(C2,D)
+  elseif posCC == "TANGENT_INT" and posC2L == "TANGENT" then
+    return self:CCL_ITT(C2, D)
 
   else
     return self:CCL_DDD(C2, D)
-
   end
+
 end
-
-
 ---===== START  CCC by Viète =====-------
 -- === Test de tangence robuste (absolu ET relatif) ============================
 
@@ -1925,8 +1962,7 @@ end
 
 -- === Signature des trois paires =================================
 -- Relation entre deux cercles Ci, Cj à partir de circles_position_
--- Convertit les étiquettes "outside", "inside", ... vers
--- celles utilisées par CCC : "disjoint_ext", "tangent_ext", etc.
+
 local function circle_relation_from_positions(Ci, Cj, EPS)
   EPS = EPS or tkz.epsilon
 
@@ -1967,24 +2003,28 @@ local function three_circles_signature(C1, C2, C3, opts)
     equal      = 0,
   }
 
-  local function acc(tag)
-    if tag == "intersect" then
+local function acc(tag)
+    if tag == "SECANT" then
       counts.secant = counts.secant + 1
 
-    elseif tag == "outside tangent" or tag == "inside tangent" then
+    elseif tag == "TANGENT_EXT" or tag == "TANGENT_INT" then
       counts.tangent = counts.tangent + 1
 
-    elseif tag == "outside" then
+    elseif tag == "DISJOINT_EXT" then
       counts.disjoint = counts.disjoint + 1
 
-    elseif tag == "inside" then
+    elseif tag == "DISJOINT_INT" then
       counts.inside = counts.inside + 1
 
-    elseif tag == "concentric" then
+    elseif tag == "CONCENTRIC" then
       counts.concentric = counts.concentric + 1
 
-    elseif tag == "equal" then
+    elseif tag == "IDENTICAL" then
       counts.equal = counts.equal + 1
+
+    else
+      -- optionnel mais utile pour éviter les faux silencieux
+      -- error("three_circles_signature: unexpected tag "..tostring(tag))
     end
   end
 

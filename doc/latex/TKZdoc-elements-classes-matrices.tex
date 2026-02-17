@@ -34,7 +34,7 @@ M = matrix:new(1, 0, 0, 1) -- identity matrix
 \end{verbatim}
 \end{mybox}
 
-\textbf{Short form.}
+\texttt{Short form: }
 
 A more concise form is available:
 
@@ -198,7 +198,7 @@ This method (See  \ref{ssub:method_print}) is necessary to control the results, 
   \captionof{table}{Matrix attributes.}\label{matrix:attributes}
   \begin{tabular}{ll}
   \toprule
-  \textbf{Attributes}     & \textbf{Reference} \\
+  \textbf{Attributes}     & \texttt{Reference} \\
   \midrule
   \tkzAttr{matrix}{set}     & [\ref{sub:attribute_set}]\\
   \tkzAttr{matrix}{rows}    & [\ref{ssub:attributes_matrix_rows_and_cols}] \\
@@ -244,7 +244,7 @@ The number of rows is accessed with |M.n.rows| and the number of columns with |M
 \directlua{
  init_elements()
  M.n = matrix({ { 1, 2, 3 }, { 4, 5, 6 } })
- M.n :print()
+ M.n:print()
  tex.print("Rows:  "..M.n.rows)
  tex.print("Cols:  "..M.n.cols)}
 \end{verbatim}
@@ -437,7 +437,7 @@ Tests whether two matrices are equal. The result is \textbf{true} or \textbf{fal
   \captionof{table}{Matrix functions and methods.}\label{matrix:methods}
   \begin{tabular}{lll}
   \toprule
-  \textbf{Functions} & \textbf{Reference}   & \\
+  \textbf{Functions} & \texttt{Reference}   & \\
   \midrule
   \tkzFct{matrix}{new(...)}
     & See [\ref{ssub:method_new}; \ref{sub:matrix_creation}] & \\
@@ -454,7 +454,7 @@ Tests whether two matrices are equal. The result is \textbf{true} or \textbf{fal
   \tkzFct{matrix}{matrix.htm()}
     & [\ref{ssub:method_htm}] & \\
   \midrule
-  \textbf{Methods} & \textbf{Reference}   & \\
+  \textbf{Methods} & \texttt{Reference}   & \\
   \midrule
   \tkzMeth{matrix}{print(s,n)}
     &  & \\
@@ -704,7 +704,7 @@ The method returns \code{true} if the matrix is diagonal and \code{false} otherw
 
 We'll need to display results, so let's look at the different ways of displaying them, and distinguish the differences between arrays and matrices.
 
-Below, $A$ is an array. It can be displayed as a simple array or as a matrix, but we can't use the attributes and |A :print()| is not possible because $A$ is not an object of the class \code{matrix}. If you want to display an array like a matrix you can use the function |print_matrix| (see  the next example).
+Below, $A$ is an array. It can be displayed as a simple array or as a matrix, but we can't use the attributes and |A:print()| is not possible because $A$ is not an object of the class \code{matrix}. If you want to display an array like a matrix you can use the function |print_matrix| (see  the next example).
 
 \vspace{.5em}
 \begin{minipage}{.5\textwidth}
@@ -922,7 +922,7 @@ For the moment, this method only concerns matrices of order 2.
 \subsubsection{Method \tkzMeth{matrix}{homogenization}}
 \label{ssub:method_homogenization}
 
-\code{Homogenization} of vector: the aim is to be able to use a homogeneous transformation matrix
+The goal of \code{homogenization} is to to be able to use a homogeneous transformation matrix
 
 Let's take a point $A$ such that |z.A = point(2,-1)|. In order to apply a \code{htm}  matrix, we need to perform a few operations on this point. The first is to determine the vector (matrix) associated with the point. This is straightforward, since there's a point attribute called \code{mtx} which gives this vector:
 
@@ -973,10 +973,10 @@ The main method is to create the matrix:
 A 3x3 matrix is created which combines a $\pi/4$ rotation and a $\overrightarrow{t}=(3,1)$ translation.
 
 \directlua{
-init_elements()
-  pi  = math.pi
-  M.h   = matrix.htm(pi / 4, 3, 1)
-  M.h :print()
+  init_elements()
+  pi = math.pi
+  M.h = matrix.htm(pi / 4, 3, 1)
+  M.h:print()
 }
 
 
@@ -988,15 +988,15 @@ M.W = M.A * M.V
 \end{mybox}
 
 \directlua{
-init_elements()
-pi  = math.pi
-M.h   = matrix.htm(pi / 4 , 3 , 1)
-M.h :print()
-z.A = point(2,0)
-M.V = z.A.mtx:homogenization()
-M.V : print() tex.print('=')
-M.W = M.h * M.V
-M.W : print()
+  init_elements()
+  pi  = math.pi
+  M.h = matrix.htm(pi / 4 , 3 , 1)
+  M.h:print()
+  z.A = point(2,0)
+  M.V = z.A.mtx:homogenization()
+  M.V:print() tex.print('=')
+  M.W = M.h * M.V
+  M.W:print()
 }
 
 All that remains is to extract the coordinates of the new point.

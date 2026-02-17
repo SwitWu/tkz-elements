@@ -76,17 +76,82 @@ end
 -- Result -> boolean
 -------------------
 
--- Checks whether a point is on the line (outside the segment)
-function line:in_out(pt)
-  return line_in_out_(self.pa, self.pb, pt)
+
+
+-- --- new canonical API --------------------------------------------
+-- Returns "on" or "outside"
+-- function line:position(p, EPS)
+  -- return line_on_(self.pa, self.pb, p, EPS) and "ON" or "OUT"
+-- end
+--
+-- -- --- legacy API (compat)
+function line:position(obj, EPS)
+  EPS = EPS or tkz.epsilon
+
+  local mt = getmetatable(obj)
+
+  if mt == point then
+    return line_on_(self.pa, self.pb, obj, EPS) and "ON" or "OUT"
+
+  elseif mt == line then
+    return line_line_position_(self, obj, EPS)
+
+  elseif mt == circle then
+    return line_circle_position_(self, obj, EPS)
+  end
+
+  error("Unsupported object in line:position()")
 end
+
+------------------------------------------
+-- Checks whether a point is on the (infinite) line
+function line:in_out(pt, EPS)
+  return line_on_(self.pa, self.pb, pt, EPS)
+end
+
+-- Keep the alias, but route through the EPS-aware method
 line.on_line = line.in_out
+line.is_on_line = line.in_out
 
 -- Checks if a point is on the line segment
-function line:in_out_segment(pt)
-  return point.mod(pt - self.pa) + point.mod(pt - self.pb) - point.mod(self.pb - self.pa) <= tkz.epsilon
+
+function line:position_segment(pt, EPS)
+  EPS = EPS or tkz.epsilon
+  if self:position(pt, EPS) ~= "ON" then
+    return "OUT"
+  end
+  return on_segment_(self.pa, self.pb, pt, EPS) and "ON" or "OUT"
 end
-line.on_segment = line.in_out_segment
+
+
+function line:on_segment(pt, EPS)
+  return on_segment_(self.pa, self.pb, pt, EPS)
+end
+line.in_out_segment = line.on_segment
+line.is_on_segment = line.on_segment
+
+function line:is_equidistant(p)
+  return is_equidistant_(self.pa, self.pb, p)
+end
+
+
+-- Classification along the oriented segment [pa,pb], but only if pt is on the line
+-- Returns -1 (before pa), 0 (between), +1 (after pb), or nil if pt is not on the line.
+function line:where_on_line(pt, EPS)
+  EPS = EPS or tkz.epsilon
+
+  if self:position(pt, EPS) ~= "ON" then
+    return nil
+  end
+
+  local t = self:abscissa_(pt, EPS)
+  if t == nil then return nil end
+
+  if t < -EPS    then return "BEFORE"  end
+  if t >  1+EPS  then return "AFTER"   end
+  return "BETWEEN"
+end
+
 
 function line:is_parallel(L)
   local pa, pb = self:get()
@@ -100,9 +165,25 @@ function line:is_orthogonal(L)
   return is_orthogonal_(pa, pb, pc, pd)
 end
 
-function line:is_equidistant(p)
-  return is_equidistant_(self.pa, self.pb, p)
+-- ------------------------------------------------------------
+-- line / line relative position
+-- returns: "IDENTICAL" | "PARALLEL" | "SECANT"
+-- ------------------------------------------------------------
+function line_line_position_(L1, L2, EPS)
+  EPS = EPS or tkz.epsilon
+
+  if is_parallel_(L1.pa, L1.pb, L2.pa, L2.pb) then
+    -- parallèles ou identiques
+    if line_on_(L1.pa, L1.pb, L2.pa, EPS) then
+      return "IDENTICAL"
+    else
+      return "PARALLEL"
+    end
+  else
+    return "INTERSECT"
+  end
 end
+
 
 -------------------
 -- Result -> point
@@ -776,7 +857,7 @@ function line:set_affinity(...)
 end
 
 function line:path(nb)
-  nb = nb or 20
+  nb = nb or 1
   local list = {}
   for i = 0, nb do
     local t = i / nb
@@ -972,7 +1053,7 @@ function line:LPP(a, b)
   end
 
   -- Cas dégénéré : i existe et est sur le segment [a,b] → aucune solution
-  if i and lab:in_out_segment(i) then
+  if i and lab:on_segment(i) then
     return pa_center, pa_through, n
   end
 

@@ -20,7 +20,7 @@ Q.ABCD = quadrilateral:new(z.A, z.B, z.C, z.D)
 
 \textbf{Short form.}
 
-A shorter syntax is also available:
+A shorthand constructor is also available:
 
 \begin{mybox}
 \begin{verbatim}
@@ -32,7 +32,7 @@ Q.ABCD = quadrilateral(z.A, z.B, z.C, z.D)
 Points are created in the direct direction. A test is performed to check whether the points form a rectangle, otherwise compilation is blocked.
 
 \begin{center}
- \code{ Creation : Q.new = rectangle : new (z.A,z.B,z.C,z.D)}
+ \code{ Creation: Q.new = rectangle:new(z.A,z.B,z.C,z.D)}
 \end{center}
 
 
@@ -121,21 +121,21 @@ z.A = point(0, 0)
 z.B = point(1, 4)
 z.C = point(3.5, 4)
 z.D = point(5, 0 )
-Q.ABCD = quadrilateral(z.A,z.B,z.C,z.D)
+Q.ABCD = quadrilateral(z.A, z.B, z.C, z.D)
 z.I = Q.ABCD.center
-L.ll = Q.ABCD.da:ll_from (z.I)
-z.H = intersection(L.ll,Q.ABCD.ab)
-z.Hp = intersection(L.ll,Q.ABCD.cd)
+L.ll = Q.ABCD.da:ll_from(z.I)
+z.H = intersection(L.ll, Q.ABCD.ab)
+z.Hp = intersection(L.ll, Q.ABCD.cd)
 z.M =  Q.ABCD.ab.mid
-C.MA = circle(z.M,z.A)
+C.MA = circle(z.M, z.A)
 L.perp = Q.ABCD.ab:ortho_from(z.H)
-_,z.P = intersection (C.MA,L.perp)
-T.PAB = triangle (z.P,z.A,z.B)
+_,z.P = intersection (C.MA, L.perp)
+T.PAB = triangle (z.P, z.A, z.B)
 L.bis =  T.PAB:bisector ()
 z.G = L.bis.pb
-L.llg = Q.ABCD.da: ll_from (z.G)
-L.llm = Q.ABCD.da : ll_from (z.M)
-z.Gp = intersection (L.llg,Q.ABCD.cd)}
+L.llg = Q.ABCD.da:ll_from(z.G)
+L.llm = Q.ABCD.da:ll_from(z.M)
+z.Gp = intersection(L.llg, Q.ABCD.cd)}
 \begin{center}
 \begin{tikzpicture}
 \tkzGetNodes
@@ -179,21 +179,21 @@ z.A = point(0, 0)
 z.B = point(1, 4)
 z.C = point(3.5, 4)
 z.D = point(5, 0 )
-Q.ABCD = quadrilateral(z.A,z.B,z.C,z.D)
+Q.ABCD = quadrilateral(z.A, z.B, z.C, z.D)
 z.I = Q.ABCD.center
 L.ll = Q.ABCD.da:ll_from (z.I)
-z.H = intersection(L.ll,Q.ABCD.ab)
-z.Hp = intersection(L.ll,Q.ABCD.cd)
+z.H = intersection(L.ll, Q.ABCD.ab)
+z.Hp = intersection(L.ll, Q.ABCD.cd)
 z.M =  Q.ABCD.ab.mid
 C.MA = circle(z.M,z.A)
 L.perp = Q.ABCD.ab:ortho_from(z.H)
-_,z.P = intersection (C.MA,L.perp)
-T.PAB = triangle (z.P,z.A,z.B)
-L.bis =  T.PAB:bisector ()
+_,z.P = intersection(C.MA, L.perp)
+T.PAB = triangle(z.P, z.A, z.B)
+L.bis =  T.PAB:bisector()
 z.G = L.bis.pb
-L.llg = Q.ABCD.da: ll_from (z.G)
-L.llm = Q.ABCD.da : ll_from (z.M)
-z.Gp = intersection (L.llg,Q.ABCD.cd)}
+L.llg = Q.ABCD.da:ll_from(z.G)
+L.llm = Q.ABCD.da:ll_from(z.M)
+z.Gp = intersection(L.llg, Q.ABCD.cd)}
 \end{verbatim}
 
 \subsection{Quadrilateral methods}
@@ -206,7 +206,7 @@ z.Gp = intersection (L.llg,Q.ABCD.cd)}
   \captionof{table}{Quadrilateral methods.}\label{quadrilateral:methods}
   \begin{tabular}{ll}
   \toprule
-  \textbf{Methods} & \textbf{Reference}    \\
+  \textbf{Methods} & \texttt{Reference}    \\
   \midrule
   \tkzMeth{quadrilateral}{new()}& Note\footnote{quadrilateral(pt, pt, pt, pt) (short form, recommended)}; [\ref{sub:creating_a_quadrilateral}]\\
 
@@ -271,7 +271,7 @@ if bool == true then
 end
 }
 \begin{center}
-\begin{tikzpicture}[scale = .75 ]
+\begin{tikzpicture}[scale = .75]
   \tkzGetNodes
   \tkzDrawPolygon(A,B,C,D)
   \tkzDrawPoints(A,B,C,D)

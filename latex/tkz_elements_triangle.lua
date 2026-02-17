@@ -78,6 +78,7 @@ function triangle:new(za, zb, zc)
 		alpha_ = alpha_,
 		beta_ = beta_,
 		gamma_ = gamma_,
+		cross = cross,
 		semiperimeter = semiperimeter,
 		area = area,
 		inradius = inradius,
@@ -112,9 +113,42 @@ end
 -- Result -> boolean
 -----------------------
 -- added strict
+function triangle:position(p, EPS)
+	EPS = EPS or tkz.epsilon
+	local x, y, z = barycentric_coordinates_(self.pa, self.pb, self.pc, p)
+
+	local in_  = (x >  EPS and y >  EPS and z >  EPS)
+	local out_ = (x < -EPS or  y < -EPS or  z < -EPS)
+
+	if in_ then
+		return "IN"
+	elseif out_ then
+		return "OUT"
+	else
+		return "ON" -- zone de bord (tolérance)
+	end
+end
+
+
 function triangle:in_out(pt, strict)
 	-- ne change pas → tous les anciens documents restent valides
 	return in_out_(self.pa, self.pb, self.pc, pt, strict)
+end
+
+function triangle:on_triangle(pt, EPS)
+	EPS = EPS or tkz.epsilon
+	local a, b, c = self.pa, self.pb, self.pc
+	local x, y, z = barycentric_coordinates_(a, b, c, pt)
+	-- boundary cases
+	local onx = math.abs(x) <= EPS
+	local ony = math.abs(y) <= EPS
+	local onz = math.abs(z) <= EPS
+
+	if onx or ony or onz then
+		return true
+	end
+
+	return false
 end
 
 function triangle:check_equilateral(EPS)
@@ -185,11 +219,11 @@ function triangle:parameter(p)
 	local AB, BC, CA = self.ab, self.bc, self.ca
 	local ptotal = a + b + c
 
-	if AB:in_out_segment(p) then
+	if AB:on_segment(p) then
 		return length_(A, p) / ptotal
-	elseif BC:in_out_segment(p) then
+	elseif BC:on_segment(p) then
 		return (c + length_(B, p)) / ptotal
-	elseif CA:in_out_segment(p) then
+	elseif CA:on_segment(p) then
 		return (c + a + length_(C, p)) / ptotal
 	else
 		tex.error("The point is not on the boundary of the triangle.")
@@ -1050,17 +1084,17 @@ function triangle:thebault_circles(p)
 	-- 1. Déterminer le côté contenant p et (a,b,c)
 	--    a = sommet opposé au côté portant p
 	--------------------------------------------------
-	if self.bc:in_out_segment(p) then
+	if self.bc:on_segment(p) then
 		-- p sur BC -> sommet opposé A
 		a, b, c = pa, pb, pc
 		side    = self.bc
 
-	elseif self.ca:in_out_segment(p) then
+	elseif self.ca:on_segment(p) then
 		-- p sur CA -> sommet opposé B
 		a, b, c = pb, pc, pa
 		side    = self.ca
 
-	elseif self.ab:in_out_segment(p) then
+	elseif self.ab:on_segment(p) then
 		-- p sur AB -> sommet opposé C
 		a, b, c = pc, pa, pb
 		side    = self.ab
@@ -1451,7 +1485,7 @@ function triangle:path(p1, p2)
 	-- Trouver les indices des segments contenant p1 et p2
 	local function locate(p)
 		for i, s in ipairs(sides) do
-			if s.seg:in_out_segment(p) then
+			if s.seg:on_segment(p) then
 				return i
 			end
 		end

@@ -1,0 +1,132 @@
+%--------------------------------------------------------------------
+\section{Geometric Relations API}
+\label{sec:geometric_relations_api}
+
+\subsection{General Principle}
+
+In \tkzNamePack{tkz-elements}, geometric objects provide a unified method
+\[
+\code{object:position(other\_object[, EPS])}
+\]
+to classify a geometric relation.
+
+The result depends on the type of the second argument (\code{other\_object}).
+
+\medskip
+All position tests are tolerance-aware.
+If not specified, the optional parameter \code{EPS} defaults to the global value
+\tkzVar{tkz}{tkz.epsilon}.
+
+\medskip
+\textbf{Convention:}
+All classification results are returned as \emph{uppercase symbolic strings},
+intended for logical comparison in Lua code.
+
+%--------------------------------------------------------------------
+\subsection{Point vs Object}
+
+When the tested object is a point, the result describes membership relative to
+a region (or a boundary).
+
+\medskip
+Possible return values:
+
+\begin{center}
+\begin{tabular}{ll}
+\code{"IN"}  & strictly inside the region, \\
+\code{"ON"}  & on the boundary (within tolerance), \\
+\code{"OUT"} & strictly outside the region.
+\end{tabular}
+\end{center}
+
+\medskip
+Examples:
+\begin{itemize}
+\item \code{circle:position(point)} \quad (\code{"IN"}, \code{"ON"}, \code{"OUT"})
+\item \code{triangle:position(point)} \quad (\code{"IN"}, \code{"ON"}, \code{"OUT"})
+\item \code{conic:position(point)} \quad (\code{"IN"}, \code{"ON"}, \code{"OUT"})
+\item \code{line:position(point)} \quad (\code{"ON"} or \code{"OUT"})
+\end{itemize}
+
+%--------------------------------------------------------------------
+\subsection{Object vs Object}
+
+When both arguments are geometric objects, the result describes their mutual
+geometric relation.
+
+\subsubsection*{Line vs Line}
+
+\begin{center}
+\begin{tabular}{ll}
+\code{"INTERSECT"} & lines intersect at one point, \\
+\code{"PARALLEL"}  & distinct parallel lines, \\
+\code{"IDENTICAL"} & identical lines.
+\end{tabular}
+\end{center}
+
+\subsubsection*{Line vs Circle}
+
+\begin{center}
+\begin{tabular}{ll}
+\code{"DISJOINT"} & no intersection, \\
+\code{"TANGENT"}  & exactly one common point, \\
+\code{"SECANT"}   & two intersection points.
+\end{tabular}
+\end{center}
+
+\subsubsection*{Circle vs Circle}
+
+\begin{center}
+\begin{tabular}{ll}
+\code{"DISJOINT\_EXT"} & exterior disjoint circles, \\
+\code{"TANGENT\_EXT"}  & exterior tangency, \\
+\code{"SECANT"}        & two intersection points, \\
+\code{"TANGENT\_INT"}  & interior tangency, \\
+\code{"DISJOINT\_INT"} & one circle strictly inside the other, \\
+\code{"CONCENTRIC"}    & same center, different radii, \\
+\code{"IDENTICAL"}     & identical circles.
+\end{tabular}
+\end{center}
+
+%--------------------------------------------------------------------
+\subsection{Triangle and Conic}
+
+For \tkzClass{triangle} and \tkzClass{conic}, the method \code{position()}
+currently supports point arguments only.
+
+\subsubsection*{Triangle vs Point}
+
+\begin{center}
+\begin{tabular}{ll}
+\code{"IN"}  & strictly inside the triangle, \\
+\code{"ON"}  & on an edge or a vertex, \\
+\code{"OUT"} & outside the triangle.
+\end{tabular}
+\end{center}
+
+\subsubsection*{Conic vs Point}
+
+\begin{center}
+\begin{tabular}{ll}
+\code{"IN"}  & inside the conic region (according to its type), \\
+\code{"ON"}  & on the conic curve, \\
+\code{"OUT"} & outside the associated region.
+\end{tabular}
+\end{center}
+
+\medskip
+\texttt{Note:} For hyperbolas and parabolas, the meaning of \code{"IN"} and
+\code{"OUT"} depends on the region associated with the conic type and its
+construction data (focus/directrix or equivalent representation).
+
+%--------------------------------------------------------------------
+\subsection{Design Philosophy}
+
+\begin{itemize}
+\item A single polymorphic method centralizes geometric classification.
+\item Uppercase symbolic results ensure clarity and stability.
+\item Numerical tolerance improves robustness near boundary cases.
+\item The API is extensible: additional object types may be supported over time.
+\item Backward compatibility wrappers may be provided when older boolean methods
+      existed in previous versions.
+\end{itemize}

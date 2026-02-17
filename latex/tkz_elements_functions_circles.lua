@@ -29,57 +29,36 @@ from_diameter = diameter
 -----------------------
 -- Result -> boolean
 -----------------------
-function in_out_(a, b, pt)
-    return math.abs(point.abs(pt - a) - point.abs(b - a)) < tkz.epsilon
-end
-
-function in_out_disk_(a, b, pt)
-    return point.abs(pt - a) <= point.abs(b - a)
-end
-
-function midarc_(o, a, b) -- a -> b
-    local phi = 0.5 * get_angle_(a, o, b)
-    return rotation_(o, phi, b)
-end
-
-function is_tangent_(a, b, o, t, EPS)
-   EPS = EPS or tkz.epsilon
-  local r = length_(o, t)
-  local d = distance_(a, b, o)
-  return math.abs(d - r) <= EPS
-end
-
--- p est SUR le cercle (bande de tolérance)
-function on_circle_(o, t, p ,EPS)
-   EPS = EPS or tkz.epsilon
+function on_circle_(o, t, p, EPS)
+  EPS = EPS or tkz.epsilon
   local r = point.abs(t - o)
   local d = point.abs(p - o)
   return math.abs(d - r) <= EPS
 end
 
--- Inclusif : disque fermé (<=)
 function in_disk_(o, t, p, EPS)
-   EPS = EPS or tkz.epsilon
+  EPS = EPS or tkz.epsilon
   local r = point.abs(t - o)
   return point.abs(p - o) <= r + EPS
 end
 
--- Strict : disque ouvert (<)  — utile pour tes dispatchers
 function in_disk_strict_(o, t, p, EPS)
-   EPS = EPS or tkz.epsilon
+  EPS = EPS or tkz.epsilon
   local r = point.abs(t - o)
-  return point.abs(p - o) < r - EPS
+  local rr = r - EPS
+  if rr <= 0 then return false end
+  return point.abs(p - o) < rr
 end
 
--- Strict : extérieur pur (>)
-function out_disk_strict_(o, t, p,EPS)
-   EPS = EPS or tkz.epsilon
+function out_disk_strict_(o, t, p, EPS)
+  EPS = EPS or tkz.epsilon
   local r = point.abs(t - o)
   return point.abs(p - o) > r + EPS
 end
 
+-- internal helper
 function point_circle_position_(o, t, p, EPS)
-   EPS = EPS or tkz.epsilon
+  EPS = EPS or tkz.epsilon
   local d = point.abs(p - o)
   local r = point.abs(t - o)
   if math.abs(d - r) <= EPS then
@@ -90,6 +69,42 @@ function point_circle_position_(o, t, p, EPS)
     return "OUT"
   end
 end
+
+function circle_point_position_(C, p, EPS)
+  EPS = EPS or tkz.epsilon
+  local d = point.abs(p - C.center)
+  local r = C.radius
+
+  if is_zero_(d - r, EPS) then
+    return "ON"
+  elseif d < r then
+    return "IN"
+  else
+    return "OUT"
+  end
+end
+
+
+function in_out_(o, t, p, EPS)
+  EPS = EPS or tkz.epsilon
+local r = point.abs(t - o)
+local d = point.abs(p - o)
+return math.abs(d - r) <= EPS
+end
+
+function in_out_disk_(a, b, pt)
+    return point.abs(pt - a) <= point.abs(b - a)
+end
+
+
+function is_tangent_(a, b, o, t, EPS)
+   EPS = EPS or tkz.epsilon
+  local r = length_(o, t)
+  local d = distance_(a, b, o)
+  return math.abs(d - r) <= EPS
+end
+
+
 
 
 function act_(O1, T1, O2, T2, opts)
@@ -113,9 +128,32 @@ function act_(O1, T1, O2, T2, opts)
   return (eE_abs <= eps_abs) or (eI_abs <= eps_abs)
       or (eE_rel <= eps_rel) or (eI_rel <= eps_rel)
 end
+
+-- distance from point C to the infinite line (A,B)
+-- you already have distance_(A,B,C) apparently
+function line_circle_position_(L, C, EPS)
+  EPS = EPS or tkz.epsilon
+  local r = C.radius
+  local d = distance_(L.pa, L.pb, C.center)
+
+  if d > r + EPS then
+    return "DISJOINT"
+  elseif is_zero_(d - r, EPS) then
+    return "TANGENT"
+  else
+    return "SECANT"
+  end
+end
 -----------------------
 -- Result -> point
 -----------------------
+
+function midarc_(o, a, b) -- a -> b
+    local phi = 0.5 * get_angle_(a, o, b)
+    return rotation_(o, phi, b)
+end
+
+
 function tangent_point_two_circles_(c1, r1, c2, r2)
   local dc = c2 - c1
   local d  = point.abs(dc)
@@ -263,43 +301,50 @@ function line_position_(c, r, a, b, EPS)
   EPS = EPS or tkz.epsilon
   local d = distance_(a, b, c)
 
-  if tkz.approx(d, r, EPS) then
-    return "tangent"
-  elseif d < r then
-    return "secant"
+  if d > r + EPS then
+    return "DISJOINT"
+
+  elseif math.abs(d - r) <= EPS then
+    return "TANGENT"
+
   else
-    return "disjoint"
+    return "SECANT"
   end
 end
 
 
 
-function circles_position_(c1, r1, c2, r2, EPS)
+-- Relation between two circles (O1,r1) and (O2,r2)
+-- returns: COINCIDENT, CONCENTRIC, DISJOINT_EXT, TANGENT_EXT, SECANT,
+--          TANGENT_INT, DISJOINT_INT
+function circles_position_(o1, r1, o2, r2, EPS)
   EPS = EPS or tkz.epsilon
 
-  local d   = point.mod(c1 - c2)
-  local sum = r1 + r2
-  local dif = math.abs(r1 - r2)
+  local d = point.abs(o2 - o1)
+  local rp = r1 + r2
+  local rm = math.abs(r1 - r2)
 
-  -- à l'extérieur « clairement » (au-delà d'EPS)
-  if d > sum + EPS then
-    return "outside"
+  -- same center?
+  if is_zero_(d, EPS) then
+    if is_zero_(r1 - r2, EPS) then
+      return "IDENTICAL"
+    else
+      return "CONCENTRIC"
+    end
+  end
 
-  -- tangence extérieure
-  elseif math.abs(d - sum) <= EPS then
-    return "outside tangent"
-
-  -- tangence intérieure
-  elseif math.abs(d - dif) <= EPS then
-    return "inside tangent"
-
-  -- strictement à l'intérieur
-  elseif d < dif - EPS then
-    return "inside"
-
-  -- sinon : secants
+  -- compare d with r1+r2 and |r1-r2|
+  if d > rp + EPS then
+    return "DISJOINT_EXT"
+  elseif is_zero_(d - rp, EPS) then
+    return "TANGENT_EXT"
+  elseif d < rp - EPS and d > rm + EPS then
+    return "SECANT"
+  elseif is_zero_(d - rm, EPS) then
+    return "TANGENT_INT"
   else
-    return "intersect"
+    -- d < |r1-r2| - EPS
+    return "DISJOINT_INT"
   end
 end
 
@@ -369,18 +414,19 @@ function midcircle_cc_(o1, t1, o2, t2, EPS)
   r1 = length_(o1, t1)
   r2 = length_(o2, t2)
   state = circles_position_(o1, r1, o2, r2, EPS)
+
   i = barycenter_({ o2, r1 }, { o1, -r2 })
   j = barycenter_({ o2, r1 }, { o1, r2 })
   tg1, _ = tangent_from_(o1, t1, i)
   TG1, _ = tangent_from_(o2, t2, i)
 
-    if (state == "outside") or (state == "outside tangent") then
+    if (state == "DISJOINT_EXT") or (state == "TANGENT_EXT") then
         p = math.sqrt(point.mod(i - tg1) * point.mod(i - TG1))
         return circle:radius(i, p)
-    elseif state == "intersect" then
+    elseif state == "SECANT" then
         r, s = intersection_cc_(o1, t1, o2, t2, EPS)
         return circle:radius(i, point.mod(r - i)), circle:radius(j, point.mod(r - j))
-    elseif (state == "inside") or (state == "inside tangent") then
+    elseif (state == "DISJOINT_INT") or (state == "TANGENT_INT") then
         a, b = intersection_lc_(o1, o2, o1, t1, EPS)
         c, d = intersection_lc_(o1, o2, o2, t2, EPS)
 
@@ -479,9 +525,8 @@ function common_tangent_(C1, C2, mode, EPS)
   local B, rB = C2.center, C2.radius
 
   local pos   = circles_position_(A, rA, B, rB, EPS)
-  -- "inside" | "outside" | "intersect" | "inside tangent" | "outside tangent"
-  local S_ext = external_similitude_(A, rA, B, rB) -- peut être nil si rA == rB
-  local S_int = internal_similitude_(A, rA, B, rB) -- pour rA == rB : milieu AB
+  local S_ext = external_similitude_(A, rA, B, rB)
+  local S_int = internal_similitude_(A, rA, B, rB)
 
   local function equal_radii()
     return math.abs(rA - rB) < EPS
@@ -601,12 +646,13 @@ local function inside_tangent_proc()
     end
   end
 
+
   -- --------- Dispatcher clair ----------
-  if     pos == "inside"           then return inside_proc()
-  elseif pos == "intersect"        then return intersect_proc()
-  elseif pos == "inside tangent"   then return inside_tangent_proc()
-  elseif pos == "outside tangent"  then return outside_tangent_proc()
-  elseif pos == "outside"          then return outside_proc()
+  if     pos == "DISJOINT_INT"  then return inside_proc()
+  elseif pos == "SECANT"        then return intersect_proc()
+  elseif pos == "TANGENT_INT"   then return inside_tangent_proc()
+  elseif pos == "TANGENT_EXT"   then return outside_tangent_proc()
+  elseif pos == "DISJOINT_EXT"  then return outside_proc()
   end
 
   tex.error("common_tangent_: invalid configuration ('"..tostring(pos).."', mode='"..tostring(mode).."').")

@@ -15,6 +15,31 @@ function line_in_out_(a, b, pt)
 	return math.abs((b - a) ^ (pt - a)) <= tkz.epsilon
 end
 
+-- --- core predicate (EPS-aware) -----------------------------------
+function line_on_(a, b, pt, EPS)
+	EPS = EPS or tkz.epsilon
+	return math.abs((b - a) ^ (pt - a)) <= EPS
+end
+
+function on_segment_(a, b, pt, EPS)
+	EPS = EPS or tkz.epsilon
+	return point.mod(pt - a) + point.mod(pt - b) - point.mod(b - a) <= EPS
+end
+-- Parameter of orthogonal projection of pt on the oriented line pa->pb
+-- t < 0 : before pa ; 0..1 : between ; t > 1 : after pb
+function line:abscissa_(pt, EPS)
+	EPS = EPS or tkz.epsilon
+	local a, b = self.pa, self.pb
+	local u = b - a
+	local uu = (u .. u) -- dot product
+	if uu <= EPS*EPS then
+		tex.error("Degenerate line: two points coincide.")
+		return nil
+	end
+	local t = ((pt - a) .. u) / uu
+	return t
+end
+
 function is_parallel_(pa, pb, pc, pd)
 	local det = (pb - pa) ^ (pd -pc)
 	return math.abs(det) < tkz.epsilon

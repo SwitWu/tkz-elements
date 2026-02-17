@@ -1,0 +1,40 @@
+%--------------------------------------------------------------------
+\section{Numerical Tolerance}
+\label{sec:numerical_tolerance}
+
+\subsection{Floating-Point Arithmetic}
+
+All computations in \tkzNamePack{tkz-elements} are performed using
+floating-point arithmetic.
+As a consequence, exact comparisons between real numbers are unreliable.
+
+For example, a point theoretically lying on a line may produce a
+very small non-zero value due to rounding errors.
+
+\subsection{Global Tolerance: \code{tkz.epsilon}}
+
+To ensure numerical robustness, \tkzNamePack{tkz-elements}
+uses a global tolerance parameter:
+
+
+\verb|tkz.epsilon = 1e-10|
+
+
+This value defines the admissible numerical error in geometric tests
+(collinearity, incidence, equality of distances, etc.).
+
+\medskip
+By default, this tolerance is set to a small positive value.
+It can be adjusted by advanced users if needed.
+
+\subsection{Usage in Position Tests}
+
+All membership and position tests are \emph{EPS-aware}.
+When a method accepts an optional argument \code{EPS}, the following rule applies:
+
+\begin{itemize}
+\item If \code{EPS} is provided, it overrides the global tolerance.
+\item Otherwise, \code{tkz.epsilon} is used.
+\end{itemize}
+
+This design ensures consistency across all geometric objects.

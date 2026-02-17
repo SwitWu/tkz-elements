@@ -6,7 +6,7 @@
 -- tkz-settings and math
 
 tkz = tkz or {}
-tkz.nb_dec = 8
+tkz.nb_dec = 10
 tkz.epsilon = 0.1 ^ tkz.nb_dec
 tkz.dc = 2
 tkz.phi = (1 + math.sqrt(5)) / 2 -- golden number φ
@@ -609,8 +609,6 @@ function tkz.GetNodes()
 				)
 		end
 end
-
-
 
 
 return tkz

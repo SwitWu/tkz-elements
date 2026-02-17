@@ -203,7 +203,7 @@ Here is a \tkzname{path} representing a simple triangle:
   \captionof{table}{Methods of the class vector.}\label{path:metamethods}
   \begin{tabular}{ll}
   \toprule
-   \textbf{Metamethods} & \textbf{Reference} \\
+   \texttt{Metamethods} & \texttt{Reference} \\
    \midrule
   \tkzMeta{path}{add(path1,path2)}   & [\ref{ssub:metamethod_add}]  \\
   \tkzMeta{path}{sub(path1,path2)}   & [\ref{ssub:metamethod_sub}]  \\
@@ -257,34 +257,25 @@ tostring(p) --> path: { (x1,y1) , (x2,y2) , ... }
 \subsection{Methods}
 
 \bgroup
-  \catcode`\_ = 12
-  \small
-  \captionof{table}{Methods of the \texttt{path} class.}\label{path:methods}
-  \begin{tabular}{ll}
-    \toprule
-    \textbf{Method} & \textbf{Reference} \\
-    \midrule
-\tkzMeth{path}{add\_point(z)} & [\ref{ssub:method_tkzmeth_path_add__point}]\\
-
-\tkzMeth{path}{get(i)}       & \ref{ssub:method_tkzmeth_path_get}] \\
-
-\tkzMeth{path}{copy()}       & [\ref{ssub:method_tkzmeth_path_copy}] \\
-
+\catcode`\_ = 12
+\small
+\captionof{table}{Methods of the \texttt{path} class.}\label{path:methods}
+\begin{tabular}{ll}
+\toprule
+\texttt{Method} & \texttt{Reference} \\
+\midrule
+\tkzMeth{path}{add\_point(z)}     & [\ref{ssub:method_tkzmeth_path_add__point}]\\
+\tkzMeth{path}{get(i)}            & [\ref{ssub:method_tkzmeth_path_get}] \\
+\tkzMeth{path}{copy()}            & [\ref{ssub:method_tkzmeth_path_copy}] \\
+\tkzMeth{path}{count()}           & [\ref{ssub:method_tkzmeth_path_count}] \\
 \tkzMeth{path}{translate(dx, dy)} & [\ref{ssub:method_tkzmeth_path_translate}] \\
-
-\tkzMeth{path}{homothety(pt, k)} & [\ref{ssub:method_tkzmeth_path_homothety}] \\
-
-\tkzMeth{path}{rotate(pt, an)}  &  [\ref{ssub:method_tkzmeth_path_rotate}] \\
-
-\tkzMeth{path}{close()}  &  [\ref{ssub:method_tkzmeth_path_close}]\\
-
-\tkzMeth{path}{sub(i1, i2)} &  [\ref{ssub:method_tkzmeth_path_sub_i1_i2}] \\
-
-\tkzMeth{path}{show()}  &  [\ref{ssub:method_tkzmeth_path_show}] \\
-
+\tkzMeth{path}{homothety(pt, k)}  & [\ref{ssub:method_tkzmeth_path_homothety}] \\
+\tkzMeth{path}{rotate(pt, an)}    & [\ref{ssub:method_tkzmeth_path_rotate}] \\
+\tkzMeth{path}{close()}           & [\ref{ssub:method_tkzmeth_path_close}]\\
+\tkzMeth{path}{sub(i1, i2)}       & [\ref{ssub:method_tkzmeth_path_sub_i1_i2}] \\
+\tkzMeth{path}{show()}            & [\ref{ssub:method_tkzmeth_path_show}] \\
 \tkzMeth{path}{add\_pair\_to\_path(z1, z2, n)} & or add\_pair  [\ref{ssub:subsubsection_name}] \\
-
-\tkzMeth{path}{concat(sep)}  &  [\ref{ssub:path_concat}]\\
+\tkzMeth{path}{concat(sep)}       &  [\ref{ssub:path_concat}]\\
 \bottomrule
 \end{tabular}
 \egroup
@@ -294,9 +285,31 @@ tostring(p) --> path: { (x1,y1) , (x2,y2) , ... }
 \subsubsection{Method \tkzMeth{path}{add\_point(pt,<n>)}}
 \label{ssub:method_tkzmeth_path_add__point}
 
+This method appends a point to the path.
+
+\medskip
+
+\textbf{Arguments:}
+\begin{itemize}
+  \item \code{pt}: a point object.
+  \item \code{n} (optional): number of decimal places used when formatting
+        the point coordinates for TikZ output.
+\end{itemize}
+
+\medskip
+
+If \code{n} is provided, the coordinates are rounded to \code{n}
+decimal places before being stored in the path.
+If omitted, a default formatting precision is used.
+
+\medskip
+
+\texttt{Note: }
+The parameter \code{n} affects only the numerical representation in the
+generated TikZ code. It does not modify the internal geometric
+computation.
 Adds a point (given as a complex table) to the path. Let's take one of the first examples:
 
-| PA.triangle = path({ "(0, 0)", "(1, 0)","(1, 1)" })|and use the method to build the path automatically
 
 \begin{tkzexample}[latex=.3\textwidth]
 \directlua{
@@ -347,6 +360,22 @@ Returns a deep copy of the path
   \tkzDrawCoordinates(PA.p2)
 \end{tikzpicture}
 \end{tkzexample}
+
+\subsubsection{Method \tkzMeth{path}{count()}}
+\label{ssub:method_tkzmeth_path_count}
+
+Returns a deep copy of the path
+
+\begin{tkzexample}[latex=.3\textwidth]
+\directlua{
+  PA.p1 = path({ "(0, 0)", "(1, 0)","(1, 1)" })
+  PA.p2 = PA.p1:copy()
+  PA.p2:add_point(point(0, 0),0)
+  tex.print(PA.p2:count())
+  }
+\end{tkzexample}
+
+
 
 \subsubsection{Method \tkzMeth{path}{translate(dx,dy)}}
 \label{ssub:method_tkzmeth_path_translate}
