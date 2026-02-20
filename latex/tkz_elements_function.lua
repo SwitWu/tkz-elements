@@ -70,7 +70,8 @@ function fct:eval(x)
   return y
 end
 
--- Build a path from f(x)
+
+
 function fct:path(xmin, xmax, n)
   xmin = tonumber(xmin) or 0
   xmax = tonumber(xmax) or 1
@@ -87,7 +88,11 @@ function fct:path(xmin, xmax, n)
     if ok then
       y = tonumber(y)
       if y and y == y and y ~= math.huge and y ~= -math.huge then
-        p:add_point(point(x, y))
+        -- on ajoute le point AVEC la même logique que fct:point
+        local sx = self.sx or 1
+        local sy = self.sy or 1
+        p:add_point(point(sx * x, sy * y))
+        -- (ou bien: p:add_point(self:point(x)) mais ça recalculerait eval(x))
       end
     end
   end
@@ -95,14 +100,72 @@ function fct:path(xmin, xmax, n)
   return p
 end
 
+function fct:set_scale(sx, sy)
+  self.sx = tonumber(sx) or 1
+  self.sy = tonumber(sy) or 1
+  return self
+end
+
+
+
 -- ------------------------------------------------------------
 -- scalar evaluations
 -- ------------------------------------------------------------
+
 function fct:point(x)
-  return point(x, self:eval(x))
+  x = tonumber(x) or 0
+  local y = self:eval(x)
+  local sx = self.sx or 1
+  local sy = self.sy or 1
+  return point(sx * x, sy * y)
 end
 
-return fct
+
+function fct:half_tangents(x0, h)
+  h = h or (1e-4 * (1 + math.abs(x0)))
+
+  local P  = self:point(x0)
+  local X0, Y0 = P:get()
+
+  local Xp, Yp = self:point(x0 + h):get()
+  local Xm, Ym = self:point(x0 - h):get()
+
+  local mr = (Yp - Y0) / (Xp - X0)
+  local ml = (Y0 - Ym) / (X0 - Xm)
+
+  local function unit_point(m, dir)
+    local d = 1 / math.sqrt(1 + m*m)
+    return point(X0 + dir*d, Y0 + dir*m*d)
+  end
+
+  local Pl = unit_point(ml, -1)
+  local Pr = unit_point(mr,  1)
+
+  return Pl, Pr, ml, mr
+end
+
+
+
+function fct:tangent(x0, h, tol)
+  tol = tol or 1e-3
+  local Pl, Pr, ml, mr = self:half_tangents(x0, h)
+
+  if math.abs(mr - ml) > tol then
+    return Pl, Pr
+  end
+
+  local P  = self:point(x0)
+  local X0, Y0 = P:get()
+
+  local m = 0.5 * (ml + mr)
+  local d = 1 / math.sqrt(1 + m*m)
+
+  local Pr2 = point(X0 + d, Y0 + m*d)
+  local Pl2 = point(X0 - d, Y0 - m*d)
+
+  return Pl2, Pr2
+end
+
 
 --
 -- return fct

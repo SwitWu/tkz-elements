@@ -269,7 +269,9 @@ tostring(p) --> path: { (x1,y1) , (x2,y2) , ... }
 \tkzMeth{path}{copy()}            & [\ref{ssub:method_tkzmeth_path_copy}] \\
 \tkzMeth{path}{count()}           & [\ref{ssub:method_tkzmeth_path_count}] \\
 \tkzMeth{path}{translate(dx, dy)} & [\ref{ssub:method_tkzmeth_path_translate}] \\
-\tkzMeth{path}{homothety(pt, k)}  & [\ref{ssub:method_tkzmeth_path_homothety}] \\
+\tkzMeth{path}{scale(kx, ky)}     & [\ref{ssub:path_scale}] \\
+\tkzMeth{path}{homothety(pt, k)}  & [\ref{ssub:path_homothety}] \\
+\tkzMeth{path}{map(fx, fy)}        & [\ref{ssub:path_map}] \\
 \tkzMeth{path}{rotate(pt, an)}    & [\ref{ssub:method_tkzmeth_path_rotate}] \\
 \tkzMeth{path}{close()}           & [\ref{ssub:method_tkzmeth_path_close}]\\
 \tkzMeth{path}{sub(i1, i2)}       & [\ref{ssub:method_tkzmeth_path_sub_i1_i2}] \\
@@ -391,24 +393,150 @@ Translates the path by a given vector \((dx,dy)\)
 \end{tikzpicture}
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{path}{homothety(pt,r)}}
-\label{ssub:method_tkzmeth_path_homothety}
+\subsubsection{Method \tkzMeth{path}{scale(kx,ky)}}
+\label{ssub:path_scale}
 
-Applies a homothety centered at \(pt\) with ratio \(k\)
+This method applies an anisotropic scaling to a path with respect to the origin.
+
+\medskip
+
+\texttt{Arguments: }
+\begin{itemize}
+  \item \code{kx} : horizontal scaling factor,
+  \item \code{ky} : vertical scaling factor.
+\end{itemize}
+
+\medskip
+
+\texttt{Description: }
+
+Each point $P(x,y)$ of the path is transformed into
+\[
+P'(kx \cdot x,\; ky \cdot y).
+\]
+
+The transformation is performed relative to the origin $(0,0)$.
+
+\medskip
+
+\texttt{Returns: }
+
+A new \code{path} object containing the scaled points.
+The original path remains unchanged.
+
+\medskip
+
+\texttt{Example: }
+
+\begin{verbatim}
+PA.scaled = PA.original:scale(2,0.5)
+\end{verbatim}
+
+This doubles the $x$-coordinates and halves the $y$-coordinates.
+
+\subsubsection{Method \tkzMeth{path}{homothety(k,<center>)}}
+\label{ssub:path_homothety}
+
+This method applies a uniform scaling (homothety) to a path.
+
+\medskip
+
+\textbf{Arguments}
+\begin{itemize}
+  \item \code{k} : scaling factor,
+  \item \code{center} : optional reference point.
+\end{itemize}
+
+\medskip
+
+\textbf{Change in Version 5}
+
+The \code{center} parameter is now optional.
+If omitted, the origin $(0,0)$ is used.
+
+\medskip
+
+\textbf{Description}
+
+Each point $P(x,y)$ is transformed into
+\[
+P'(x',y') = (x_c + k(x - x_c),\; y_c + k(y - y_c)).
+\]
+
+\medskip
+
+\textbf{Returns}
+
+A new \code{path} object.
+
+\subsubsection{Method \tkzMeth{path}{map(fx,<fy>)}}
+\label{ssub:path_map}
+
+This method applies a coordinate transformation to each point of the path.
+
+\medskip
+
+\texttt{Arguments: }
+\begin{itemize}
+  \item \code{fx} : Lua function applied to the $x$-coordinate,
+  \item \code{fy} : optional Lua function applied to the $y$-coordinate.
+\end{itemize}
+
+If \code{fy} is omitted, the function \code{fx} is applied to both coordinates.
+
+\medskip
+
+\texttt{Description: }
+
+Each point $P(x,y)$ of the path is transformed into
+\[
+P'(x',y')
+\]
+according to:
+\[
+x' = fx(x),
+\qquad
+y' = fy(y).
+\]
+
+If only one function is provided:
+\[
+(x,y) \mapsto (f(x), f(y)).
+\]
+
+\medskip
+
+\texttt{Returns: }
+
+A new \code{path} object containing the transformed points.
+The original path is not modified.
+
+\medskip
+
+\texttt{Examples: }
+
+Apply the same function to both coordinates:
+
+\begin{verbatim}
+PA.new = PA.old:map(math.abs)
+\end{verbatim}
+
+Apply different transformations:
+
+\begin{verbatim}
+PA.new = PA.old:map(
+  function(x) return 2*x end,
+  function(y) return 0.5*y end
+)
+\end{verbatim}
+
+This produces the transformation
+\[
+(x,y) \mapsto (2x, 0.5y).
+\]
 
 
-\begin{tkzexample}[latex=.3\textwidth]
-\directlua{
-   z.O = point(0, 0)
-   PA.base = path({ "(0,0)", "(1,0)", "(1,1)" })
-   PA.scaled = PA.base:homothety(z.O, -2)}
-\begin{tikzpicture}
-  \tkzGetNodes
-  \tkzDrawCoordinates(PA.base)
-  \tkzDrawCoordinates(PA.scaled)
-  \tkzDrawPoint(O)
-\end{tikzpicture}
-\end{tkzexample}
+
 
 \subsubsection{Method \tkzMeth{path}{rotate(pt, an)}}
 \label{ssub:method_tkzmeth_path_rotate}

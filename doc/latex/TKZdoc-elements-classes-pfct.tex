@@ -105,12 +105,14 @@ and returns the corresponding callable Lua functions (or wraps them into a
 \tkzClass{pfct} object, depending on the implementation). This is a low-level
 helper mainly intended for internal use.
 
+
 \subsubsection{Method \tkzMeth{pfct}{x(t)}}
 \label{ssub:method_pfct_x}
 
 \texttt{Description: }Evaluates the $x$-component of the parametric curve at
 parameter \code{t}.
 
+\medskip
 \texttt{Returns: } a number.
 
 \subsubsection{Method \tkzMeth{pfct}{y(t)}}
@@ -119,16 +121,37 @@ parameter \code{t}.
 \texttt{Description: }Evaluates the $y$-component of the parametric curve at
 parameter \code{t}.
 
+\medskip
 \texttt{Returns: } a number.
 
 \subsubsection{Method \tkzMeth{pfct}{point(t)}}
 \label{ssub:method_pfct_point}
 
+
 \texttt{Description: }Constructs the point $(x(t),y(t))$ associated with the
 parametric curve. This method provides a direct bridge between numerical
 evaluation and geometric construction.
 
+\medskip
 \texttt{Returns: } a \tkzClass{point}.
+
+\medskip
+\texttt{Example: }
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+ init_elements()
+ PF.lem = pfct("cos(t+pi/2)", "sin(2*t)")
+ PA.courbe = PF.lem:path(0, 2*math.pi, 200)
+ z.A = PF.lem:point(math.pi/8)
+ }
+\begin{center}
+ \begin{tikzpicture}[scale=2]
+\tkzGetNodes
+  \tkzDrawCoordinates[smooth,cyan](PA.courbe)
+  \tkzDrawPoint[red](A)
+\end{tikzpicture}
+ \end{center}
+\end{tkzexample}
 
 \subsubsection{Method \tkzMeth{pfct}{path(tmin,tmax,n)}}
 \label{ssub:method_pfct_path}
@@ -140,7 +163,8 @@ the internal policy.
 
 \texttt{Returns: } a \tkzClass{path}.
 
-\texttt{Example: }
+\medskip
+\texttt{Example 1: }
 \begin{tkzexample}[latex=.4\textwidth]
 \directlua{
  init_elements()
@@ -155,106 +179,58 @@ the internal policy.
  \end{center}
 \end{tkzexample}
 
-
-%--------------------------------------------------------------------
-\subsection{Macros \tkzMacro{tkz-elements}{tkzDrawPointOnParamGraph} and
-\tkzMacro{tkz-elements}{tkzDrawPointsOnParamGraph}}
-
-These macros allow drawing points on a \emph{parametric curve} defined
-in the module system.
-
-The parametric function must already exist in the module table
-\texttt{PF}.
-
-%--------------------------------------------------------------------
-
-\subsubsection{Macro \tkzMacro{tkz-elements}{tkzDrawPointOnParamGraph}}
-
-
-\paragraph{Syntax}
-\begin{verbatim}
-\tkzDrawPointOnParamGraph[<TikZ options>]{<t>}{<name>}
-\end{verbatim}
-
-\paragraph{Description}
-This macro draws a point belonging to a parametric curve stored
-in the module \texttt{PF}.
-
-The drawn point has coordinates
-\[
-\bigl(x(t),\,y(t)\bigr),
-\]
-where the parametric curve is defined by the object \texttt{PF.<name>}.
-
-\paragraph{Arguments}
-\begin{itemize}
-  \item \texttt{<TikZ options>} (optional): graphical options applied to the point
-  \item \texttt{<t>}: value of the parameter
-  \item \texttt{<name>}: name of the parametric function stored in \texttt{PF}
-\end{itemize}
-
-\paragraph{Example}
-\begin{verbatim}
-\tkzDrawPointOnParamGraph[blue]{1.5}{lis}
-\end{verbatim}
-
-%--------------------------------------------------------------------
-\subsubsection{Macro \tkzMacro{tkz-elements}{tkzDrawPointsOnParamGraph}}
-
-\paragraph{Syntax}
-\begin{verbatim}
-\tkzDrawPointsOnParamGraph[<TikZ options>]{<t1,t2,...,tn>}{<name>}
-\end{verbatim}
-
-\paragraph{Description}
-This macro draws several points belonging to a parametric curve stored
-in the module \texttt{PF}.
-
-For each value \(t_i\) in the list, a point of coordinates
-\[
-\bigl(x(t_i),\,y(t_i)\bigr)
-\]
-is computed and drawn.
-
-\paragraph{Arguments}
-\begin{itemize}
-  \item \texttt{<TikZ options>} (optional): graphical options applied to all points
-  \item \texttt{<t1,t2,...,tn>}: comma-separated list of parameter values
-  \item \texttt{<name>}: name of the parametric function stored in \texttt{PF}
-\end{itemize}
-
-\paragraph{Example}
-\begin{verbatim}
-\tkzDrawPointsOnParamGraph[red]{0,0.5,1,1.5,2}{lis}
-\end{verbatim}
-
-\paragraph{Remarks}
-\begin{itemize}
-  \item These macros assume that the parametric function is already defined
-        in the module \texttt{PF}.
-  \item All evaluations are performed in Lua.
-  \item The macros are compatible with parametric curves drawn using
-        \texttt{\textbackslash tkzDrawCoordinates}.
-\end{itemize}
-
-\texttt{Example: }
-\begin{tkzexample}[latex=.5\textwidth]
+\medskip
+\texttt{Example 2: }
+\begin{tkzexample}[latex=.4\textwidth]
 \directlua{
  init_elements()
- PF.lem = pfct("cos(t+pi/2)", "sin(2*t)")
- PA.courbe = PF.lem:path(0, 2*math.pi, 200)
- z.A = PF.lem:point(math.pi/2)
+ PF.ff = pfct("cos(t)+(t)*sin(t)", "sin(t)-(t)*cos(t)")
+ PA.c_1 = PF.ff:path(0, math.pi, 1000)
+ PA.c_2 = PF.ff:path(math.pi, 2 * math.pi, 1000)
  }
 \begin{center}
- \begin{tikzpicture}[scale=2]
-\tkzGetNodes
-  \tkzDrawCoordinates[smooth,cyan](PA.courbe)
-  \tkzDrawPoint[blue](A)
-  \tkzDrawPointsOnParamGraph[red]{0,2,3,5}{lem}
-  \tkzDrawPointOnParamGraph[blue]{4}{lem}
-\end{tikzpicture}
+ \begin{tikzpicture}
+  \tkzInit[xmin=-5,xmax=2,ymin=-5,ymax=3]
+  \tkzGrid
+  \tkzAxeXY
+  \tkzDrawCoordinates[smooth,thick,red](PA.c_1)
+  \tkzDrawCoordinates[smooth,thick,cyan](PA.c_2)
+ \end{tikzpicture}
  \end{center}
-\end{tkzexample}
+ \end{tkzexample}
+
+ \medskip
+ \texttt{Example 3: }
+ \begin{tkzexample}[latex=.4\textwidth]
+\directlua{
+  init_elements()
+  PF.ff = pfct("t * sin((1 / t))", "t * cos((1 / t))")
+  PA.c_1 = PF.ff:path(math.pi/128, math.pi/16, 1000)
+  PA.c_2 = PF.ff:path(math.pi/16, math.pi, 1000)
+  PA.curve = PA.c_1 + PA.c_2
+  z.Ax = point(1, -1)
+  z.Ay = point(1, 2.5)
+  }
+
+\begin{center}
+   \begin{tikzpicture}[scale=2]
+ \tkzGetNodes
+ \tkzInit[xmin=-1,xmax=1,ymin=-1,ymax=3]
+ \tkzGrid
+ \tkzDrawLine[thick,red](Ax,Ay)
+ \tkzDrawX[label={$x(t) = t*sin((1/t)$},
+     below= -18pt,noticks=false]
+ \tkzLabelX[text=blue,below = 3pt]
+ \tkzDrawY[label={$y(t) = t*cos(1/t)$},
+     right= 18pt,noticks=false]
+ \tkzDrawCoordinates[smooth,cyan](PA.curve)
+ \end{tikzpicture}
+  \end{center}
+  \end{tkzexample}
+
+%--------------------------------------------------------------------
+
+
 
 \endinput
 %--------------------------------------------------------------------

@@ -19,16 +19,6 @@ setmetatable(path, {
 	end,
 })
 
--- function path.__add(p1, p2)
-	-- local result = {}
-	-- for _, pt in ipairs(p1) do
-	-- 	result[#result + 1] = pt
-	-- end
-	-- for _, pt in ipairs(p2) do
-	-- 	result[#result + 1] = pt
-	-- end
-	-- return path:new(result)
--- end
 
 
 function path.__add(p1, p2)
@@ -127,6 +117,23 @@ function path:homothety(center, k)
 		local newx = center.re + k * (x - center.re)
 		local newy = center.im + k * (y - center.im)
 		table.insert(scaled, string.format("(%s,%s)", checknumber_(newx), checknumber_(newy)))
+	end
+	return path:new(scaled)
+end
+
+-- Mise à l'échelle anisotrope
+function path:scale(kx, ky)
+	local scaled = {}
+	for _, pt in ipairs(self) do
+		local x, y = utils.parse_point(pt)
+		local newx = x * kx
+		local newy = y * ky
+		table.insert(scaled,
+			string.format("(%s,%s)",
+				checknumber_(newx),
+				checknumber_(newy)
+			)
+		)
 	end
 	return path:new(scaled)
 end
@@ -243,5 +250,28 @@ function path:iter()
 		end
 	end
 end
+
+
+function path:map(fx, fy)
+	fy = fy or fx
+
+	local mapped = {}
+
+	for _, pt in ipairs(self) do
+		local x, y = utils.parse_point(pt)
+
+		local newx = fx(x)
+		local newy = fy(y)
+
+		mapped[#mapped+1] =
+			string.format("(%s,%s)",
+				checknumber_(newx),
+				checknumber_(newy)
+			)
+	end
+
+	return path:new(mapped)
+end
+
 
 return path

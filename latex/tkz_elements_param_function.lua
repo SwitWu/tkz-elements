@@ -45,6 +45,9 @@ function pfct:new(exprx, expry, env)
   o.expry = expry
   o.env   = env or math
   o.fx, o.fy = nil, nil
+  o.sx = 1
+  o.sy = 1
+  o.mapfn = nil
   return o
 end
 
@@ -74,15 +77,43 @@ function pfct:compile()
   return self
 end
 
+function pfct:set_scale(sx, sy)
+  self.sx = tonumber(sx) or 1
+  self.sy = tonumber(sy) or 1
+  return self
+end
+
+function pfct:scale(sx, sy)
+  local o = self:copy()
+  return o:set_scale(sx, sy)
+end
+
 -- ------------------------------------------------------------
 -- evaluation
 -- ------------------------------------------------------------
 function pfct:eval(t)
   self:compile()
+
   local okx, x = pcall(self.fx, t)
   local oky, y = pcall(self.fy, t)
+
   if not okx then x = 0/0 end
   if not oky then y = 0/0 end
+
+  -- scale
+  x = (self.sx or 1) * x
+  y = (self.sy or 1) * y
+
+  -- map
+  if self.mapfn then
+    local ok, X, Y = pcall(self.mapfn, x, y, t, self)
+    if ok then
+      x, y = X, Y
+    else
+      x, y = 0/0, 0/0
+    end
+  end
+
   return x, y
 end
 
@@ -90,11 +121,14 @@ end
 -- path
 -- ------------------------------------------------------------
 function pfct:path(tmin, tmax, n)
-  tmin = tonumber(tmin)
-  tmax = tonumber(tmax)
+  tmin = tonumber(tmin) or 0
+  tmax = tonumber(tmax) or 1
   n    = tonumber(n) or 200
+  if n <= 0 then n = 1 end
 
   local p = path()
+  self:compile()
+
   local step = (tmax - tmin) / n
 
   for i = 0, n do
@@ -108,6 +142,18 @@ function pfct:path(tmin, tmax, n)
   return p
 end
 
+function pfct:set_map(fn)
+  if fn ~= nil and type(fn) ~= "function" then
+    error("pfct:set_map(fn): fn must be a function")
+  end
+  self.mapfn = fn
+  return self
+end
+
+function pfct:map(fn)
+  local o = self:copy()
+  return o:set_map(fn)
+end
 -- ------------------------------------------------------------
 -- file (TikZ plot file)
 -- ------------------------------------------------------------
@@ -142,16 +188,12 @@ end
 -- scalar evaluations
 -- ------------------------------------------------------------
 function pfct:x(t)
-  self:compile()
-  local ok, x = pcall(self.fx, t)
-  if not ok then return 0/0 end
+  local x = self:eval(t)
   return x
 end
 
 function pfct:y(t)
-  self:compile()
-  local ok, y = pcall(self.fy, t)
-  if not ok then return 0/0 end
+  local _, y = self:eval(t)
   return y
 end
 

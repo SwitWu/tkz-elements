@@ -3,9 +3,9 @@
 % SPDX-License-Identifier: LPPL-1.3c
 % Maintainer: Alain Matthes
 
-\ProvidesPackage{tkz-elements}[2026/02/17 v5.00c Graphic Object Library]
+\ProvidesPackage{tkz-elements}[2026/02/20 v5.02c Graphic Object Library]
 
-\typeout{Package tkz-elements v5.00c (2026/02/17) loaded.}
+\typeout{Package tkz-elements v5.00c (2026/02/20) loaded.}
 
 \RequirePackage{iftex}
 \ifluatex\else
@@ -83,7 +83,8 @@
 \def\tkz@DrawSegmentsFromPaths[#1](#2,#3){%
 \begingroup
 \directlua{%
-  for i = 1, #2:count() do
+  local P = #2
+   for i = 1, P:count() do
     local x1, y1 = #2:get_number_path(i)
     local x2, y2 = #3:get_number_path(i)
     tex.print("\\tkzDefPoint("..x1..","..y1.."){start}")
@@ -104,8 +105,21 @@
   \endgroup
 }
 
-% \def\tkzGetPointsFromPath{\pgfutil@ifnextchar[{\tkz@GetPointsFromPath}{%
-% \tkz@GetPointsFromPath[]}}
+
+\def\tkzDrawCirclesFromPaths{\pgfutil@ifnextchar[{\tkz@DrawCirclesFromPaths}{\tkz@DrawCirclesFromPaths[]}}
+\def\tkz@DrawCirclesFromPaths[#1](#2,#3){%
+  \begingroup
+  \directlua{
+    local P = #2
+    for i = 1, P:count() do
+      local cx, cy = #2:get_number_path(i)
+      local tx, ty = #3:get_number_path(i)
+      tex.print("\\node[" .. "\luaescapestring{#1}" .. ",circle through={(" .. tx .. "," .. ty .. ")}] at (" .. cx .. "," .. cy .. ") {};")
+    end
+  }
+  \endgroup
+}
+
 \def\tkzGetPointsFromPath(#1,#2){%
 \begingroup
    \foreach[expand list][count = \i] \r/\s in {%
@@ -117,44 +131,6 @@
 }
 
 
-\def\tkzDrawCirclesFromPaths{\pgfutil@ifnextchar[{\tkz@DrawCirclesFromPaths}{\tkz@DrawCirclesFromPaths[]}}
-\def\tkz@DrawCirclesFromPaths[#1](#2,#3){%
-  \begingroup
-  \directlua{
-    for i = 1, #2:count() do
-      local cx, cy = #2:get_number_path(i)
-      local tx, ty = #3:get_number_path(i)
-      tex.print("\\node[" .. "\luaescapestring{#1}" .. ",circle through={(" .. tx .. "," .. ty .. ")}] at (" .. cx .. "," .. cy .. ") {};")
-    end
-  }
-  \endgroup
-}
-
-}{%
-\PackageWarning{tkz-elements}{%
-      tkz-euclide is loaded but too old.\MessageBreak
-      Minimum version required : 5.10c 2024/04/19%
-}}}{%
-}%
-
-\def\tkzGetNodesMP#1{\directlua{
-  local out = assert(io.open("#1.mp", "w"))
-  local names = {}
-  for K, _ in pairs(z) do
-    table.insert(names, tostring(K))
-  end
-  table.sort(names)
-  out:write("pair ", table.concat(names, ", "), ";\string\n")
-  for _, name in ipairs(names) do
-    local V = z[name]
-    if V then
-      out:write(name, " := (", V.re, "cm,", V.im, "cm);\string\n")
-    end
-  end
-  out:close()
-}}
-
-% \tkzDrawFromPointToPath[<style>](<PointTikZ>,<PathLua>)
 \def\tkzDrawFromPointToPath{%
   \pgfutil@ifnextchar[{\tkz@DrawFromPointToPath}{\tkz@DrawFromPointToPath[]}%
 }
@@ -170,7 +146,10 @@
     end
   }%
   \endgroup
-}\makeatother
+}
+
+\makeatother
+
 
 % Returns the number of points in a path (usage: \tkzPathCount{PA.A}{N})
 \def\tkzPathCount(#1)#2{%
@@ -193,99 +172,34 @@
 
 \def\tkzEraseLuaObj#1{\directlua{#1 = nil}}
 
-
-\makeatletter
-\newcommand\tkzSetFunction[2]{%
-  \begingroup
-  \edef\tkz@expr{#1}
-  \directlua{
-    tkz_#2 = utils.compile_fx_(
-      "\luaescapestring{\expandafter\detokenize\expandafter{\tkz@expr}}"
-    )
-  }%
-  \endgroup
-}
-
-\newcommand\tkzSetParamFunction[3]{%
-  % #1 = expr x(t), #2 = expr y(t), #3 = nom
-  \begingroup
-  \edef\tkz@exprx{#1}%
-  \edef\tkz@expry{#2}%
-  \directlua{
-    tkz_#3 = utils.compile_ft_(
-      "\luaescapestring{\expandafter\detokenize\expandafter{\tkz@exprx}}",
-      "\luaescapestring{\expandafter\detokenize\expandafter{\tkz@expry}}"
-    )
-  }%
-  \endgroup
-}
-\makeatother
+}{%
+\PackageWarning{tkz-elements}{%
+      tkz-euclide is loaded but too old.\MessageBreak
+      Minimum version required : 5.10c 2024/04/19%
+}}}{%
+}%
 
 
 
-\def\tkzGetCurve#1#2#3#4#5{%
-  \directlua{
-    PA.#5 = utils.build_path_(tkz_#4, #1, #2, #3)
-  }%
-}
-
-\let\tkzGetPath\tkzGetCurve
-% or % \tkzGetPathFromFunction
-
-\def\tkzGetParamCurve#1#2#3#4#5{%
-  % #1=tmin, #2=tmax, #3=n, #4=nom (tkz_<nom>), #5=nom du path PA.<...>
-  \directlua{
-    PA.#5 = utils.build_param_path_(tkz_#4, #1, #2, #3)
-  }%
-}
-
-% Dessine le point (x, f(x))
-\newcommand{\tkzDrawPointOnFct}[3][]{%
-  \tkzDrawPoint[#1](#2,\directlua{tex.sprint(tkz_#3(#2))})%
-}
-
-% Dessine plusieurs points (x, f(x)) avec une liste x1,x2,...
-\newcommand{\tkzDrawPointsOnFct}[3][]{%
-  \foreach \x in {#2}{\tkzDrawPointOnFct[#1]{\x}{#3}}%
-}
-
-\def\tkzClean{\directlua{init_elements()}
- }%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\tkzGetNodesMP#1{\directlua{
+  local out = assert(io.open("#1.mp", "w"))
+  local names = {}
+  for K, _ in pairs(z) do
+    table.insert(names, tostring(K))
+  end
+  table.sort(names)
+  out:write("pair ", table.concat(names, ", "), ";\string\n")
+  for _, name in ipairs(names) do
+    local V = z[name]
+    if V then
+      out:write(name, " := (", V.re, "cm,", V.im, "cm);\string\n")
+    end
+  end
+  out:close()
+}}
 
 
- \newcommand{\tkzEvalFct}[2]{%
-   \directlua{tex.sprint(F["\luaescapestring{\detokenize{#1}}"]:eval(#2))}%
- }
-
-
- \newcommand{\tkzDrawPointOnGraph}[3][]{%
-   \begingroup
-   \edef\tkztmpy{\tkzEvalFct{#3}{#2}}%
-   \tkzDrawPoint[#1](#2,\tkztmpy)%
-   \endgroup
- }
-\newcommand{\tkzDrawPointsOnGraph}[3][]{%
-   \foreach \x in {#2}{\tkzDrawPointOnGraph[#1]{\x}{#3}}%
- }
-
-% --- point unique sur une courbe paramétrée PF.<name>(t)
- \makeatletter
- \newcommand{\tkzDrawPointOnParamGraph}[3][]{%
-   \directlua{%
-     local pf = PF["#3"]
-     if not pf then
-       tex.error("tkz-elements", {"Parametric function PF.".."#3".." is undefined"})
-     end
-     z.TMP = pf:point(#2)
-   }%
-   \tkzGetNodes
-   \tkzDrawPoint[#1](TMP)%
- }
-
- \newcommand{\tkzDrawPointsOnParamGraph}[3][]{%
-   \foreach \t in {#2}{%
-     \tkzDrawPointOnParamGraph[#1]{\t}{#3}%
-   }%
- }
- \makeatother
 \endinput

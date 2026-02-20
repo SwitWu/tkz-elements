@@ -5,7 +5,7 @@
 
 The \tkzClass{fct} class represents a real-valued function
 \[
-x \longmapsto f(x),
+x \longmapsto f(x)
 \]
 defined and evaluated in Lua. A \tkzClass{fct} object encapsulates either
 (i) a numerical expression (given as a string in the variable \texttt{x}),
@@ -58,29 +58,30 @@ The \tkzClass{fct} class offers a compact set of methods, centered around:
 \vspace{1em}
 
 \bgroup
-  \small
-  \captionof{table}{fct methods.}\label{fct:methods}
-  \begin{tabular}{ll}
-  \toprule
-  \textbf{Methods} & \texttt{Reference} \\
-  \midrule
-  \textbf{Creation} & \\
-  \midrule
-  \tkzFct{fct}{new(expr\_or\_fn)}              & [\ref{ssub:method_fct_new}] \\
-  \tkzFct{fct}{compile(expr)}                 & [\ref{ssub:method_fct_compile}] \\
-  \midrule
-  \textbf{Reals / evaluation} & \\
-  \midrule
-  \tkzMeth{fct}{eval(x)}                     & [\ref{ssub:method_fct_value}] \\
-  \midrule
-  \textbf{Points / Paths} & \\
-  \midrule
-  \tkzMeth{fct}{point(x)}                     & [\ref{ssub:method_fct_point}] \\
-  \tkzMeth{fct}{path(xmin,xmax,n)}            & [\ref{ssub:method_fct_path}] \\
-  \bottomrule
-  \end{tabular}
+\small
+\captionof{table}{fct methods.}\label{fct:methods}
+\begin{tabular}{ll}
+\toprule
+\texttt{Methods} & \texttt{Reference} \\
+\midrule
+\texttt{Creation} & \\
+\midrule
+\tkzFct{fct}{new(expr\_or\_fn)}   & [\ref{ssub:method_fct_new}] \\
+\tkzFct{fct}{compile(expr)}      & [\ref{ssub:method_fct_compile}] \\
+\midrule
+\texttt{Reals / evaluation} & \\
+\midrule
+\tkzMeth{fct}{eval(x)}             & [\ref{ssub:method_fct_value}] \\
+\midrule
+\texttt{Points / Paths} & \\
+\midrule
+\tkzMeth{fct}{set\_scale(x)}     & [\ref{ssub:method_fct_set_scale}] \\
+\tkzMeth{fct}{point(x)}     & [\ref{ssub:method_fct_point}] \\
+\tkzMeth{fct}{path(xmin,xmax,n)}   & [\ref{ssub:method_fct_path}] \\
+\bottomrule
+\end{tabular}
 \egroup
-
+\label{ssub:method_fct_set_scale}
 %-------------------- details ---------------------------------------
 \subsubsection{Constructor \tkzFct{fct}{new(expr\_or\_fn)}}
 \label{ssub:method_fct_new}
@@ -90,6 +91,7 @@ The \tkzClass{fct} class offers a compact set of methods, centered around:
 an expression in the variable \texttt{x}, evaluated using standard Lua rules
 (therefore requiring \texttt{math.} prefixes).
 
+\medskip
 \texttt{Arguments: }\par
 \begin{itemize}
 \item \code{expr\_or\_fn}: either
@@ -99,9 +101,11 @@ an expression in the variable \texttt{x}, evaluated using standard Lua rules
   \end{itemize}
 \end{itemize}
 
+\medskip
 \texttt{Returns: } a \tkzClass{fct} object.
 
-\texttt{Example:}
+\medskip
+\texttt{Example: }
 \begin{verbatim}
 \directlua{
   init_elements()
@@ -110,6 +114,8 @@ an expression in the variable \texttt{x}, evaluated using standard Lua rules
 }
 \end{verbatim}
 
+
+
 \subsubsection{Function \tkzFct{fct}{compile(expr)}}
 \label{ssub:method_fct_compile}
 
@@ -117,7 +123,10 @@ an expression in the variable \texttt{x}, evaluated using standard Lua rules
 (or wraps it into a \tkzClass{fct}, depending on the implementation). This is a
 low-level helper mainly intended for internal use.
 
+\medskip
 \texttt{Argument: } \code{expr} (string, expression in variable \texttt{x}). \qquad
+
+\medskip
 \texttt{Returns: } a callable function or a \tkzClass{fct} object (depending on implementation).
 
 \subsubsection{Method \tkzMeth{fct}{eval(x)}}
@@ -125,6 +134,7 @@ low-level helper mainly intended for internal use.
 
 \texttt{Description: }Evaluates the function at the real number \code{x}.
 
+\medskip
 \texttt{Returns: } a number (which may be \texttt{nan} or infinite if the expression is not defined).
 
 \begin{verbatim}
@@ -143,8 +153,10 @@ low-level helper mainly intended for internal use.
 This method provides a direct bridge between numerical evaluation and geometric
 construction.
 
+\medskip
 \texttt{Returns: } a \tkzClass{point}.
 
+\medskip
 \texttt{Example: }
 \begin{verbatim}
   init_elements()
@@ -161,9 +173,10 @@ construction.
 subdivisions and returns a \tkzClass{path}. Invalid values are skipped (depending
 on the internal policy).
 
+\medskip
 \texttt{Returns: } a \tkzClass{path}.
 
-
+\medskip
 \texttt{Example: }
 
 \begin{tkzexample}[latex=.5\textwidth]
@@ -179,103 +192,223 @@ on the internal policy).
   \tkzGetNodes
   \tkzDrawCoordinates[smooth,blue,thick](PA.curve)
   \tkzDrawPoint[red](A)
-  \tkzDrawPointsOnGraph[blue]{0,1,2}{fa}
-  \tkzDrawPointOnGraph[red]{-1}{fa}
+%  \tkzDrawPointsOnGraph[blue]{0,1,2}{fa}
+%  \tkzDrawPointOnGraph[red]{-1}{fa}
 \end{tikzpicture}
 \end{tkzexample}
 
-%--------------------------------------------------------------------
-\subsection{Macros \tkzMacro{tkz-elements}{tkzDrawPointOnGraph} and
-\tkzMacro{tkz-elements}{tkzDrawPointsOnGraph}}
+%
 
-These macros allow drawing points on the graph of a function defined
-in the module system.
+% ------------------------------------------------------------
+% fct : set_scale
+% ------------------------------------------------------------
 
-The function must already exist in the module table \texttt{F}.
+\subsubsection{Method \tkzMeth{fct}{set\_scale}}
+\label{ssub:method_fct_set_scale}
 
-%--------------------------------------------------------------------
+This method applies an anisotropic scaling to the function graph.
 
-\subsubsection{Macro \tkzMacro{tkz-elements}{tkzDrawPointOnGraph}}
+\medskip
+\texttt{Syntax: }
+\begin{quote}
+F:set\_scale(sx, sy)
+\end{quote}
 
-\paragraph{Syntax}
-\begin{verbatim}
-\tkzDrawPointOnGraph[<TikZ options>]{<x>}{<name>}
-\end{verbatim}
+\medskip
+\texttt{Arguments: }
+\begin{itemize}
+\item \texttt{sx}: scaling factor applied to the $x$-coordinate.
+\item \texttt{sy}: scaling factor applied to the $y$-coordinate.
+\end{itemize}
 
-\paragraph{Description}
-This macro draws a point belonging to the graph of a real function stored
-in the module \texttt{F}.
+\medskip
+\texttt{Description: }
 
-The drawn point has coordinates
+Let $f(x)$ be the original function.
+After applying \texttt{set\_scale(sx, sy)}, a generated point
+
 \[
-(x,\; f(x)),
+(x, f(x))
 \]
-where \texttt{f} denotes the function object \texttt{F.<name>}.
 
-\paragraph{Arguments}
-\begin{itemize}
-  \item \texttt{<TikZ options>} (optional): graphical options applied to the point
-  \item \texttt{<x>}: abscissa of the point
-  \item \texttt{<name>}: name of the function stored in \texttt{F}
-\end{itemize}
+becomes
 
-\paragraph{Example}
-\begin{verbatim}
-\tkzDrawPointOnGraph[blue]{4}{fa}
-\end{verbatim}
-
-%--------------------------------------------------------------------
-\subsubsection{Macro \tkzMacro{tkz-elements}{tkzDrawPointsOnGraph}}
-
-\paragraph{Syntax}
-\begin{verbatim}
-\tkzDrawPointsOnGraph[<TikZ options>]{<x1,x2,...,xn>}{<name>}
-\end{verbatim}
-
-\paragraph{Description}
-This macro draws several points belonging to the graph of a real function
-stored in the module \texttt{fct}.
-
-For each value \(x_i\) in the list, a point of coordinates
 \[
-(x_i,\; f(x_i))
+(s_x x,\; s_y f(x)).
 \]
-is computed and drawn.
 
-\paragraph{Arguments}
-\begin{itemize}
-  \item \texttt{<TikZ options>} (optional): graphical options applied to all points
-  \item \texttt{<x1,x2,...,xn>}: comma-separated list of abscissas
-  \item \texttt{<name>}: name of the function stored in \texttt{F}
-\end{itemize}
+The scaling affects the geometric output produced by
+\texttt{point(x)} and \texttt{path(xmin, xmax, n)}.
 
-\paragraph{Example}
-\begin{verbatim}
-\tkzDrawPointsOnGraph[red]{-2,0,2,3,5}{fa}
-\end{verbatim}
+The analytic expression of the function remains unchanged.
 
-\paragraph{Remarks}
-\begin{itemize}
-  \item These macros assume that the function is already defined in the module
-        \texttt{F}.
-  \item All evaluations are performed in Lua.
-  \item The macros are compatible with paths drawn using
-        \texttt{\textbackslash tkzDrawCoordinates}.
-\end{itemize}
-
+\medskip
 \texttt{Example: }
-\begin{tkzexample}[latex=.4\textwidth]
+
+\begin{tkzexample}[vbox]
 \directlua{
   init_elements()
-  F.fa = fct("x*exp(-x^2)+1")
-  PA.curve = F.fa:path(-3, 5, 20)
+  F.f73 = fct("(1./90000)*x*x*x-(1./100)*x*x+(113./36)*x")
+            :set_scale(1/100, 1/400)
+  PA.scaled = F.f73:path(0, 800, 200)
+  z.A  = F.f73:point(600)
+  z.Pl, z.Pr = F.f73:tangent(600)
 }
-\begin{tikzpicture}[gridded]
-  \tkzInit[xmin=-3,xmax=5,ymin=-1,ymax=2]
-  \tkzDrawX\tkzDrawY
-  \tkzDrawCoordinates[smooth,cyan](PA.curve)
-  \tkzDrawPointsOnGraph[red]{-2,0,2,3,5}{fa}
-  \tkzDrawPointOnGraph[blue]{1}{fa}
+\begin{center}
+\begin{tikzpicture}[scale=1.75]
+\tkzGetNodes
+\tkzInit[xmin=0,xmax=800,xstep=100,
+         ymin=0,ymax=2000,ystep=400]
+\tkzGrid
+\tkzAxeXY
+\tkzDrawCoordinates[smooth,red](PA.scaled)
+\tkzDrawPoint[red,size=4](A)
+\tkzDrawLine[blue,add = .5 and .5](Pl,Pr)
 \end{tikzpicture}
+\end{center}
 \end{tkzexample}
+
+
+
+
+\subsubsection{Method \tkzMeth{fct}{tangent(x0,<h>,<tol>)}}
+\label{ssub:fct_tangent}
+
+This method returns two points defining the tangent at abscissa \texttt{x0}.
+If the curve behaves regularly at \texttt{x0}, a single tangent is returned.
+If the curve has a corner (left and right slopes significantly different),
+the method returns the two half-tangent points.
+
+\medskip
+
+\texttt{Arguments: }
+\begin{itemize}
+\item \texttt{x0}: abscissa where the tangent is evaluated.
+\item \texttt{h} (optional): finite difference step passed to \texttt{half\_tangents}.
+\item \texttt{tol} (optional): tolerance used to decide whether left/right slopes
+define a unique tangent. Default: \texttt{1e-3}.
+\end{itemize}
+
+\medskip
+
+\texttt{Returns: }
+Two points \texttt{P1}, \texttt{P2} that define a tangent direction.
+They are constructed at unit distance from the point $P=(x0,f(x0))$.
+
+\medskip
+
+\texttt{Behaviour: }
+
+\begin{itemize}
+  \item If the function is locally smooth at $x_0$
+        (i.e.\ the left and right slopes are sufficiently close),
+        a single tangent direction is computed using a centered derivative.
+  \item If the slopes differ significantly (e.g.\ cusp or angle),
+        the two half-tangents are returned.
+\end{itemize}
+
+\medskip
+
+\texttt{Example: }
+
+\begin{tkzexample}[vbox]
+\directlua{
+  init_elements()
+  F.f691 = fct("x*exp(x)")
+  PA.curve = F.f691:path(-5, 1, 200)
+  PA.from = path:new()
+  PA.to   = path:new()
+  for x=-4, 1, 0.5 do
+    local Pl, Pr = F.f691:tangent(x)
+    PA.from:add_point(Pl)
+    PA.to:add_point(Pr)
+  end}
+
+\begin{center}
+ \begin{tikzpicture}[scale=2]
+\tkzGetNodes
+\tikzstyle{tan style}=[-]
+\tkzInit[xmin=-5,xmax=2,ymin=-1,ymax=3]
+\tkzDrawXY
+\tkzDrawCoordinates[smooth,red](PA.curve)
+\tkzText[draw,color = red,
+     fill = orange!20](1.5,1.5){$y = xe^x$}
+\tkzDrawSegmentsFromPaths[draw,color=blue,
+  line width=.4pt,add=.5 and .5](PA.from,PA.to)
+\end{tikzpicture}
+\end{center}
+
+\end{tkzexample}
+
+
+% ------------------------------------------------------------
+% fct : half_tangents
+% ------------------------------------------------------------
+
+\subsubsection{Method \tkzMeth{fct}{half\_tangents}}
+\label{ssub:method_fct_half_tangents}
+
+This method computes two half-tangent directions at abscissa \texttt{x0}
+using a finite difference approximation.
+It is mainly intended to provide two points defining the two possible tangent
+directions when the curve has a corner or a cusp.
+
+\texttt{Syntax: }
+\begin{quote}
+Pl, Pr, ml, mr = F:half\_tangents(x0, h)
+\end{quote}
+
+\texttt{Arguments: }
+\begin{itemize}
+\item \texttt{x0}: abscissa where the tangent directions are evaluated.
+\item \texttt{h} (optional): finite difference step. If omitted, a default value
+is chosen (relative to \texttt{x0}).
+\end{itemize}
+
+\texttt{Returns: }
+\begin{itemize}
+\item \texttt{Pl}, \texttt{Pr}: two points on the left and right tangent directions.
+They are constructed at unit distance from the point $P=(x0,f(x0))$.
+\item \texttt{ml}, \texttt{mr}: the corresponding left and right slopes.
+\end{itemize}
+
+\texttt{Description: }
+
+Let $P=(x_0,f(x_0))$. The method evaluates
+$P_+=(x_0+h,f(x_0+h))$ and $P_-=(x_0-h,f(x_0-h))$ and computes the slopes
+
+\[
+m_r=\frac{f(x_0+h)-f(x_0)}{(x_0+h)-x_0}, \qquad
+m_l=\frac{f(x_0)-f(x_0-h)}{x_0-(x_0-h)}.
+\]
+
+Then it returns two points on the corresponding directions (left/right),
+normalized so that $\overline{PPl}=\overline{PPr}=1$.
+
+\texttt{Example: }
+
+\begin{tkzexample}[vbox]
+\directlua{
+init_elements()
+  F.f67 = fct("(exp(x)-1)/(exp(1)-1)"):set_scale(10, 10)
+  PA.scaled = F.f67:path(0, 1, 200)
+  z.P0l, z.P0r = F.f67:half_tangents(0)
+  z.P1l, z.P1r = F.f67:half_tangents(1)
+  z.P0 = F.f67:point(0)
+  z.P1 = F.f67:point(1)
+}
+
+\begin{center}
+\begin{tikzpicture}[scale=1.25]
+\tkzGetNodes
+\tkzInit[xmax=1,ymax=1,xstep=0.1,ystep=0.1]
+\tkzGrid(0,0)(1,1)
+\tkzAxeXY
+\tkzDrawCoordinates[smooth,red,thick](PA.scaled)
+ \tkzText[draw,color = red,fill = orange!20](0.5,0.6)%
+{$f(x)=\dfrac{\text{e}^x-1}{\text{e}-1}$}
+\tkzDrawSegments[>=stealth,->,cyan, thick, add = 0 and 4](P0,P0r P1,P1l)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}[vbox]
 \endinput

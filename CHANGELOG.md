@@ -1,3 +1,26 @@
+## [2026/02/20 — version 5.02c]
+### Added
+- **path**
+    - method 'scale' Anisotropic scaling
+
+- **fct**
+    -   Added `half_tangents` and `tangent` methods.
+    -   Tangents now return unit direction points (no `line` objects).
+    -   Fully compatible with `set_scale`.
+    -   Unified implementation based on drawing coordinates.
+
+### Changed
+- **path**
+    - homothety now center is optional
+- **fct** et **pfct**
+     - Removed graph-related drawing macros
+     (`\tkzDrawPointOnGraph`, `\tkzDrawPointsOnGraph`,
+      `\tkzDrawPointOnParamGraph`, `\tkzDrawPointsOnParamGraph`).
+     These were incompatible with `set_scale` and contradicted the
+     Lua-computation / TikZ-drawing design principle.
+- **tkz-elements.sty**
+      - Deletions and corrections.
+
 ## [2026/02/17 — version 5.00c]
 
 ### Docs

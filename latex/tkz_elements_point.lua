@@ -376,6 +376,11 @@ function point:shift_collinear_to(B, dist)
 	local v = (B - self):normalize()
 	return self + v*dist
 end
+
+function point:scale(kx, ky)
+	ky = ky or kx
+	return point(kx * self.re, ky * self.im)
+end
 -- =====================
 -- the result is a circle
 -- =====================
