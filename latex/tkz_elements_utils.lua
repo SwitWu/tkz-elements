@@ -35,7 +35,7 @@ end
 
 -- Public: alias (kept for backward compatibility)
 utils.checknumber       = utils.format_number
-utils.to_decimal_string = utils.format_number
+
 
 -- Coordinates formatting (single component)
 function utils.format_coord(x, decimals)

@@ -63,7 +63,15 @@ function path:__tostring()
 end
 
 
+-- function path:add_point(z, decimals)
+-- 	table.insert(self, utils.format_point(z, decimals))
+-- end
+
 function path:add_point(z, decimals)
+	if type(z) == "string" then
+		local x,y = utils.parse_point(z)
+		z = point(x,y)
+	end
 	table.insert(self, utils.format_point(z, decimals))
 end
 

@@ -54,7 +54,12 @@ function triangle:new(za, zb, zc)
 	local area = 0.5 * math.abs((zb - za) ^ (zc - za))
 	local inradius = area / semiperimeter
 	local circumradius = (a * b * c) / (4 * area)
-
+  local ma = midpoint_(zb, zc)
+	local mb = midpoint_(zc, za)
+	local mc = midpoint_(za, zb)
+  local ha = projection_(zb, zc, za)
+	local hb = projection_(zc, za, zb)
+	local hc = projection_(za, zb, zc)
 	local tr = {
 		pa = za,
 		pb = zb,
@@ -72,6 +77,12 @@ function triangle:new(za, zb, zc)
 		ab = ab,
 		ca = ca,
 		bc = bc,
+		ma = ma,
+		mb = mb,
+		mc = mc,
+		ha = ha,
+		hb = hb,
+		hc = hc,
 		alpha = alpha,
 		beta = beta,
 		gamma = gamma,
@@ -361,9 +372,9 @@ function triangle:excenter(pt)
 end
 
 function triangle:projection(p)
-	local p1 = projection_(self.pb, self.pc, p)
-	local p2 = projection_(self.pa, self.pc, p)
-	local p3 = projection_(self.pa, self.pb, p)
+	local p1 = projection_(self.pa, self.pb, p)
+	local p2 = projection_(self.pb, self.pc, p)
+	local p3 = projection_(self.pc, self.pa, p)
 	return p1, p2, p3
 end
 
@@ -682,6 +693,17 @@ end
 -- Ancien nom si tu veux conserver la compatibilité :
 triangle.bisector_points = triangle.apollonius_points
 
+function triangle:the_apollonius_center()
+	local lbrocard = self:brocard_axis()
+	local n = self.eulercenter
+	local s = self.spiekercenter
+	local lns = line(n,s)
+	return intersection(lbrocard, lns)
+end
+
+function triangle:apollonius_point()
+	return kimberling(181)
+end
 -------------------
 -- Result -> line
 -------------------
@@ -855,6 +877,7 @@ end
 --- Result -> circles --
 -----------------------
 
+
 function triangle:apollonius_circle(side, EPS)
 		 EPS = EPS or tkz.epsilon
 		-- lengths
@@ -906,6 +929,9 @@ function triangle:euler_circle()
 	return circle:new(euler_center_(self.pa, self.pb, self.pc), midpoint_(self.pb, self.pc))
 end
 
+--aliase
+triangle.feuerbach = triangle.euler_circle
+
 function triangle:circum_circle()
 	return circle:new(circum_center_(self.pa, self.pb, self.pc),self.pa)
 end
@@ -915,20 +941,27 @@ function triangle:in_circle()
 end
 -- see excenter ??
 
-
 function triangle:ex_circle(arg)
 	local pts = { self.pa, self.pb, self.pc }
 	local i = resolve_triangle_index(self, arg)
-	if i < 0 or i > 2 then
-		return nil
-	end
+	if i < 0 or i > 2 then return nil end
 
 	local A = pts[i + 1]
 	local B = pts[(i + 1) % 3 + 1]
 	local C = pts[(i + 2) % 3 + 1]
 
-	local O = ex_center_(B, C, A)
-	return circle:new(O, projection_(C, A, O))
+	local O = ex_center_(A, B, C)          -- excentre opposé à A
+	local T = projection_(B, C, O)         -- point de tangence sur (BC)
+
+	return circle:new(O, T)
+end
+
+function triangle:radical_circle()
+	local Ca, Cb, Cc
+	Ca = self:ex_circle(self.pa)
+	Cb = self:ex_circle(self.pb)
+	Cc = self:ex_circle(self.pc)
+	return Ca:radical_circle(Cb, Cc)
 end
 
 function triangle:spieker_circle()
@@ -1201,6 +1234,15 @@ function triangle:feuerbach_apollonius_k181(EPS)
 	local xb = intersection_ll_(self.pb,A,S,Eb)
 	local xc = intersection_ll_(self.pc,A,S,Ec)
 	return circle:new(circum_circle_(xa, xb, xc))
+end
+
+function triangle:the_apollonius_circle()
+	local ce = self:the_apollonius_center()
+	local apo = self:kimberling(181)
+	local ll = line(apo, self.pa)
+	local cxa = self:ex_circle()
+	local u,v = intersection(ll, cxa,{near = self.pa})
+	return circle:new(ce, v)
 end
 
 -------------------

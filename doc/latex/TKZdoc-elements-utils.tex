@@ -1,12 +1,9 @@
 \newpage
 \section{Module utils}
-The \tkzname{utils} module provides a collection of general-purpose utility functions used throughout the \tkzNamePack{tkz-elements} library. These functions are designed to support common tasks such as numerical rounding, type checking, floating-point comparisons, and table operations.
-
-\vspace{1em}
-Although these functions are not directly related to geometric constructions, they play a vital role in ensuring the consistency, robustness, and readability of the core algorithms. Most of them are small, efficient, and reusable in other contexts.
-
-\vspace{1em}
-This module is loaded automatically by \tkzNamePack{tkz-elements}, but its functions can also be used independently if needed.
+The \tkzname{utils} module provides low-level numerical and parsing
+utilities used internally by \tkzname{tkz-elements}.
+These functions ensure safe numeric conversions and consistent
+string formatting for TikZ output.
 
 
 \subsection{Table of module functions \tkzname{utils}}
@@ -17,7 +14,7 @@ This module is loaded automatically by \tkzNamePack{tkz-elements}, but its funct
 
 \begin{tabular}{@{}ll@{}}
 \toprule
-\textbf{Function} & \texttt{Reference} \\
+\texttt{Function} & \texttt{Reference} \\
 \midrule
 
 \tkzFct{utils}{utils.parse\_point(str)}        & [\ref{sub:function_utils_parse_point}] \\
@@ -37,52 +34,79 @@ This module is loaded automatically by \tkzNamePack{tkz-elements}, but its funct
 \end{tabular}
 \end{table}
 
-\subsection{Function \tkzFct{utils}{parse\_point(str)}}
+
+
+\subsection{Function \tkzFct{utils}{utils.parse\_point(str)}}
 \label{sub:function_utils_parse_point}
 
 Parses a string of the form \code{"(x,y)"} and returns the corresponding numeric coordinates. This function supports optional spaces and scientific notation.
 
+\medskip
+\texttt{Arguments: } \code{str} – A string representing a point, e.g., \code{"(3.5, -2.0)"}.
+
+The function accepts:
+\begin{itemize}
+\item Decimal notation: \texttt{(3.5,-2)}
+\item Scientific notation: \texttt{(1e-5,2E3)}
+\item Optional spaces
+\item Optional parentheses
+\end{itemize}
+
+\medskip
 \texttt{Syntax: }
 
 \begin{center}
 \code{local x, y = utils.parse\_point("(1.5, -2.3)")}
 \end{center}
 
+\medskip
 \texttt{Purpose: }
 
 The function takes a string argument and parses it to extract the \code{x} and \code{y} components as numbers. The input string must follow the format \code{"(x, y)"} where \code{x} and \code{y} can be floating-point values written in decimal or scientific notation.
 
-\texttt{Arguments: } \code{str} – A string representing a point, e.g., \code{"(3.5, -2.0)"}.
 
+\medskip
 \texttt{Returns: }
 
-\code{x}, \code{y} – numeric coordinates as Lua numbers.
+Two numbers: \texttt{x}, \texttt{y} – numeric coordinates as Lua numbers.
 Two numerical values: the real and imaginary parts of the point.
 
-\texttt{Features: }
 
-\begin{itemize}
-\item Accepts optional spaces around numbers and commas.
-\item Accepts scientific notation (\code{1e-2}, \code{3.4E+1}).
-\item Raises an error for invalid formats.
-\end{itemize}
-
-
+\medskip
 \texttt{Example usage: }
 
 \begin{verbatim}
-local x, y = utils.parse_point("(3.5, -2)")
--- x = 3.5, y = -2.0
+utils.parse_point("(3.5, -2)")
+--  3.5   -2.0
+
+utils.parse_point("(1e-5,2E3)")
+-- 1e-05  2000
+
+utils.parse_point(" -3.2e+1 , 4.5e-2 ")
+-- -32  0.045
 \end{verbatim}
 
-\texttt{Related functions: }
+Scientific and decimal forms are numerically equivalent:
 
-\begin{itemize}
-\item \tkzFct{utils}{format\_point(z, decimals)}
-\item \tkzFct{utils}{format\_number(x, decimals)}
-\end{itemize}
+\begin{verbatim}
+local x1 = utils.parse_point("(1e-5,0)")
+local x2 = utils.parse_point("(0.00001,0)")
+-- x1 == x2  --> true
+\end{verbatim}
 
-\subsection{Function \tkzFct{utils}{format\_number(x, decimals)}}
+\medskip
+\texttt{Error handling}
+
+Invalid input raises a \texttt{tex.error}:
+
+\begin{verbatim}
+utils.parse_point("(a,b)")
+-- Invalid point string
+\end{verbatim}
+
+
+
+\subsection{Function \tkzFct{utils}{utils.format\_number(x, decimals)}}
 \label{sub:function_utils_format_number}
 
 This function formats a numeric value (or a numeric string) into a string representation with a fixed number of decimal places.
@@ -100,8 +124,8 @@ The function converts a number (or a string that can be converted to a number) i
 \texttt{Arguments: }
 
 \begin{itemize}
-\item \code{x} – A number or a string convertible to a number.
-\item \code{decimals} – Optional. The number of decimal places (default is 5).
+\item \code{x} – numeric value
+\item \code{decimals} – Optional. number of decimal places (default: 5)
 \end{itemize}
 
 \texttt{Returns: } A string representing the value of \code{x} with the specified number of decimals.
@@ -117,25 +141,43 @@ The function converts a number (or a string that can be converted to a number) i
 \texttt{Example usage: }
 
 \begin{verbatim}
-local a = utils.format_number(math.pi, 3)
-% a = "3.142"
+utils.format_number(1e-5,5)
+-- "0.00001"
 
-local b = utils.format_number("2.718281828", 2)
-% b = "2.72"
+utils.format_number(math.pi, 3)
+-- "3.142"
+
+utils.format_number("2.718281828", 2)
+-- "2.72"
+
+utils.format_number(2e3,2)
+-- "2000.00"
+
+utils.format_number(-4.2e-2,4)
+-- "-0.0420"
 \end{verbatim}
 
-\texttt{Error handling.}
 
-An error is raised if \code{x} is not a valid number or numeric string.
+\subsection{Typical Use in tkz-elements}
 
-\texttt{Related functions: }
+Example of a complete parsing and formatting pipeline:
 
-\begin{itemize}
-\item \tkzFct{utils}{to\_decimal\_string(x, decimals)}
-\item \tkzFct{utils}{format\_point(z, decimals)}
-\end{itemize}
+\begin{tkzexample}[latex=.4\textwidth]
+\directlua{
+init_elements()
+local x,y = utils.parse_point("(1e-5,2e3)")
 
-\subsection{Function \tkzFct{utils}{format\_coord(x, decimals)}}
+local sx = utils.format_number(x,5)
+local sy = utils.format_number(y,2)
+tex.print(sx)
+tex.print('\\\\')
+tex.print(sy)
+}
+\end{tkzexample}
+
+
+
+\subsection{Function \tkzFct{utils}{utils.format\_coord(x, decimals)}}
 \label{sub:function_utils_format_coord}
 
 This function formats a numerical value into a string with a fixed number of decimal places. It is a lighter version of \tkzFct{utils}{format\_number}, intended for internal use when inputs are guaranteed to be numeric.
@@ -172,43 +214,92 @@ Unlike \tkzFct{utils}{format\_number}, it does not perform input validation and 
 \item \tkzFct{utils}{format\_number(x, decimals)} – safer alternative with validation
 \end{itemize}
 
-\subsection{Function \tkzFct{utils}{checknumber(x, decimals)}}
+\medskip
+\texttt{Precision considerations: }
+
+Very small values may be rounded to zero depending on the number of decimals:
+
+\begin{verbatim}
+utils.format_number(1e-8,5)
+-- "0.00000"
+
+utils.format_number(1e-8,10)
+-- "0.0000000100"
+\end{verbatim}
+
+\texttt{Important note: }
+
+Lua may internally represent numbers using scientific notation:
+
+\begin{verbatim}
+print(1e-5)
+-- 1e-05
+\end{verbatim}
+
+However, \verb|utils.format_number| always produces a fixed decimal
+representation suitable for TikZ output.
+
+\subsection{Interaction with \tkzname{path}}
+
+The formatting utilities are especially important when building
+TikZ paths from computed points.
+
+\texttt{Example: Scientific notation inside a path}
+
+Consider a very small coordinate obtained after a computation:
+
+\begin{verbatim}
+local x = 1e-5
+local y = 2
+\end{verbatim}
+
+If inserted directly into a path without formatting:
+
+\begin{verbatim}
+PA.curve:add_point(point(x,y))
+\end{verbatim}
+
+Lua may internally represent the coordinate as:
+
+\begin{verbatim}
+(1e-05,2)
+\end{verbatim}
+
+While numerically correct, scientific notation is not ideal
+for TikZ output.
+
+
+\texttt{Complete example}
+
+\begin{verbatim}
+local p = path()
+p:add_point(point(1e-5,0),5)
+p:add_point(point(2e-5,1),5)
+
+-- produces:
+-- (0.00001,0.00000) -- (0.00002,1.00000)
+\end{verbatim}
+
+
+
+
+
+\subsection{Function \tkzFct{utils}{utils.checknumber(x, decimals)}}
 \label{sub:function_utils_checknumber}
 
 Validates and converts a number or numeric string into a fixed-format decimal string.
 
-\medskip
-\texttt{Syntax: }
+Alias of \verb|utils.format_number| (kept for backward compatibility)
 
-\begin{center}
-\code{local s = utils.checknumber("2.71828", 4)} \hfill $\rightarrow$ \code{"2.7183"}
-\end{center}
+\begin{verbatim}
+utils.checknumber(1e-5,5)
+-- "0.00001"
+\end{verbatim}
 
-\texttt{Arguments: }
 
-\begin{itemize}
-\item \code{x} – A number or numeric string.
-\item \code{decimals} – Optional number of decimal digits (default: 5).
-\end{itemize}
 
-\medskip
-\texttt{Returns: }
 
-A formatted string representing the value rounded to the specified number of decimal places.
-
-\medskip
-\texttt{Remarks: }
-
-Used internally to validate input before formatting. Returns an error if the input is not convertible.
-
-\medskip
-\texttt{Related functions: }
-
-\begin{itemize}
-\item \tkzFct{utils}{format\_number}
-\end{itemize}
-
-\subsection{Function \tkzFct{utils}{format\_point(z, decimals)}}
+\subsection{Function \tkzFct{utils}{utils.format\_point(z, decimals)}}
 \label{sub:function_utils_format_point}
 
 Converts a complex point into a string representation suitable for coordinate output.
@@ -244,7 +335,7 @@ Raises an error if \code{z} does not have numeric \code{re} and \code{im} compon
 \item \tkzFct{utils}{format\_coord}
 \end{itemize}
 
-\subsection{Function \tkzFct{utils}{almost\_equal(a, b, epsilon)}}
+\subsection{Function \tkzFct{utils}{utils.almost\_equal(a, b, epsilon)}}
 \label{sub:function_utils_almost_equal}
 
 Returns \code{true} if two numbers are approximately equal within a given tolerance.
@@ -271,7 +362,7 @@ A boolean: \code{true} if the values differ by less than the tolerance.
 
 
 
-\subsection{Function \tkzFct{utils}{wlog(...)}}
+\subsection{Function \tkzFct{utils}{utils.wlog(...)}}
 \label{sub:function_utils_wlog}
 
 Logs a formatted message to the .log file only, with a \code{[tkz-elements]} prefix.

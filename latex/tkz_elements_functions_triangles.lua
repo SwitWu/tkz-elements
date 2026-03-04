@@ -514,14 +514,14 @@ function resolve_triangle_index(self, arg)
 	elseif type(arg) == "number" then
 		return arg % 3
 	elseif type(arg) == "table" and arg.re and arg.im then
-		if arg == a then
+		if rawequal(arg, a) then
 			return 0
-		elseif arg == b then
+		elseif rawequal(arg, b) then
 			return 1
-		elseif arg == c then
+		elseif rawequal(arg, c) then
 			return 2
 		else
-			tex.error("Invalid vertex")
+			tex.error("Invalid vertex (not the stored triangle vertex object)")
 		end
 	else
 		tex.error("Invalid argument for triangle index")

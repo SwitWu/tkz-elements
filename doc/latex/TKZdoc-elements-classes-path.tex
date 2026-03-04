@@ -167,19 +167,37 @@ local x, y = utils.parse_point("(3.5, -2)")
 \end{verbatim}
 
 
-\item Number formatting (e.g., for \TIKZ{} compatibility) should be handled by checknumber, assumed to be defined globally or in a utility module.
+\item Number formatting (e.g., for \TIKZ{} compatibility) should be handled by utils\_checknumber, assumed to be defined globally or in a utility module.
 
 \item The class is designed to be lightweight and compatible with TikZ/LuaLaTeX workflows.
 
 \end{itemize}
 
-\subsection{Constructor}
+
+
+
+
+\subsection{Constructor \tkzMeth{path}{path(<list>)}}
+
+Creates a new path.
+
+\medskip
+
+\texttt{Arguments: }
+ \code{<list>} (optional): a Lua table containing point
+        coordinates given as strings in TikZ format,
+        e.g. \code{"(0,0)"}, \code{"(1,2)"}.
+
 
 \begin{center}
   \begin{verbatim}
  PA.name = path(table_of_points) -- Creates a new path object.
   \end{verbatim}
 \end{center}
+
+\medskip
+
+If no argument is provided, an empty path is created.
 
 
 If data is provided, the input should be a table of points written as strings, e.g., |{ "(0,0)", "(1,0)"|, |"(1,1)" }| otherwise creates an empty path.
@@ -188,7 +206,8 @@ Here is a \tkzname{path} representing a simple triangle:
 
   \begin{mybox}
     \begin{verbatim}
-      PA.triangle = path({ "(0, 0)", "(1, 0)","(1, 1)" })
+      PA.name = path({ "(0, 0)", "(1, 0)","(1, 1)" })
+      tex.print(tostring(PA.name))
     \end{verbatim}
   \end{mybox}
 
@@ -293,10 +312,21 @@ This method appends a point to the path.
 
 \textbf{Arguments:}
 \begin{itemize}
-  \item \code{pt}: a point object.
+  \item \code{pt}: either
+  \begin{itemize}
+    \item a \code{point} object, or
+    \item a string representing a point coordinate, e.g. \code{"(2,3)"} or
+          \code{"(1e-5,0)"}.
+  \end{itemize}
   \item \code{n} (optional): number of decimal places used when formatting
-        the point coordinates for TikZ output.
+        the coordinates for TikZ output.
 \end{itemize}
+
+\medskip
+
+If \code{pt} is a string, it is parsed using \code{utils.parse\_point}.
+Then the point is formatted (via \code{utils.format\_point}) and stored
+in the path.
 
 \medskip
 
@@ -310,21 +340,29 @@ If omitted, a default formatting precision is used.
 The parameter \code{n} affects only the numerical representation in the
 generated TikZ code. It does not modify the internal geometric
 computation.
-Adds a point (given as a complex table) to the path. Let's take one of the first examples:
 
+\medskip
 
-\begin{tkzexample}[latex=.3\textwidth]
+\textbf{Examples}
+
+\begin{tkzexample}[latex=.35\textwidth]
 \directlua{
   PA.triangle = path()
-  z.A = point(0, 0)
-  z.B = point(1, 0)
-  z.C = point(1, 1)
-  PA.triangle:add_point(z.A, 0)
-  PA.triangle:add_point(z.B, 0)
-  PA.triangle:add_point(z.C, 0)
-  tex.print(tostring(PA.triangle))}
+  PA.triangle:add_point(point(0,0),0)
+  PA.triangle:add_point(point(1,0),0)
+  PA.triangle:add_point(point(1,1),0)
+  tex.print(tostring(PA.triangle))
+}
 \end{tkzexample}
 
+\begin{tkzexample}[latex=.35\textwidth]
+\directlua{
+  PA.p = path({ "(0,0)", "(1,0)", "(1,1)" })
+  PA.p:add_point("(2,3)",0)
+  PA.p:add_point("(1e-5,0)",5)
+  tex.print(tostring(PA.p))
+}
+\end{tkzexample}
 \subsubsection{Method \tkzMeth{path}{get(i)}}
 \label{ssub:method_tkzmeth_path_get}
 

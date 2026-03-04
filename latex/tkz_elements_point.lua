@@ -217,6 +217,11 @@ function point.__eq(z1, z2)
 	local epsilon = 1e-10
 	return math.abs(z1.re - z2.re) < epsilon and math.abs(z1.im - z2.im) < epsilon
 end
+
+function point:identity(pt)
+	return point.abs(self - pt) < tkz.epsilon
+end
+
 -- -------------------------------------------------------------------
 local function pyth(a, b)
 	if a == 0 and b == 0 then
@@ -339,9 +344,9 @@ function point:normalize_from(p)
 end
 end
 
-function point:identity(pt)
-	return point.abs(self - pt) < tkz.epsilon
-end
+-- function point:identity(pt)
+-- 	return point.abs(self - pt) < tkz.epsilon
+-- end
 
 function point:orthogonal(d)
 	local m

@@ -234,9 +234,9 @@ init_elements()
 The variables \code{alpha}, \code{beta}, and \code{gamma} are \emph{numbers}
 (measured in radians). They are obtained by evaluating
 \[
-\alpha = \lvert \angle(ZA,ZB,ZC)\rvert,\qquad
-\beta  = \lvert \angle(ZB,ZC,ZA)\rvert,\qquad
-\gamma = \lvert \angle(ZC,ZA,ZB)\rvert,
+\alpha = \lvert \widehat(ZA,ZB,ZC)\rvert,\qquad
+\beta  = \lvert \widehat(ZB,ZC,ZA)\rvert,\qquad
+\gamma = \lvert \widehat(ZC,ZA,ZB)\rvert,
 \]
 where \code{get\_angle\_} returns an oriented angle (possibly negative,
 depending on the orientation of the three points). The use of
@@ -2665,6 +2665,13 @@ Its interface is identical to \tkzMeth{triangle}{bisector}, accepting either an 
 
 \subsubsection{Method \tkzMeth{triangle}{mediator(...)}}
 \label{ssub:triangle_mediator}
+In classical English geometry, the line called médiatrice in French is usually referred to as the perpendicular bisector of a segment.
+The word mediator is not standard in modern English mathematical literature and may occasionally denote a perpendicular bisecting plane in three-dimensional geometry.
+However, throughout this documentation, we deliberately use the term mediator to designate:
+the line in the plane passing through the midpoint of a segment and perpendicular to it.
+This choice is motivated by terminological coherence with the French mathematical tradition and by the desire to keep method names concise and readable in code.
+Whenever the term mediator appears in this manual, it should therefore be understood as the perpendicular bisector of a segment in the plane.
+
 
 This method returns the perpendicular bisector of one side of a triangle.
 
@@ -2726,19 +2733,19 @@ L3 = T:mediator(z.C)     -- bisector of AB (since C is opposite AB)
 \end{tkzexample}
 
 
-\textbf{See also.} \tkzFct{line}{mediator}, \tkzFct{triangle}{altitude}, \tkzFct{triangle}{bisector}
+\texttt{See also: } \tkzFct{line}{mediator}, \tkzFct{triangle}{altitude}, \tkzFct{triangle}{bisector}
 
 \subsubsection{Method \tkzMeth{triangle}{antiparallel(arg)}}
 \label{antiparallel}
 
-This method returns an \textbf{antiparallel line} associated with a triangle and one of its angles.
+This method returns an \texttt{antiparallel line} associated with a triangle and one of its angles.
 
-Two lines, such as $(PQ)$ and $(BC)$, are said to be \textbf{antiparallel} with respect to an angle (e.g., $\angle A$) if they form equal angles (in opposite directions) with the bisector of that angle.
+Two lines, such as $(PQ)$ and $(BC)$, are said to be \texttt{antiparallel} with respect to an angle (e.g., $\hat{A}$) if they form equal angles (in opposite directions) with the bisector of that angle.
 
 
 Useful properties of antiparallel lines:
 \begin{itemize}
-  \item If $(PQ)$ and $(BC)$ are antiparallel with respect to $\angle A$, then the four points $P$, $Q$, $B$, and $C$ are \textbf{concyclic}.
+  \item If $(PQ)$ and $(BC)$ are antiparallel with respect to $\hat{A}$, then the four points $P$, $Q$, $B$, and $C$ are \texttt{concyclic}.
   \item Antiparallelism is symmetric: if $(PQ)$ is antiparallel to $(BC)$, then $(BC)$ is antiparallel to $(PQ)$.
 \end{itemize}
 
@@ -2753,9 +2760,9 @@ This method takes two arguments:
 
 The second argument \code{arg} can be:
 \begin{itemize}
-  \item \code{nil} or \code{0} (default): antiparallel to $BC$ w.r.t.\ angle $\widehat{A}$;
-  \item \code{1}: antiparallel to $AC$ w.r.t.\ angle $\widehat{B}$;
-  \item \code{2}: antiparallel to $AB$ w.r.t.\ angle $\widehat{C}$;
+  \item \code{nil} or \code{0} (default): antiparallel to $BC$ w.r.t.\ angle $\hat{A}$;
+  \item \code{1}: antiparallel to $AC$ w.r.t.\ angle $\hat{B}$;
+  \item \code{2}: antiparallel to $AB$ w.r.t.\ angle $\hat{C}$;
   \item a point equal to one of the triangle’s vertices: \code{z.A}, \code{z.B}, or \code{z.C}.
 \end{itemize}
 
@@ -2764,7 +2771,7 @@ The second argument \code{arg} can be:
 This method is used, for example, in the construction of the symmedian point (see Section~\ref{ssub:method_triangle_lemoine_point}).
 
 \vspace{1em}
-\begin{minipage}{.5\textwidth}
+\begin{tkzexample}[latex =.5\textwidth]
   \directlua{
     init_elements()
     z.B = point(0, 0)
@@ -2785,22 +2792,8 @@ This method is used, for example, in the construction of the symmedian point (se
     \tkzDrawSegments(P,Q)
     \tkzDrawCircle(W,P)
   \end{tikzpicture}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-  \directlua{
-    init_elements()
-    z.B = point(0, 0)
-    z.C = point(5, 0)
-    z.A = point(1, 4)
-    T.ABC = triangle(z.A, z.B, z.C)
-    z.M = point(2, 2)
-    L.anti = T.ABC:antiparallel(z.M, z.A)
-    z.P, z.Q = L.anti:get()
-    T.PQ = triangle(z.P, z.Q, z.B)
-    z.W = T.PQ.circumcenter}
 \end{tkzexample}
-\end{minipage}
+
 
 \subsubsection{Method  \tkzMeth{triangle}{orthic\_axis()} and \tkzMeth{triangle}{orthic\_axis\_points()}}
 \label{ssub:method_triangle_orthic_axis}

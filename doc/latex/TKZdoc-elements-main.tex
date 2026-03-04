@@ -14,7 +14,7 @@
 ]{tkz-doc}
 %\overfullrule=5pt
 \gdef\tkznameofpack{tkz-elements}
-\gdef\tkzversionofpack{5.02c}
+\gdef\tkzversionofpack{5.03c}
 \gdef\tkzdateofpack{\today}
 \gdef\tkznameofdoc{tkz-elements.pdf}
 \let\tkzversionofdoc\tkzversionofpack
@@ -54,17 +54,17 @@
 
 \usepackage[colorlinks,pdfencoding=auto, psdextra]{hyperref}
 \hypersetup{
-    linkcolor=Gray,
+    linkcolor=black,
     citecolor=Green,
     filecolor=Mulberry,
     urlcolor=orange,
-    menucolor=Gray,
+    menucolor=black,
     runcolor=Mulberry,
-    linkbordercolor=Gray,
+    linkbordercolor=black,
     citebordercolor=Green,
     filebordercolor=Mulberry,
     urlbordercolor=NavyBlue,
-    menubordercolor=Gray,
+    menubordercolor=black,
     runbordercolor=Mulberry,
     pdfsubject={Euclidean Geometry},
     pdfauthor={\tkzauthorofpack},
@@ -82,10 +82,6 @@
 \usepackage{unicode-math}
 \usepackage{concmath-otf}
 \let\rmfamily\ttfamily
-%\usepackage{fourier-otf}
-% après \usepackage{unicode-math}
-%\providecommand{\widearc}[1]{\overparen{#1}}
-% end fonts
 %<--------------------------------------------------------------------------->
 % load other packages
 \usepackage{pifont}
@@ -102,7 +98,7 @@
 \usepackage{enumitem}
 \usepackage{moreenum}
 \usepackage{textcomp}
-\usepackage{mathtools,amsfonts}
+\usepackage{mathtools}
 \usepackage{amsthm}
 \usepackage{thmtools}
 
@@ -166,7 +162,7 @@
 % end decoration
 %<--------------------------------------------------------------------------->
 % settings styles
-\tkzSetUpColors[background=white,text=darkgray]
+\tkzSetUpColors[background=white,text=black]
 \tkzSetUpPoint[size=2,color=teal,fill=teal!10]
 \tkzSetUpLine[ultra thin,color=teal]
 \tkzSetUpCompass[color=orange,ultra thin,/tkzcompass/delta=10]
@@ -385,7 +381,7 @@ path   & \hyperref[path:methods]{see table} \\
 
 \input{TKZdoc-elements-classes-vectors.tex}
 \input{TKZdoc-elements-classes-matrices.tex}
-\input{TKZdoc-elements-classes-path.tex}
+ \input{TKZdoc-elements-classes-path.tex}
 \input{TKZdoc-elements-classes-list-point.tex}
 \input{TKZdoc-elements-classes-angle.tex}
 \input{TKZdoc-elements-intersection.tex}

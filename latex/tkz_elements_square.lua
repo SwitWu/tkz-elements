@@ -61,5 +61,4 @@ function square:get()
 end
 
 
-
 return square

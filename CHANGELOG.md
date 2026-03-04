@@ -1,25 +1,85 @@
-## [2026/02/20 — version 5.02c]
-### Added
-- **path**
-    - method 'scale' Anisotropic scaling
-
-- **fct**
-    -   Added `half_tangents` and `tangent` methods.
-    -   Tangents now return unit direction points (no `line` objects).
-    -   Fully compatible with `set_scale`.
-    -   Unified implementation based on drawing coordinates.
+## [2026/03/04 — version 5.03c]
 
 ### Changed
+
 - **path**
-    - homothety now center is optional
-- **fct** et **pfct**
-     - Removed graph-related drawing macros
-     (`\tkzDrawPointOnGraph`, `\tkzDrawPointsOnGraph`,
-      `\tkzDrawPointOnParamGraph`, `\tkzDrawPointsOnParamGraph`).
-     These were incompatible with `set_scale` and contradicted the
-     Lua-computation / TikZ-drawing design principle.
+  - `add_point` now accepts either a `point` object or a string
+    representing coordinates (e.g. `"(2,3)"`, `"(1e-5,0)"`).
+  - String arguments are automatically parsed using
+    `utils.parse_point`.
+  - Improves API flexibility while preserving internal
+    TikZ-formatted storage.
+
+- **utils**
+  - Clarified and documented support for scientific notation
+    in `parse_point` (e.g. `1e-5`, `2E3`).
+  - Improved documentation of `format_number`,
+    `checknumber`, and `to_decimal_string`.
+  - Reinforced consistent fixed-decimal formatting
+    for TikZ output.
+
 - **tkz-elements.sty**
-      - Deletions and corrections.
+  - Removed the `tkzelements` environment.
+
+- **point**
+  - Unified approximate equality and geometric identity.
+  - `__eq` now uses the same Euclidean proximity criterion as `identity`.
+  - Removed coordinate-wise comparison in favor of a rotation-invariant
+    distance test.
+  - Centralized comparison logic for improved numerical consistency.
+
+- **triangle**
+  - Added `radical_circle`: the circle orthogonal to the three excentral circles.
+  - Added `the_apollonius_center` and `the_apollonius_circle`.
+  - `triangle.feuerbach` is now defined as `triangle.euler_circle()`.
+
+### Documentation
+
+- Improved documentation of `\tkzDrawCoordinates`.
+- Explained its direct mapping to TikZ `plot coordinates`.
+- Clarified that a Lua `path` is a discrete computational object
+  rendered as an explicit polygonal chain.
+- Emphasized the design principle:
+
+  *Lua computes — TikZ draws.*
+
+- Clarified terminology:
+  - **mediator** refers to the **perpendicular bisector** of a segment.
+
+
+## [2026/02/20 — version 5.02c]
+
+### Added
+
+#### **path**
+- Added method `scale` (anisotropic scaling).
+
+#### **fct**
+- Added methods `half_tangents` and `tangent`.
+- Tangents now return **unit direction points** (instead of `line` objects).
+- Fully compatible with `set_scale`.
+- Unified implementation based on coordinate generation.
+
+---
+
+### Changed
+
+#### **path**
+- In `homothety`, the center argument is now optional.
+
+#### **fct** and **pfct**
+- Removed graph-related drawing macros:
+  `\tkzDrawPointOnGraph`, `\tkzDrawPointsOnGraph`,
+  `\tkzDrawPointOnParamGraph`, and `\tkzDrawPointsOnParamGraph`.
+
+  These macros were incompatible with `set_scale` and conflicted
+  with the package design principle: computations must be
+  performed in Lua, while drawing is delegated to TikZ or
+  `\tkzDrawPoints`.
+
+#### **tkz-elements.sty**
+- Cleanup and internal corrections.
+- Simplified the Lua–TikZ bridge layer.
 
 ## [2026/02/17 — version 5.00c]
 
