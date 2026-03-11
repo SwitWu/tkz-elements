@@ -15,7 +15,10 @@ Each triangle object is created using the \tkzMeth{triangle}{new} method, which 
 \subsection{Creating a triangle}
 \label{sub:creating_a_triangle}
 
-The \tkzClass{triangle} class is used to define triangles from three points. It automatically computes a wide range of geometric attributes associated with the triangle.
+The \tkzClass{triangle} class is used to define triangles from three points.
+\textbf{Note.} The triangle must be non-degenerate. The constructor
+raises an error if two vertices coincide (within tolerance) or if
+the three vertices are aligned. It automatically computes a wide range of geometric attributes associated with the triangle.
 
 \begin{mybox}
 \begin{verbatim}
@@ -32,6 +35,8 @@ The short form \code{triangle(z.A, z.B, z.C)} is equivalent and more commonly us
 T.ABC = triangle(z.A, z.B, z.C)
 \end{verbatim}
 \end{mybox}
+
+\errmessage{JE SUIS BIEN LE BON FICHIER}
 
 \subsection{Attributes of a triangle} %(fold)
 
@@ -75,6 +80,13 @@ Several attributes are automatically computed and stored:
   \cos(\gamma) = \frac{a^2 + b^2 - c^2}{2ab}
   \]
   They are stored in \code{T.ABC.alpha}, \code{T.ABC.beta}, and \code{T.ABC.gamma}.
+
+  \item \texttt{Feet of medians, altitudes and internal bisectors: }
+  \begin{itemize}
+    \item |ma|, |mb|, |mc|: midpoints of the sides.
+    \item |ha|, |hb|, |hc|: feet of the altitudes.
+    \item |ia|, |ib|, |ic|: feet of the internal angle bisectors.
+  \end{itemize}
 \end{itemize}
 
 These attributes define the essential geometric properties of the triangle and are used in numerous derived methods and constructions.
@@ -115,6 +127,9 @@ These attributes define the essential geometric properties of the triangle and a
   \tkzAttr{triangle}{cross}& [\ref{ssub:triangle_attributes_cross}] \\
   \tkzAttr{triangle}{inradius}& [\ref{ssub:triangle_attributes_lengths}]\\
   \tkzAttr{triangle}{circumradius}& [\ref{ssub:triangle_attributes_lengths}] \\
+  \tkzAttr{triangle}{ma/mb/mc}& [\ref{ssub:triangle_attributes_foot_median}]  \\
+  \tkzAttr{triangle}{ha/hb/hc}& [\ref{ssub:triangle_attributes_foot_altitude}]\\
+  \tkzAttr{triangle}{ia/ib/ic}& [\ref{ssub:triangle_attributes_foot_bisector}] \\
   \bottomrule %
   \end{tabular}
   \egroup
@@ -188,7 +203,7 @@ For a practical illustration of this method, see  the associated \code{tikzpictu
 \label{ssub:triangle_attributes_characteristic_points}
 The \code{tikzpicture} environment can be viewed in the documentation.
 
-\begin{minipage}{.5\textwidth-2cm}
+\begin{tkzexample}[latex=.5\textwidth]
 \directlua{
 init_elements()
    z.A = point(0, 0)
@@ -211,22 +226,9 @@ init_elements()
      \tkzLabelPoints[above](C)
   \end{tikzpicture}
 \end{center}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-\begin{tkzexample}[code only]
-\directlua{
- init_elements()
- z.A = point(0, 0)
- z.B = point(4, 0)
- z.C = point(1, 3)
- T.ABC = triangle(z.A, z.B, z.C)
- z.O = T.ABC.circumcenter
- z.I = T.ABC.incenter
- z.H = T.ABC.orthocenter
- z.G = T.ABC.centroid
- z.S = T.ABC.spiekercenter}
 \end{tkzexample}
-\end{minipage}
+
+
 
 \subsubsection{Triangle attributes: angles} %(fold)
 \label{ssub:triangle_attributes_angles}
@@ -449,6 +451,92 @@ and a zero value indicates collinearity.
 \end{center}
 \end{tkzexample}
 
+\subsubsection{Triangle attributes: median feet}
+\label{ssub:triangle_attributes_foot_median}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+init_elements()
+   z.A = point(0, 0)
+   z.B = point(4, 0)
+   z.C = point(1, 3)
+   T.ABC = triangle(z.A, z.B, z.C)
+   z.M_a = T.ABC.ma
+   z.M_b = T.ABC.mb
+   z.M_c = T.ABC.mc
+   z.G = T.ABC.centroid}
+\begin{center}
+  \begin{tikzpicture}
+     \tkzGetNodes
+     \tkzDrawPolygon(A,B,C)
+     \tkzDrawSegments[dashed](A,M_a B,M_b C,M_c)
+     \tkzDrawPoints(A,B,C,M_a,M_b,M_c,G)
+     \tkzLabelPoints[below](A,B,M_c,G)
+     \tkzLabelPoints[left](M_b)
+     \tkzLabelPoints[right](M_a)
+     \tkzLabelPoints[above](C)
+  \end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\subsubsection{Triangle attributes: altitude feet}
+\label{ssub:triangle_attributes_foot_altitude}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+init_elements()
+   z.A = point(0, 0)
+   z.B = point(4, 0)
+   z.C = point(1, 3)
+   T.ABC = triangle(z.A, z.B, z.C)
+   z.H_a = T.ABC.ha
+   z.H_b = T.ABC.hb
+   z.H_c = T.ABC.hc
+   z.H = T.ABC.orthocenter}
+\begin{center}
+  \begin{tikzpicture}
+     \tkzGetNodes
+     \tkzDrawPolygon(A,B,C)
+     \tkzDrawSegments[dashed](A,H_a B,H_b C,H_c)
+     \tkzDrawPoints(A,B,C,H_a,H_b,H_c,H)
+     \tkzLabelPoints[below](A,B,H_c,H)
+     \tkzLabelPoints[left](H_b)
+     \tkzLabelPoints[right](H_a)
+     \tkzLabelPoints[above](C)
+  \end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\subsubsection{Triangle attributes: internal bisector feet}
+\label{ssub:triangle_attributes_foot_bisector}
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+init_elements()
+   z.A = point(0, 0)
+   z.B = point(4, 0)
+   z.C = point(1, 3)
+   T.ABC = triangle(z.A, z.B, z.C)
+   z.I_a = T.ABC.ia
+   z.I_b = T.ABC.ib
+   z.I_c = T.ABC.ic
+   z.I = T.ABC.incenter
+   z.ta,z.tb,z.tc = T.ABC:projections(z.I)}
+\begin{center}
+  \begin{tikzpicture}
+     \tkzGetNodes
+     \tkzDrawPolygon(A,B,C)
+     \tkzDrawSegments[dashed](A,I_a B,I_b C,I_c)
+     \tkzDrawCircle(I,ta)
+     \tkzDrawPoints(A,B,C,I_a,I_b,I_c,I,ta,tb,tc)
+     \tkzLabelPoints[below](A,B,I_c,I)
+     \tkzLabelPoints[left](I_b)
+     \tkzLabelPoints[right](I_a)
+     \tkzLabelPoints[above](C)
+  \end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
 \subsection{Methods of the class triangle} %(fold)
 
 \bgroup
@@ -499,7 +587,8 @@ and a zero value indicates collinearity.
 \tkzMeth{triangle}{nagel\_point()} & [\ref{ssub:method_triangle_nagel__point}]\\
 \tkzMeth{triangle}{feuerbach\_point()} & [\ref{ssub:method_point_feuerbach}]\\
 \tkzMeth{triangle}{spieker\_center()} & [\ref{ssub:method_triangle_spieker_center}]\\
-\tkzMeth{triangle}{projection(p)}  & [\ref{ssub:method_triangle_projection_pt}]\\
+\tkzMeth{triangle}{projections(p)}  & [\ref{ssub:method_triangle_projections_pt}]\\
+\tkzMeth{triangle}{reflections(p)}  & [\ref{ssub:method_triangle_reflections_pt}]\\
 \tkzMeth{triangle}{euler\_points()} &  [\ref{ssub:method_triangle_euler__points}] \\
 \tkzMeth{triangle}{nine\_points()} &  [\ref{ssub:method_triangle_nine__points}] \\
 \tkzMeth{triangle}{taylor\_points()} & See  [\ref{ssub:method_triangle_taylor__circle}]\\
@@ -646,6 +735,7 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 \tkzMeth{triangle}{macbeath\_inellipse()}  & [\ref{ssub:method_triangle_macbeath__inellipse}]\\
 \tkzMeth{triangle}{mandart\_ellipse()}  & [\ref{ssub:method_triangle_mandart__inellipse}]\\
 \tkzMeth{triangle}{orthic\_inellipse()}  & [\ref{ssub:method_triangle_orthic__inellipse}]\\
+\tkzMeth{triangle}{projection()}  & [See \ref{ssub:method_triangle_projection}]\\
 \tkzMeth{triangle}{reflection()}  & [See \ref{ssub:method_triangle_reflection}; \ref{ssub:method_triangle_simson__line}; \ref{ssub:method_yiu_circles}]\\
 \midrule
 \texttt{Methods Returning a Square} &\\
@@ -1477,8 +1567,8 @@ The Bevan point of a triangle  is the circumcenter of the excentral triangle.
 \label{ssub:method_triangle_excenter_pt}
 Since the argument is one of the triangle's vertices, this method returns the center of the corresponding exinscribed circle.
 
-\subsubsection{Method \tkzMeth{triangle}{projection}(pt)}
-\label{ssub:method_triangle_projection_pt}
+\subsubsection{Method \tkzMeth{triangle}{projections}(pt)}
+\label{ssub:method_triangle_projections_pt}
 
 This method returns the three orthogonal projections of a point onto the sides of the triangle.
 
@@ -1490,7 +1580,7 @@ Given a triangle $ABC$ and a point $P$, the method computes the feet of the perp
 
 The result consists of three points, which can be retrieved as follows:
 \begin{mybox}
-\code{z.D, z.E, z.F = T.ABC:projection(z.P)}
+\code{z.D, z.E, z.F = T.ABC:projections(z.P)}
 \end{mybox}
 where:
 \begin{itemize}
@@ -1515,11 +1605,11 @@ This method is useful, for example, in constructing the pedal triangle of a poin
   z.I = T.ABC.incenter
   z.a,
   z.b,
-  z.c = T.ABC:projection(z.I)
+  z.c = T.ABC:projections(z.I)
   z.J = T.ABC:excenter(z.C)
   z.X,
   z.Y,
-  z.Z = T.ABC:projection(z.J)}
+  z.Z = T.ABC:projections(z.J)}
   \begin{center}
     \begin{tikzpicture}[scale=.75]
     \tkzGetNodes
@@ -1541,6 +1631,37 @@ This method is useful, for example, in constructing the pedal triangle of a poin
     \end{tikzpicture}
     \end{center}
 \end{tkzexample}
+
+
+\subsubsection{Method \tkzMeth{triangle}{reflections}(pt)}
+\label{ssub:method_triangle_reflections_pt}
+
+This method returns the three reflections of a point across the sides of the triangle.
+
+\begin{tkzexample}[latex = .5\textwidth]
+\directlua{
+init_elements()
+z.A = point(2, 4)
+z.B = point(0, 0)
+z.C = point(6, 0)
+T.ABC = triangle(z.A, z.B, z.C)
+z.P = T.ABC:barycentric(2, 1, 4)
+z.P1,
+z.P2, z.P3 = T.ABC:reflections(z.P)
+}
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawSegments[dashed](P,P1 P,P2 P,P3)
+  \tkzDrawPoints(A,B,C,P1,P2,P3,P)
+  \tkzLabelPoints(B,C,P1,P)
+  \tkzLabelPoints[above](P2,A,P3)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+
 
 \subsubsection{Method \tkzMeth{triangle}{parallelogram()}}
 \label{ssub:method_triangle_parallelogram}
@@ -3443,13 +3564,13 @@ z.J,_ = T.ABC:ex_circle(1):get()
 z.K,_ = T.ABC:ex_circle(2):get()
 z.Xk ,
 z.Yk,
-z.Zk = T.ABC:projection(z.K)
+z.Zk = T.ABC:projections(z.K)
 z.Xi ,
 z.Yi,
-z.Zi = T.ABC:projection(z.I)
+z.Zi = T.ABC:projections(z.I)
 z.Xj ,
 z.Yj,
-z.Zj = T.ABC:projection(z.J)
+z.Zj = T.ABC:projections(z.J)
 }
 \begin{center}
 \begin{tikzpicture}[scale=.5]
@@ -3482,13 +3603,13 @@ z.J,_ = T.ABC:ex_circle(1):get()
 z.K,_ = T.ABC:ex_circle(2):get()
 z.Xk,
 z.Yk,
-z.Zk = T.ABC:projection(z.K)
+z.Zk = T.ABC:projections(z.K)
 z.Xi,
 z.Yi,
-z.Zi = T.ABC:projection(z.I)
+z.Zi = T.ABC:projections(z.I)
 z.Xj,
 z.Yj,
-z.Zj = T.ABC:projection(z.J)}
+z.Zj = T.ABC:projections(z.J)}
 \end{tkzexample}
 \end{minipage}
 
@@ -3660,30 +3781,31 @@ Given a point $P$, the pedal triangle of $P$ is the triangle whose polygon verti
 
 \vspace{1em}
 \begin{minipage}{.5\textwidth}
-  \directlua{
-    init_elements()
-    z.A = point(0, 0)
-    z.B = point(5, 0)
-    z.C = point(1.5, 3)
-    z.O = point(2, 1)
-    T.ABC = triangle(z.A, z.B, z.C)
-    T.pedal = T.ABC:pedal(z.O)
-    z.E, z.F, z.G = T.pedal:get()
-    C.pedal = T.ABC:pedal_circle(z.O)
-    z.w = C.pedal.center
-    z.T = C.pedal.through}
-  \begin{center}
-    \begin{tikzpicture}[scale = 1.2]
-    \tkzGetNodes
-    \tkzDrawPolygon(A,B,C)
-    \tkzDrawPolygon[red](E,F,G)
-    \tkzDrawCircle(w,T)
-    \tkzDrawPoints(A,B,C,E,F,G,O)
-    \tkzLabelPoints(A,B,G)
-    \tkzLabelPoints[above](C,E,F)
-    \tkzDrawSegments(O,E O,F O,G)
-    \end{tikzpicture}
-  \end{center}
+\directlua{
+  init_elements()
+  z.A = point(0, 0)
+  z.B = point(5, 0)
+  z.C = point(1.5, 3)
+  z.O = point(2, 1)
+  T.ABC = triangle(z.A, z.B, z.C)
+  T.pedal = T.ABC:pedal(z.O)
+  z.E, z.F, z.G = T.pedal:get()
+  C.pedal = T.ABC:pedal_circle(z.O)
+  z.w = C.pedal.center
+  z.T = C.pedal.through}
+\begin{center}
+  \begin{tikzpicture}[scale = 1.2]
+      \tkzGetNodes
+      \tkzDrawPolygon(A,B,C)
+      \tkzDrawPolygon[red](E,F,G)
+      \tkzDrawCircle(w,T)
+      \tkzDrawSegments(O,E O,F O,G)
+      \tkzDrawPoints(A,B,C,E,F,G,O)
+      \tkzLabelPoints(A,B,E)
+      \tkzLabelPoints[left](G)
+      \tkzLabelPoints[above](C,F)
+  \end{tikzpicture}
+\end{center}
 \end{minipage}
 \begin{minipage}{.5\textwidth}
 \begin{tkzexample}[code only]
@@ -4277,32 +4399,32 @@ Three circle objects tangent to one another and to the triangle’s sides.
 
 \texttt{Example usage: }
 
-\begin{tkzexample}[latex=.45\textwidth]
-\directlua{
-  init_elements()
-  z.A = point(0, 0)
-  z.B = point(5, 0)
-  z.C = point(1, 4)
-  T.ABC = triangle(z.A, z.B, z.C)
-  C.A,
-  C.B,
-  C.C = T.ABC:three_tangent_circles()
-  z.ta = C.A.through
-  z.tb = C.B.through
-  z.tc = C.C.through
-  C.ins = T.ABC:in_circle()
-  z.I, z.T = C.ins:get()}
-\begin{center}
-\begin{tikzpicture}[scale=.6]
-\tkzGetNodes
-\tkzDrawCircles(A,ta B,tb C,tc I,T)
-\tkzDrawPolygon(A,B,C)
-\tkzDrawPoints(A,B,C)
-\tkzLabelPoints(A,B)
-\tkzLabelPoints[above](C)
-\end{tikzpicture}
-\end{center}
-\end{tkzexample}
+% \begin{tkzexample}[latex=.45\textwidth]
+% \directlua{
+%   init_elements()
+%   z.A = point(0, 0)
+%   z.B = point(5, 0)
+%   z.C = point(1, 4)
+%   T.ABC = triangle(z.A, z.B, z.C)
+%   C.A,
+%   C.B,
+%   C.C = T.ABC:three_tangent_circles()
+%   z.ta = C.A.through
+%   z.tb = C.B.through
+%   z.tc = C.C.through
+%   C.ins = T.ABC:in_circle()
+%   z.I, z.T = C.ins:get()}
+% \begin{center}
+% \begin{tikzpicture}[scale=.6]
+% \tkzGetNodes
+% \tkzDrawCircles(A,ta B,tb C,tc I,T)
+% \tkzDrawPolygon(A,B,C)
+% \tkzDrawPoints(A,B,C)
+% \tkzLabelPoints(A,B)
+% \tkzLabelPoints[above](C)
+% \end{tikzpicture}
+% \end{center}
+% \end{tkzexample}
 
 \subsubsection{Method \tkzMeth{triangle}{three\_apollonius\_circles()}}
 \label{ssub:three_apollonius_circles}
@@ -4676,9 +4798,9 @@ The excentral triangle plays an important role in triangle geometry, particularl
  T.exc = T.ABC:excentral()
  z.I = T.ABC.incenter
  z.Ja, z.Jb, z.Jc = T.exc:get()
- z.Xa, _, _ = T.ABC:projection(z.Ja)
- z.Xb, _, _ = T.ABC:projection(z.Jb)
- z.Xc, _, _ = T.ABC:projection(z.Jc)}
+ z.Xa, _, _ = T.ABC:projections(z.Ja)
+ z.Xb, _, _ = T.ABC:projections(z.Jb)
+ z.Xc, _, _ = T.ABC:projections(z.Jc)}
 \begin{tikzpicture}[scale=.75]
   \tkzGetNodes
   \tkzDrawLines[add=1 and 1](A,B B,C C,A)
@@ -5056,6 +5178,33 @@ The Yiu triangle $O_AO_BO_C$ is the triangle formed by the centers of the Yiu ci
   \tkzLabelPoints[above](A,O_C)
 \end{tikzpicture}
 \end{tkzexample}
+
+\subsubsection{Method \tkzMeth{triangle}{projection()}}
+\label{ssub:method_triangle_projection}
+This method returns a triangle whose vertices are the projections of the original triangle's vertices with respect to the opposite sides.
+
+The result is the orthic triangle.
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{%
+z.A = point(2, 5)
+z.B = point(0, 0)
+z.C = point(6, 0)
+T.ABC = triangle(z.A,z.B,z.C)
+T.orthic = T.ABC:projection()
+z.Ap,
+z.Bp,
+z.Cp = T.orthic:get()
+}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawPolygons(A,B,C A',B',C')
+\tkzDrawPoints(A,B,C,A',B',C')
+\tkzLabelPoints(B,C,A')
+\tkzLabelPoints[above](A,B',C')
+\end{tikzpicture}
+\end{tkzexample}
+
 
 \subsubsection{Method \tkzMeth{triangle}{reflection()}}
 \label{ssub:method_triangle_reflection}
@@ -5825,9 +5974,9 @@ Its center is the \emph{mittenpunkt} $M$ of the triangle.
   z.M = T.ABC:mittenpunkt_point()
   T.exc = T.ABC:excentral()
   z.Ja, z.Jb, z.Jc = T.exc:get()
-  z.Xa, _,_ = T.ABC:projection(z.Ja)
-  z.Xb, z.Yb,_ = T.ABC:projection(z.Jb)
-  z.Xc,_, z.Zc = T.ABC:projection(z.Jc)
+  z.Xa, _,_ = T.ABC:projections(z.Ja)
+  z.Xb, z.Yb,_ = T.ABC:projections(z.Jb)
+  z.Xc,_, z.Zc = T.ABC:projections(z.Jc)
   CO = T.ABC:mandart_inellipse()
   curve = CO:points(0, 1, 100)}
   \begin{tikzpicture}

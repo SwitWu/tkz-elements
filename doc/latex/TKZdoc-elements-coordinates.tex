@@ -110,7 +110,7 @@ T.ABC = triangle(z.A, z.B, z.C)
 z.L = T.ABC:trilinear(T.ABC.a,
                       T.ABC.b,
                       T.ABC.c)
-z.a, z.b, z.c = T.ABC:projection(z.L)}
+z.a, z.b, z.c = T.ABC:projections(z.L)}
 \begin{tikzpicture}
 \tkzGetNodes
 \tkzDrawPolygon(A,B,C)

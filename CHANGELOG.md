@@ -1,3 +1,25 @@
+## [2026/03/11 — version 5.04c]
+
+### Added
+
+- **triangle**
+  - Added new attributes: `ma`, `mb`, `mc`, `ha`, `hb`, `hc`, `ia`, `ib`, `ic`
+    - `ma`, `mb`, `mc`: midpoints of the sides
+    - `ha`, `hb`, `hc`: feet of the altitudes
+    - `ia`, `ib`, `ic`: feet of the internal angle bisectors
+
+  - Added method: `triangle:reflections(pt)`
+
+### Changed
+
+- **triangle**
+- Renamed method: `projection(pt)` -> `projections(pt)`
+
+### Notes
+- **triangle**
+   - `projections(pt)` and `reflections(pt)` apply to an arbitrary point.
+   - `projection()` and `reflection()` apply to the triangle vertices.
+
 ## [2026/03/04 — version 5.03c]
 
 ### Changed

@@ -152,6 +152,12 @@ end
 ------------------------
 --     Points --
 ------------------------
+
+function find_foot_bisector_(a, b, c)
+	local i = in_center_(a, b, c)
+	return intersection_ll_(a,i,b,c)
+end
+
 function barycentric_(pa, pb, pc, x, y, z)
 	local a = length_(pb, pc)
 	local b = length_(pa, pc)

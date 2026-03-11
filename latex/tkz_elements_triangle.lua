@@ -60,6 +60,9 @@ function triangle:new(za, zb, zc)
   local ha = projection_(zb, zc, za)
 	local hb = projection_(zc, za, zb)
 	local hc = projection_(za, zb, zc)
+	local ia = find_foot_bisector_(za, zb, zc)
+	local ib = find_foot_bisector_(zb, zc, za)
+	local ic = find_foot_bisector_(zc, za, zb)
 	local tr = {
 		pa = za,
 		pb = zb,
@@ -83,6 +86,9 @@ function triangle:new(za, zb, zc)
 		ha = ha,
 		hb = hb,
 		hc = hc,
+		ia = ia,
+		ib = ib,
+		ic = ic,
 		alpha = alpha,
 		beta = beta,
 		gamma = gamma,
@@ -371,10 +377,18 @@ function triangle:excenter(pt)
 	end
 end
 
-function triangle:projection(p)
+function triangle:projections(p)
 	local p1 = projection_(self.pa, self.pb, p)
 	local p2 = projection_(self.pb, self.pc, p)
 	local p3 = projection_(self.pc, self.pa, p)
+	return p1, p2, p3
+end
+
+
+function triangle:reflections(p)
+	local p1 = symmetry_axial_(self.pa, self.pb, p)
+	local p2 = symmetry_axial_(self.pb, self.pc, p)
+	local p3 = symmetry_axial_(self.pc, self.pa, p)
 	return p1, p2, p3
 end
 
@@ -1319,7 +1333,7 @@ function triangle:euler()
 end
 
 function triangle:pedal(pt)
-	return triangle:new(self:projection(pt))
+	return triangle:new(self:projections(pt))
 end
 
 function triangle:yiu()
@@ -1332,6 +1346,14 @@ function triangle:reflection()
 		symmetry_axial_(self.pb, self.pc, self.pa),
 		symmetry_axial_(self.pa, self.pc, self.pb),
 		symmetry_axial_(self.pa, self.pb, self.pc)
+	)
+end
+
+function triangle:projection()
+	return triangle:new(
+		projection_(self.pb, self.pc, self.pa),
+		projection_(self.pa, self.pc, self.pb),
+		projection_(self.pa, self.pb, self.pc)
 	)
 end
 

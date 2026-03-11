@@ -168,6 +168,8 @@ function symmetry_axial_(pa, pb, pt)
 	return symmetry_(p, pt)
 end
 
+reflection_ = symmetry_axial_
+
 function set_symmetry_axial_(u, v, ...)
 	local t = {}
 	for _, value in ipairs({ ... }) do
