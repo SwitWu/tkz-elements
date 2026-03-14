@@ -27,7 +27,8 @@ A circle object stores various geometric attributes that can be accessed for fur
 \vspace{1em}
 
 \bgroup
-  \small
+\catcode`_=12
+\small
   \captionof{table}{Circle attributes.}\label{circle:attributes}
   \begin{tabular}{ll}
   \toprule
@@ -137,6 +138,7 @@ The circle class offers a wide range of methods, which can be grouped according 
 \vspace{1em}
 
 \bgroup
+\catcode`_=12
 \small
 \captionof{table}{Circle methods.}\label{circle:methods}
 \begin{tabular}{ll}
@@ -145,7 +147,7 @@ The circle class offers a wide range of methods, which can be grouped according 
 \midrule
 \texttt{Constructor} & \\
 \midrule
-\tkzFct{circle}{new(O,A)} & Note\footnote{circle(pt, pt) (short form, recommended)}; [\ref{ssub:method_circle_new}; \ref{ssub:creating_a_circle}]\\
+\tkzFct{circle}{new(O,A)} & [\ref{ssub:method_circle_new}; \ref{ssub:creating_a_circle}]\\
 \tkzFct{circle}{radius(O,r)} & Deprecated; See  [\ref{ssub:method_circle_radius}]\\
 \tkzFct{circle}{diameter(A,B)} & Deprecated; See  [\ref{ssub:method_circle_diameter}]\\
 \midrule
@@ -195,6 +197,7 @@ The circle class offers a wide range of methods, which can be grouped according 
 
 \newpage
 \bgroup
+\catcode`_=12
 \small
 \captionof{table}{Circle methods}\label{circle:methods 2}
 \begin{tabular}{ll}
@@ -365,7 +368,8 @@ We define a circle with its centre and radius.
   z.O = point(0, 0)
   z.A = point(2, 1)
   C.T = circle:radius(z.A, math.sqrt(5))
-  % better C.T = circle(from_radius(z.A, math.sqrt(5)))
+  % better
+  % C.T = circle(from_radius(z.A, math.sqrt(5)))
   z.T = C.T.through }
 \begin{center}
   \begin{tikzpicture}[gridded]
@@ -614,7 +618,8 @@ Returns one of:
 \def\tkzPosPoint#1#2#3#4{%
   \tkzLabelPoints(O,M,N,P)
   \tkzLabelPoint[below=#4pt,
-  font=\scriptsize](#2){\tkzUseLua{#1} on the #3}%
+  font=\scriptsize](#2){%
+  \tkzUseLua{#1} on the #3}%
 }
 
 \begin{center}

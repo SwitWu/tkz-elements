@@ -58,6 +58,7 @@ The \tkzClass{fct} class offers a compact set of methods, centered around:
 \vspace{1em}
 
 \bgroup
+\catcode`_=12
 \small
 \captionof{table}{fct methods.}\label{fct:methods}
 \begin{tabular}{ll}
@@ -190,7 +191,8 @@ on the internal policy).
   \tkzInit[xmin=-1,xmax=5,ymin=-1,ymax=2]
   \tkzDrawX\tkzDrawY
   \tkzGetNodes
-  \tkzDrawCoordinates[smooth,blue,thick](PA.curve)
+  \tkzDrawCoordinates[smooth,blue,
+                  thick](PA.curve)
   \tkzDrawPoint[red](A)
 %  \tkzDrawPointsOnGraph[blue]{0,1,2}{fa}
 %  \tkzDrawPointOnGraph[red]{-1}{fa}

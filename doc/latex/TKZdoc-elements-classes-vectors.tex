@@ -445,8 +445,6 @@ The code required to display the angle measurement is as follows:
   The main methods provided by the \tkzClass{vector} class are summarised below.
 
 \medskip
-\bgroup
-\catcode`_=12
 \small
 \captionof{table}{Methods of the class vector.}\label{vector:methods}
 \begin{tabular}{ll}
@@ -455,7 +453,7 @@ The code required to display the angle measurement is as follows:
 \midrule
 \texttt{Constructor} & \\
 \midrule
-\tkzMeth{vector}{new(pt, pt)} & Note\footnote{vector(pt, pt) (short form, recommended)}; \ref{sub:creating_a_vector} \\
+\tkzMeth{vector}{new(pt, pt)} & \ref{sub:creating_a_vector} \\
 \midrule
 \texttt{Methods Returning a Boolean} & \\
 \midrule
@@ -479,7 +477,7 @@ The code required to display the angle measurement is as follows:
 \tkzMeth{vector}{orthogonal([side],[length])} & \\
 \bottomrule
 \end{tabular}
-\egroup
+
 
 
 \subsection{Returns a boolean}

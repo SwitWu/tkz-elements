@@ -34,7 +34,7 @@ For simplicity, this documentation uses embedded Lua code in most cases. However
 
 \vspace{12pt}
 \begin{mybox}{}
-\begin{minipage}{.55\textwidth}
+\begin{minipage}{.50\textwidth}
 \begin{verbatim}
 % !TEX TS-program = lualatex
 % Created by Alain Matthes on 2024-01-09.
@@ -45,31 +45,31 @@ For simplicity, this documentation uses embedded Lua code in most cases. However
 \begin{document}
 \directlua{
  init_elements() % Clear tables
- dofile ("lua/sangaku.lua") % Load the lua code
+ dofile ("lua/sangaku.lua")
+ % Load the lua code
 }
 \begin{tikzpicture}[ scale = .75]
  \tkzGetNodes
  \tkzDrawCircle(I,F)
- \tkzFillPolygon[color = purple](A,C,D)
- \tkzFillPolygon[color = blue!50!black](A,B,C)
- \tkzFillCircle[color = orange](I,F)
+ \tkzFillPolygon[purple](A,C,D)
+ \tkzFillPolygon[blue!50!black](A,B,C)
+ \tkzFillCircle[orange](I,F)
 \end{tikzpicture}
 \end{document}
 \end{verbatim}
 \end{minipage}
-\begin{minipage}{.45\textwidth}
+\begin{minipage}{.40\textwidth}
 \directlua{
  init_elements()
  dofile ("lua/sangaku.lua")
 }
-
 \begin{center}
 \begin{tikzpicture}[ scale = .75]
   \tkzGetNodes
   \tkzDrawCircle(I,F)
-  \tkzFillPolygon[color = purple](A,C,D)
-  \tkzFillPolygon[color = blue!50!black](A,B,C)
-  \tkzFillCircle[color = orange](I,F)
+  \tkzFillPolygon[purple](A,C,D)
+  \tkzFillPolygon[blue!50!black](A,B,C)
+  \tkzFillCircle[orange](I,F)
 \end{tikzpicture}
 \end{center}
 \end{minipage}

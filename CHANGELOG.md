@@ -1,24 +1,64 @@
-## [2026/03/11 — version 5.04c]
+## [2026/03/14 — version 5.05c]
 
 ### Added
-
 - **triangle**
-  - Added new attributes: `ma`, `mb`, `mc`, `ha`, `hb`, `hc`, `ia`, `ib`, `ic`
-    - `ma`, `mb`, `mc`: midpoints of the sides
-    - `ha`, `hb`, `hc`: feet of the altitudes
-    - `ia`, `ib`, `ic`: feet of the internal angle bisectors
+   - methods `isotomic`, `complement`, `anticomplement`
+   - function triangle:ellipse_inscribed({brianchon/center/focus})
+   - function triangle:cevian_point(p, q, eps)
 
-  - Added method: `triangle:reflections(pt)`
+- **conics**
+   - function EL_five_points(z1,z2,z3,z4,z5)
 
-### Changed
+### Documentation
+- **conic**
+   - documentation clarification about constructor usage and helper functions
 
-- **triangle**
-- Renamed method: `projection(pt)` -> `projections(pt)`
 
-### Notes
-- **triangle**
-   - `projections(pt)` and `reflections(pt)` apply to an arbitrary point.
-   - `projection()` and `reflection()` apply to the triangle vertices.
+## [2026/03/11 — version 5.04c]
+
+   ### Added
+
+   - **triangle**
+     - Added new attributes: `ma`, `mb`, `mc`, `ha`, `hb`, `hc`, `ia`, `ib`, `ic`
+       - `ma`, `mb`, `mc`: midpoints of the sides
+       - `ha`, `hb`, `hc`: feet of the altitudes
+       - `ia`, `ib`, `ic`: feet of the internal angle bisectors
+
+     - Added method: `triangle:reflections(pt)`
+
+   ### Changed
+
+   - **triangle**
+   - Renamed method: `projection(pt)` -> `projections(pt)`
+
+   ### Notes
+   - **triangle**
+      - `projections(pt)` and `reflections(pt)` apply to an arbitrary point.
+      - `projection()` and `reflection()` apply to the triangle vertices.
+
+
+## [2026/03/11 — version 5.04c]
+
+   ### Added
+
+   - **triangle**
+     - Added new attributes: `ma`, `mb`, `mc`, `ha`, `hb`, `hc`, `ia`, `ib`, `ic`
+       - `ma`, `mb`, `mc`: midpoints of the sides
+       - `ha`, `hb`, `hc`: feet of the altitudes
+       - `ia`, `ib`, `ic`: feet of the internal angle bisectors
+
+     - Added method: `triangle:reflections(pt)`
+
+   ### Changed
+
+   - **triangle**
+   - Renamed method: `projection(pt)` -> `projections(pt)`
+
+   ### Notes
+   - **triangle**
+      - `projections(pt)` and `reflections(pt)` apply to an arbitrary point.
+      - `projection()` and `reflection()` apply to the triangle vertices.
+
 
 ## [2026/03/04 — version 5.03c]
 

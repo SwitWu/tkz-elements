@@ -109,7 +109,7 @@ The most natural and flexible construction method is based on the classical defi
 
 \begin{mybox}
 \begin{verbatim}
-CO = conic(z.F, L.dir, e)
+CO.name = conic(z.F, L.dir, e)
 \end{verbatim}
 \end{mybox}
 
@@ -126,19 +126,28 @@ Depending on the value of the eccentricity:
 The class also supports a short form:
 \begin{mybox}
 \begin{verbatim}
-CO = conic(z.F, L.dir, e)  -- equivalent to conic:new(...)
+CO.name = conic(z.F, L.dir, e)  -- equivalent to conic:new(...)
 \end{verbatim}
 \end{mybox}
 
 \texttt{Other constructions: }
 
-Additional creation methods are also available:
+The constructor \tkzname{conic:new(...)} remains the only creation mechanism.
+Additional helper functions are provided to compute valid argument lists
+from various geometric data. These functions do not construct a conic by
+themselves; instead, they transform the given data into parameters suitable
+for the constructor.
+
+Additional creation methods include:
 \begin{itemize}
   \item Bifocal construction using two foci and a constant sum or difference;
   \item Construction from a center, vertex, and covertex;
-  \item Construction from a general quadratic equation (conic coefficients).
+  \item Construction from a general quadratic equation (conic coefficients);
+  \item Construction from five points of an ellipse.
 \end{itemize}
 
+
+\verb|CO.EL = conic:new(EL_five_points(A,B,C,D,E))|
 These alternative methods are described in the following sections.
 
 
@@ -910,7 +919,7 @@ The most natural creation method is now the one based on a focus, a directrix, a
 \tkzFct{conic}{HY\_bifocal(pt,pt,pt or r)}& [\ref{ssub:_igfct_math_hy__bifocal}] \\
 \tkzFct{conic}{EL\_bifocal(pt,pt,pt or r)}& [\ref{ssub:_igfct_math_el__bifocal}] \\
 \tkzFct{conic}{EL\_points(L,pt,pt)}&[\ref{ssub:_math_el__points}] \\
-\tkzFct{matrix}{search\_ellipse(s1, s2, s3, s4, s5)}&[\ref{ssub:search_ellipse}]\\\tkzFct{conic}{test\_ellipse(pt,t)}&[\ref{ssub:function_test_ellipse}] \\
+\tkzFct{conic}{search\_ellipse(s1, s2, s3, s4, s5)}&[\ref{ssub:search_ellipse}]\\\tkzFct{conic}{test\_ellipse(pt,t)}&[\ref{ssub:function_test_ellipse}] \\
 \tkzFct{conic}{search\_center\_ellipse(t)}&[\ref{ssub:function_search_center_ellipse}] \\
 \tkzFct{conic}{ellipse\_axes\_angle(t)} &[\ref{ssub:function_ellipse_axes_angle}] \\
 \bottomrule
@@ -2266,7 +2275,52 @@ This approach is useful when the ellipse is defined by its geometric parameters 
 \end{center}
 \end{tkzexample}
 
-\subsubsection{Function \tkzFct{matrix}{search\_ellipse(s1, s2, s3, s4, s5)}}
+\subsubsection{Function \tkzFct{conic}{EL\_five\_points}(z1,z2,z3,z4,z5)}
+
+\texttt{Arguments: }
+
+Five points assumed to lie on the same ellipse.
+
+
+\medskip
+\texttt{Returns:} arguments suitable for  |conic:new(...)|
+This helper function computes a valid argument list for the constructor
+\tkzname{conic:new(...)} from five points of an ellipse.
+
+It does not create a conic object by itself. The function first determines
+the general quadratic equation passing through the five given points, then
+extracts the geometric data of the ellipse, and finally converts them into
+parameters compatible with the constructor.
+
+
+\medskip
+
+\texttt{Remark: } the five points must define a non-degenerate real ellipse.
+If the associated conic is degenerate, or if it is not an ellipse, an error is produced.
+
+\begin{tkzexample}[latex= .4\textwidth]
+\directlua{
+ init_elements()
+ z.A = point(4, 3)
+ z.D = point(0.2, 2)
+ z.C = point(0.4, 0)
+ z.B = point(3, 1.5)
+ z.E = point(2, 4)
+ CO.EL = conic:new(EL_five_points(z.A,z.B,z.C,z.D,z.E))
+ PA.curve = CO.EL:points(0,1,100)
+}
+\begin{center}
+\begin{tikzpicture}
+\tkzGetNodes
+\tkzDrawCoordinates[smooth,red,thick](PA.curve)
+\tkzDrawPoints(A,B,C,D,E)
+\tkzLabelPoints(A,B,C,D,E)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+
+\subsubsection{Function \tkzFct{conic}{search\_ellipse(s1, s2, s3, s4, s5)}}
 \label{ssub:search_ellipse}
 
 This function, which will eventually be renamed \code{five\_points}, is currently limited to ellipses.

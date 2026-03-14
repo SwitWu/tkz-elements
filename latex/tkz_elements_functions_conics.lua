@@ -502,3 +502,20 @@ function inverse_affinity_ellipse(C, z)
 	local CI = circle:new(C.center, C.vertex)
 	return intersection(CI, ortho, { near = z })
 end
+
+
+function EL_five_points(z1,z2,z3,z4,z5)
+	local coefficients = search_ellipse_(z1,z2,z3,z4,z5)
+if coefficients == nil then
+	tex.error("ellipse_inscribed: unable to determine the conic.")
+	return nil
+end
+
+	local center, ra, rb, angle = ellipse_axes_angle(coefficients)
+	if not center then
+		tex.error("EL_ellipse_five_points: impossible to determine ellipse data.")
+		return nil
+	end
+
+	return EL_radii(center, ra, rb, angle)
+end

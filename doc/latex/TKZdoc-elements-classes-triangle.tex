@@ -36,7 +36,6 @@ T.ABC = triangle(z.A, z.B, z.C)
 \end{verbatim}
 \end{mybox}
 
-\errmessage{JE SUIS BIEN LE BON FICHIER}
 
 \subsection{Attributes of a triangle} %(fold)
 
@@ -93,7 +92,8 @@ These attributes define the essential geometric properties of the triangle and a
 
 
 \bgroup
-  \small
+\catcode`_=12
+\small
   \captionof{table}{Triangle attributes.}\label{triangle:attributes}
   \begin{tabular}{ll}
   \toprule
@@ -271,7 +271,9 @@ The sum of the angles is: \tkzUseLua{math.deg(S)}
 \label{ssub:triangle_attributes_angles_objects}
 \noindent\texttt{Angle objects: }
 The variables \code{alpha\_}, \code{beta\_}, and \code{gamma\_} are
-\emph{objects} of class \tkzClass{angle} created with \code{angle:new(...)}.
+\emph{objects} of class \tkzClass{angle} created with
+
+\code{angle:new(...)}.
 They store the defining triple of points and provide methods to
 retrieve the measure (in radians or degrees) and to support later
 geometric operations or drawings based on that angle.
@@ -404,7 +406,8 @@ of the triangle.
   z.B = point(2, 0)
   z.C = point(1, 1)
   T.ABC = triangle(z.A, z.B, z.C)
-  tex.print("orientation =\\ ", T.ABC.orientation)}
+  tex.print("orientation =\\ ",
+            T.ABC.orientation)}
 \begin{center}
 \begin{tikzpicture}[scale = 3]
   \tkzGetNodes
@@ -510,7 +513,7 @@ init_elements()
 \subsubsection{Triangle attributes: internal bisector feet}
 \label{ssub:triangle_attributes_foot_bisector}
 
-\begin{tkzexample}[latex=.5\textwidth]
+\begin{tkzexample}[latex=.4\textwidth]
 \directlua{
 init_elements()
    z.A = point(0, 0)
@@ -523,32 +526,33 @@ init_elements()
    z.I = T.ABC.incenter
    z.ta,z.tb,z.tc = T.ABC:projections(z.I)}
 \begin{center}
-  \begin{tikzpicture}
-     \tkzGetNodes
-     \tkzDrawPolygon(A,B,C)
-     \tkzDrawSegments[dashed](A,I_a B,I_b C,I_c)
-     \tkzDrawCircle(I,ta)
-     \tkzDrawPoints(A,B,C,I_a,I_b,I_c,I,ta,tb,tc)
-     \tkzLabelPoints[below](A,B,I_c,I)
-     \tkzLabelPoints[left](I_b)
-     \tkzLabelPoints[right](I_a)
-     \tkzLabelPoints[above](C)
-  \end{tikzpicture}
+\begin{tikzpicture}
+ \tkzGetNodes
+ \tkzDrawPolygon(A,B,C)
+ \tkzDrawSegments[dashed](A,I_a B,I_b C,I_c)
+ \tkzDrawCircle(I,ta)
+ \tkzDrawPoints(A,B,C,I_a,I_b,I_c,I,ta,tb,tc)
+ \tkzLabelPoints[below](A,B,I_c,I)
+ \tkzLabelPoints[left](I_b)
+ \tkzLabelPoints[right](I_a)
+ \tkzLabelPoints[above](C)
+\end{tikzpicture}
 \end{center}
 \end{tkzexample}
 
 \subsection{Methods of the class triangle} %(fold)
 
+
+\begin{minipage}{\textwidth}
 \bgroup
 \catcode`_=12
 \small
-\begin{minipage}{\textwidth}
 \captionof{table}{triangle methods.}\label{triangle:methods}
 \begin{tabular}{ll}
 \toprule
 \texttt{Constructor} & \texttt{Reference}      \\
 \midrule
-\tkzMeth{triangle}{new}(a, b ,c) & Note\footnote{triangle(pt, pt, pt) (short form, recommended)}; [\ref{sub:creating_a_triangle}; \ref{ssub:method_triangle_new_pt_pt_pt}]\\
+\tkzMeth{triangle}{new}(a, b ,c) &  [\ref{sub:creating_a_triangle}; \ref{ssub:method_triangle_new_pt_pt_pt}]\\
 \midrule
 
 \texttt{Methods Returning a Boolean}&\\
@@ -575,7 +579,7 @@ init_elements()
 \tkzMeth{triangle}{get(arg)} & [\ref{ssub:method_triangle_get}]\\
 \tkzMeth{triangle}{point(r)} & [\ref{ssub:method_triangle_point_r}]\\
 \tkzMeth{triangle}{random(<'inside'>)} & [\ref{ssub:method_triangle_random_inside}]\\
-\tkzMeth{triangle}{barycentric(ka,kb,kc)} & Note \footnote{The function \code{barycenter} is used to obtain the barycentre for any number of points }\\
+\tkzMeth{triangle}{barycentric(ka,kb,kc)} &\ref{ssub:_triangle_barycentric_ka_kb_kc}\\
 \tkzMeth{triangle}{base(u,v)} & [\ref{ssub:method_triangle_base}] \\
 \tkzMeth{triangle}{trilinear(u,v,w)}  & [\ref{ssub:method_triangle_trilinear_x_y_z}] \\
 \tkzMeth{triangle}{lemoine\_point()} &  [\ref{ssub:method_line_isosceles}]\\
@@ -614,17 +618,18 @@ See [\ref{ssub:_triangle_kenmotu__point}] \\
 See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_points}]\\
 \tkzMeth{triangle}{isodynamic\_points()} & [\ref{ssub:isodynamic_points}] \\
 \tkzMeth{triangle}{apollonius\_point()} & [\ref{ssub:apollonius_point}] \\
+\tkzMeth{triangle}{cevian\_point()} & [\ref{ssub:cevian_point}] \\
 \bottomrule
 \end{tabular}
-\end{minipage}
 \egroup
+\end{minipage}
 
 
 
-  \bgroup
+\begin{minipage}{\textwidth}
+\bgroup
   \catcode`_=12
   \small
-  \begin{minipage}{\textwidth}
   \captionof{table}{triangle methods.}
   \begin{tabular}{ll}
   \toprule
@@ -633,15 +638,13 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 
 \texttt{Methods Returning a Line} &\\
 \midrule
-\tkzMeth{triangle}{altitude(arg) } & Note
-\footnote{|z.Ha = L.AHa.pb| recovers the common point of the opposite side and altitude. The method |orthic| is usefull. If you don't need to use the triangle object several times, you can obtain a bisector or a altitude with the function |tkz.altitude(z.A, z.B, z.C)| ; [ \ref{misc}]} [\ref{ssub:method_triangle_altitude}]\\
-\tkzMeth{triangle}{bisector(arg) }  & Note  \footnote{|_, z.b = L.Bb:get()| recovers the common point of the opposite side and bisector. If you don't need to use the triangle object several times, you can obtain a bisector  with the function |tkz.bisector(z.A, z.B, z.C)|  [\ref{misc}]};  [\ref{ssub:method_triangle_bisector}]\\
+\tkzMeth{triangle}{altitude(arg) } & [\ref{ssub:method_triangle_altitude}]\\
+\tkzMeth{triangle}{bisector(arg) }  &  [\ref{ssub:method_triangle_bisector}]\\
 \tkzMeth{triangle}{bisector\_ext(arg) } & [\ref{ssub:method_triangle_bisector_ext}]\\
 \tkzMeth{triangle}{mediator(arg)} & [\ref{ssub:triangle_mediator}]\\
 \tkzMeth{triangle}{symmedian\_line(arg)} & [\ref{ssub:method_imeth_triangle_symmedian__line}
 ; \ref{ssub:method_triangle_symmedial} ; \ref{ssub:method_line_isosceles}]\\
-\tkzMeth{triangle}{euler\_line() } & Note
-\footnote{N center of nine points circle, G centroid, H orthocenter , O circum center } ; [\ref{ssub:euler_line}]\\
+\tkzMeth{triangle}{euler\_line() } &[\ref{ssub:euler_line}]\\
 \tkzMeth{triangle}{antiparallel(pt,n)} & [\ref{antiparallel};\ref{sub:antiparallel_through_lemoine_point}]\\
 \tkzMeth{triangle}{steiner\_line(pt)} &[\ref{ssub:method_triangle_steiner__line}] \\
 \tkzMeth{triangle}{simson\_line(pt)} &[\ref{ssub:method_triangle_simson__line}] \\
@@ -651,8 +654,9 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 \tkzMeth{triangle}{orthic\_axis()}  & See [\ref{ssub:method_triangle_orthic_axis}]\\
 \bottomrule
 \end{tabular}
-\end{minipage}
 \egroup
+\end{minipage}
+
 
 
 
@@ -667,8 +671,7 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 \midrule
 \texttt{Methods Returning a Circle} &\\
 \midrule
-\tkzMeth{triangle}{euler\_circle()} & Note
-\footnote{ The midpoint of each side of the triangle, the foot of each altitude, the midpoint of the line segment from each vertex of the triangle to the orthocenter.}   [\ref{ssub:method_triangle_euler_circle}]\\
+\tkzMeth{triangle}{euler\_circle()} &   [\ref{ssub:method_triangle_euler_circle}]\\
 \tkzMeth{triangle}{circum\_circle()}  & [\ref{ssub:method_triangle_circum_circle}] \\
 \tkzMeth{triangle}{in\_circle()}  &[\ref{ssub:method_triangle_in_circle}]\\
 \tkzMeth{triangle}{ex\_circle(n)}  & [\ref{ssub:method_triangle_ex__circle}]\\
@@ -727,6 +730,8 @@ See [ \ref{ssub:method_triangle_orthic}; \ref{ssub:method_triangle_orthic_axis_p
 \texttt{Methods Returning a Conic} &\\
 \tkzMeth{triangle}{kiepert\_parabola()} & [\ref{ssub:method_triangle_kiepert_parabola}] \\
 \tkzMeth{triangle}{kiepert\_hyperbola()} & [\ref{ssub:method_triangle_kiepert__hyperbola}] \\
+
+\tkzMeth{triangle}{ellipse\_inscribed(...)}  & [\ref{ssub:ellipse_inscribed}]\\
 \tkzMeth{triangle}{steiner\_inellipse()}& [ \ref{ssub:steiner_inellipse_and_circumellipse}] \\
 \tkzMeth{triangle}{steiner\_circumellipse()} & [ \ref{ssub:steiner_inellipse_and_circumellipse}] \\
 \tkzMeth{triangle}{euler\_ellipse()}  & [\ref{ssub:euler_ellipse}]\\
@@ -2533,6 +2538,164 @@ Consider the excircles $J_A$, $J_B$, and $J_C$ of a triangle, and the external A
 \href{https://mathworld.wolfram.com/ApolloniusPoint.html}{\textit{(Reference: Weisstein, Eric W. "Apollonius Point." MathWorld)}}
 \end{flushright}
 
+
+\subsubsection{Method \tkzMeth{triangle}{cevian\_point()}}
+\label{ssub:cevian_point}
+
+\texttt{Usage: }
+
+\begin{verbatim}
+triangle:cevian_point(p,q,eps)
+\end{verbatim}
+
+\medskip
+
+\texttt{Arguments: }
+
+p: First point defining the cevian configuration \\
+q: Second point defining the cevian configuration \\
+eps: Optional numerical tolerance \\
+
+
+\medskip
+
+This method computes a cevian point associated with the current triangle from
+the points \texttt{p} and \texttt{q}. It also determines the three feet of the
+corresponding cevians on the sides of the triangle.
+
+The optional parameter \texttt{eps} is used as a numerical tolerance in the
+internal tests and comparisons.
+
+\medskip
+
+\texttt{Returns: }
+
+Four points: the cevian point and the three feet of its cevians on the sides
+$BC$, $CA$, and $AB$.
+
+
+\begin{tkzexample}[latex=.5\textwidth]
+\directlua{
+init_elements()
+z.A = point(1, 5)
+z.B = point(0, 0)
+z.C = point(6, 0)
+T.ABC = triangle(z.A, z.B, z.C)
+z.P = T.ABC.ab:point(0.4)
+z.Q = T.ABC.ca:point(0.6)
+z.X, z.D,
+z.E, z.F = T.ABC:cevian_point(z.P, z.Q)
+}
+\begin{center}
+\begin{tikzpicture}
+  \tkzGetNodes
+  \tkzDrawPolygon(A,B,C)
+  \tkzDrawSegments(A,D B,E C,F)
+  \tkzDrawPoints(A,B,C,D,E,F,X)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+
+
+\subsubsection{Method \tkzMeth{triangle}{complement(pt)}}
+\label{ssub:complement}
+
+Let $ABC$ be a non-degenerate triangle with centroid $G$.
+
+\paragraph{Definition.}
+The complement of a point $P$ with respect to triangle $ABC$ is the point $\mathcal{K}(P)$ defined as the image of $P$ under the homothety centered at $G$ with ratio $-\dfrac{1}{2}$:
+
+\[
+\mathcal{K}(P)=\mathcal{H}_{(G,-\frac{1}{2})}(P).
+\]
+
+Equivalently,
+\[
+\overrightarrow{G\mathcal{K}(P)}=-\dfrac{1}{2}\overrightarrow{GP},
+\]
+so that $G$ is the midpoint of the segment $[P\,\mathcal{K}(P)]$.
+
+\paragraph{Properties.}
+\begin{itemize}
+\item The complement is an affine transformation.
+\item $\mathcal{K}(G)=G$.
+\item The complement of the orthocenter is the nine-point center.
+\item The complement of the Nagel point is the Spieker point.
+\end{itemize}
+
+
+\texttt{Remark: }
+The complement frequently appears in triangle geometry in relation with affine constructions and triangle centers.
+
+\subsubsection{Method \tkzMeth{triangle}{anticomplement(pt)}}
+\label{ssub:anticomplement}
+
+Let $ABC$ be a non-degenerate triangle with centroid $G$.
+
+\texttt{Definition: }
+The anticomplement of a point $P$ is defined as the image of $P$ under the homothety centered at $G$ with ratio $-2$:
+
+\[
+\mathcal{K}^{-1}(P)=\mathcal{H}_{(G,-2)}(P).
+\]
+
+Equivalently,
+\[
+\overrightarrow{G\mathcal{K}^{-1}(P)}=-2\overrightarrow{GP}.
+\]
+
+\texttt{Properties: }
+\begin{itemize}
+\item The anticomplement is the inverse of the complement transformation.
+\item $G$ is fixed.
+\item The anticomplement of the nine-point center is the orthocenter.
+\item The anticomplement of the Spieker point is the Nagel point.
+\end{itemize}
+
+\texttt{Implementation in \tkzname{elements}: }
+
+
+\texttt{Remark: }
+The anticomplement is useful when moving from affine constructions back to classical triangle centers.
+
+
+\subsubsection{Method \tkzMeth{triangle}{isotomic(pt)}}
+\label{ssub:isotomic}
+
+
+Let $ABC$ be a non-degenerate triangle and let $P$ be a point not lying on its sides.
+
+\texttt{Definition: }
+Let $D,E,F$ be the intersections of $AP,BP,CP$ with $BC,CA,AB$.
+Let $D',E',F'$ be the points on the same sides such that
+
+\[
+BD'=DC,\quad CE'=EA,\quad AF'=FB.
+\]
+
+The cevians $AD',BE',CF'$ concur at a point called the isotomic conjugate of $P$, denoted $P^{\mathrm{iso}}$.
+
+\texttt{Barycentric form: }
+If $P=(x:y:z)$ in barycentric coordinates, then
+
+\[
+P^{\mathrm{iso}}=(1/x:1/y:1/z).
+\]
+
+\texttt{Properties: }
+\begin{itemize}
+\item Isotomic conjugation is an involution:
+\[
+(P^{\mathrm{iso}})^{\mathrm{iso}}=P.
+\]
+\item The centroid is self-isotomic.
+\item The isotomic conjugate of the Gergonne point is the Nagel point.
+\end{itemize}
+
+
+\texttt{Remark: }
+Unlike complement and anticomplement, isotomic conjugation is a projective transformation rather than an affine one.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%  Lines %%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4029,7 +4192,7 @@ See  [\ref{ssub:method_triangle_adams_points}]
   z.t4, z.t5,
    z.t6 = T.ABC:adams_points()}
 \begin{center}
-   \begin{tikzpicture}[scale = .75]
+   \begin{tikzpicture}
   \tkzGetNodes
   \tkzDrawPolygon(A,B,C)
   \tkzDrawCircles[blue](w,t)
@@ -5166,17 +5329,19 @@ The Yiu triangle $O_AO_BO_C$ is the triangle formed by the centers of the Yiu ci
   T.Yiu = T.ABC:yiu()
   z.O_A, z.O_B,
   z.O_C = T.Yiu:get()}
+\begin{center}
 \begin{tikzpicture}
-  \tkzGetNodes
-  \tkzInit[xmin=-3,xmax=4,ymin=-2.5,ymax=3]
-  \tkzClip
-  \tkzDrawPolygon(A,B,C)
-  \tkzDrawPolygon[red](O_A,O_B,O_C)
-  \tkzDrawCircles[blue](O_A,A O_B,B O_C,C)
-  \tkzDrawPoints(A,B,C,O_A,O_B,O_C)
-  \tkzLabelPoints(B,C,O_A,O_B)
-  \tkzLabelPoints[above](A,O_C)
+\tkzGetNodes
+\tkzInit[xmin=-3,xmax=4,ymin=-2.5,ymax=3]
+\tkzClip
+\tkzDrawPolygon(A,B,C)
+\tkzDrawPolygon[red](O_A,O_B,O_C)
+\tkzDrawCircles[blue](O_A,A O_B,B O_C,C)
+\tkzDrawPoints(A,B,C,O_A,O_B,O_C)
+\tkzLabelPoints(B,C,O_A,O_B)
+\tkzLabelPoints[above](A,O_C)
 \end{tikzpicture}
+\end{center}
 \end{tkzexample}
 
 \subsubsection{Method \tkzMeth{triangle}{projection()}}
@@ -5196,6 +5361,7 @@ z.Ap,
 z.Bp,
 z.Cp = T.orthic:get()
 }
+\begin{center}
 \begin{tikzpicture}
 \tkzGetNodes
 \tkzDrawPolygons(A,B,C A',B',C')
@@ -5203,6 +5369,7 @@ z.Cp = T.orthic:get()
 \tkzLabelPoints(B,C,A')
 \tkzLabelPoints[above](A,B',C')
 \end{tikzpicture}
+\end{center}
 \end{tkzexample}
 
 
@@ -5572,6 +5739,8 @@ This hyperbola possesses several notable geometric properties: it passes through
   curveb = CO.HY:points(-3, 3, 50, "swap")
   z.F_a, z.F_b = CO.HY.Fa, CO.HY.Fb}
   \begin{tikzpicture}[scale = .8]
+  \tkzInit[xmin=-1,xmax=7,ymin=-2,ymax=8]
+  \tkzClip
    \tkzGetNodes
    \tkzDrawPolygons(A,B,C)
    \tkzDrawCoordinates[smooth](curve)
@@ -5609,6 +5778,151 @@ This hyperbola possesses several notable geometric properties: it passes through
   z.F_a, z.F_b = CO.HY.Fa, CO.HY.Fb}
 \end{tkzexample}
 \end{minipage}
+
+
+
+
+\subsubsection{Method \tkzMeth{triangle}{ellipse\_inscribed}(spec,<eps>)}%(fold)
+\label{ssub:ellipse_inscribed}
+This method is based on classical results due to Brianchon and Poncelet.
+
+Brianchon showed that for any conic inscribed in a triangle, the lines joining the vertices to the points of tangency are concurrent at a point now called Brianchon’s point. This point is the isotomic conjugate of the complement of the center of the conic.
+
+Poncelet showed that the foci of an inscribed conic are isogonal conjugates. Consequently, a tri-tangent conic can be constructed from a single datum: its center, its Brianchon point, or one of its foci.(see e.g. classical references on triangle geometry)
+
+\medskip
+\texttt{Usage: }
+
+\begin{verbatim}
+triangle:ellipse_inscribed{spec, eps}
+\end{verbatim}
+
+\medskip
+
+This method constructs an ellipse inscribed in the current triangle.
+
+The specification table \texttt{spec} must contain one of the following keys:
+
+\begin{itemize}
+\item \texttt{\{brianchon = P\}}: Brianchon’s point of the ellipse;
+\item \texttt{\{center = O\}}: the center of the ellipse;
+\item \texttt{\{focus = F\}}: one focus of the ellipse.
+\end{itemize}
+
+The optional parameter \texttt{eps} is used as a numerical tolerance for internal
+tests and comparisons.
+
+\medskip
+\texttt{Returns: }
+
+A \texttt{conic} object representing the inscribed ellipse.
+
+\medskip
+\texttt{Description: }
+
+The fundamental construction uses Brianchon’s point.
+If $P$ denotes this point, the lines $(AP)$, $(BP)$, and $(CP)$ meet the
+sides $BC$, $CA$, and $AB$ at the three contact points of the ellipse.
+
+The center of the ellipse is then obtained as
+\[
+O = \text{complement}\bigl(\text{isotomic}(P)\bigr),
+\]
+and the ellipse is determined from its three contact points together with two
+points obtained by central symmetry about $O$.
+
+The specifications \texttt{center} and \texttt{focus} are internally reduced to
+the Brianchon form.
+
+\medskip
+\texttt{Examples: }
+
+\begin{itemize}
+
+\item Using Brianchon’s point:
+\begin{verbatim}
+z.P = T.ABC:barycentric(1,1,.75)
+CO.EL = T.ABC:ellipse_inscribed{brianchon = z.P}
+\end{verbatim}
+
+\item Using the center:
+\begin{verbatim}
+z.O = T.ABC:barycentric(1,1,.4)
+CO.EL = T.ABC:ellipse_inscribed{center = z.O}
+\end{verbatim}
+
+\item Using a focus:
+\begin{verbatim}
+z.F = point:new(...)
+CO.EL = T.ABC:ellipse_inscribed{focus = z.F}
+\end{verbatim}
+
+\end{itemize}
+
+\begin{tkzexample}[latex=.4\textwidth]
+\directlua{
+init_elements()
+z.A = point(1.5, 6)
+z.B = point(0, 0)
+z.C = point(7, 0)
+T.ABC = triangle(z.A, z.B, z.C)
+z.P = T.ABC:barycentric(1,1,.75)
+CO.ELp = T.ABC:ellipse_inscribed{brianchon = z.P}
+PA.curveP = CO.ELp:points(0, 1, 100)
+z.O = T.ABC:barycentric(1,1,.4)
+CO.ELo = T.ABC:ellipse_inscribed{center = z.O}
+PA.curveO = CO.ELo:points(0, 1, 100)
+z.Fa = T.ABC:barycentric(.8,.2,.6)
+CO.ELfa = T.ABC:ellipse_inscribed{focus = z.Fa}
+PA.curveFa = CO.ELfa:points(0, 1, 100)
+}
+
+\begin{center}
+\begin{tikzpicture}[scale=.75]
+\tkzGetNodes
+\tkzDrawPolygon(A,B,C)
+\tkzDrawCoordinates[smooth,purple](PA.curveP)
+\tkzDrawCoordinates[smooth,red](PA.curveO)
+\tkzDrawCoordinates[smooth,cyan](PA.curveFa)
+\tkzDrawPoints(A,B,C)
+\tkzDrawPoints[purple](P)
+\tkzDrawPoints[cyan](Fa)
+\tkzDrawPoints[red](O)
+\tkzLabelPoints[below](B,C)
+\tkzLabelPoints[above](A)
+\tkzLabelPoints[right](O,Fa,P)
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\medskip
+\texttt{Remark: }
+The points of tangency can be found using:
+
+From the Brianchon point |z.P|:
+
+\begin{mybox}
+\begin{verbatim}
+z.D, z.E, z.F = T.ABC:cevian(z.P)
+\end{verbatim}
+\end{mybox}
+
+From the center |z.O|:
+
+\begin{mybox}
+\begin{verbatim}
+ z.P = self:isotomic(anticomplement(z.O))
+ z.D, z.E, z.F = T.ABC:cevian(z.P)
+\end{verbatim}
+\end{mybox}
+
+From two points of contact |z.T1| and |z.T2|:
+
+\begin{mybox}
+\begin{verbatim}
+ z.D, z.E, z.F = T.ABC:cevian_point(z.T1, z.T2, eps)
+\end{verbatim}
+\end{mybox}
 
 \subsubsection{Method \tkzMeth{triangle}{euler\_ellipse()}} %(fold)
 \label{ssub:euler_ellipse}

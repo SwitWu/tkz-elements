@@ -33,7 +33,8 @@ A line object provides access to the following attributes:
 
 \vspace{1em}
 \bgroup
-  \small
+\catcode`_=12
+\small
   \captionof{table}{Line attributes.}\label{line:attributes}
   \begin{tabular}{lll}
   \toprule
@@ -132,7 +133,7 @@ Here's the list of methods for the \tkzNameObj{line} object. The results can be 
 \midrule
 
 \texttt{Constructor} & \\
-\tkzMeth{line}{new(pt, pt)} &Note\footnote{line(pt, pt) (short form, recommended)}; [\ref{sub:creating_a_line}; \ref{ssub:method_line_new_pt_pt}] \\
+\tkzMeth{line}{new(pt, pt)} &[\ref{sub:creating_a_line}; \ref{ssub:method_line_new_pt_pt}] \\
 
 \midrule
 \texttt{Methods Returning a Real Number} & \\
@@ -180,8 +181,8 @@ Here's the list of methods for the \tkzNameObj{line} object. The results can be 
 \midrule
 \tkzMeth{line}{ll\_from(pt)}    & [\ref{ssub_line_from_a_defined_line}] \\
 \tkzMeth{line}{ortho\_from(pt)} & [\ref{ssubline_ortho_from}] \\
-\tkzMeth{line}{mediator()}     & Note\footnote{You may use \tkzMeth{perpendicular\_bisector} as a synonym.} ; [\ref{ssub:method_line_mediator}]\\
-\tkzMeth{line}{swap\_line()}  & [\ref{ssub:method_line_swap__line} ; \ref{ssub:intersection_line_parabola_explained}] \\
+\tkzMeth{line}{mediator()}      &  [\ref{ssub:method_line_mediator}]\\
+\tkzMeth{line}{swap\_line()}    & [\ref{ssub:method_line_swap__line} ; \ref{ssub:intersection_line_parabola_explained}] \\
 
 \tkzMeth{line}{orthogonal\_at()} & \ref{ssub:method_line_orthogonal__at} \\
 \bottomrule
@@ -200,11 +201,11 @@ Here's the list of methods for the \tkzNameObj{line} object. The results can be 
 \midrule
 \texttt{Methods Returning a Triangle} & \\
 \midrule
-\tkzMeth{line}{equilateral(<'swap'>)}    &  Note\footnote{By default, triangles are oriented positively (counter-clockwise). Use \code{"swap"} for clockwise orientation.};  [\ref{ssub:method_line_equilateral};  \ref{ssub:object_rotation}]  \\
+\tkzMeth{line}{equilateral(<'swap'>)}    &  [\ref{ssub:method_line_equilateral};  \ref{ssub:object_rotation}]  \\
 
 \tkzMeth{line}{isosceles(d,<'swap'>)}& [\ref{ssub:method_line_isosceles}]\\
 
-\tkzMeth{line}{two\_angles(an,an)} &Note \footnote{The given side is between the two angles} [\ref{ssub:triangle_with_two__angles}] \\
+\tkzMeth{line}{two\_angles(an,an)} & [\ref{ssub:triangle_with_two__angles}] \\
 \tkzMeth{line}{school(<'swap'>)}     & [\ref{ssub:method_imeth_line_school_swap}] \\
 \tkzMeth{line}{half(<'swap'>)}       & [\ref{ssub:method_imeth_line_half_swap}]\\
 \tkzMeth{line}{s\_s(r,r<,'swap'>)}   & [\ref{ssub:triangle_with_three_given_sides}] \\
@@ -230,7 +231,7 @@ Here's the list of methods for the \tkzNameObj{line} object. The results can be 
 \midrule
 \texttt{Methods Returning a Square}&\\
 \midrule
-\tkzMeth{line}{square()}  &  Note \footnote{ |_,_,z.C,z.D = S.AB:get()|}; [\ref{ssub:object_rotation}] \\
+\tkzMeth{line}{square()}  &  [\ref{ssub:object_rotation}] \\
 \midrule
 \texttt{Methods Returning a Object} &\\
 \midrule

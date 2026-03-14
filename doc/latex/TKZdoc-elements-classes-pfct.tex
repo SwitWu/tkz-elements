@@ -184,12 +184,13 @@ the internal policy.
 \begin{tkzexample}[latex=.4\textwidth]
 \directlua{
  init_elements()
- PF.ff = pfct("cos(t)+(t)*sin(t)", "sin(t)-(t)*cos(t)")
+ PF.ff = pfct("cos(t)+(t)*sin(t)",
+              "sin(t)-(t)*cos(t)")
  PA.c_1 = PF.ff:path(0, math.pi, 1000)
  PA.c_2 = PF.ff:path(math.pi, 2 * math.pi, 1000)
  }
 \begin{center}
- \begin{tikzpicture}
+ \begin{tikzpicture}[scale=.75]
   \tkzInit[xmin=-5,xmax=2,ymin=-5,ymax=3]
   \tkzGrid
   \tkzAxeXY

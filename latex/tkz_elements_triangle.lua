@@ -718,6 +718,23 @@ end
 function triangle:apollonius_point()
 	return kimberling(181)
 end
+
+function triangle:isotomic(p)
+	local pta, ptb, ptc = cevian_(self.pa, self.pb, self.pc, p)
+
+	local pta_s = 2*self.ma - pta
+	local ptb_s = 2*self.mb - ptb
+
+	return intersection_ll_(self.pa,pta_s,self.pb,ptb_s)
+end
+
+function triangle:anticomplement(p)
+return self.centroid:homothety(-2,p)
+end
+
+function triangle:complement(p)
+return self.centroid:homothety(-1/2,p)
+end
 -------------------
 -- Result -> line
 -------------------
@@ -1609,6 +1626,98 @@ function triangle:LLL(which)
 
 end
 triangle.c_lll = triangle.LLL
+
+
+
+-- code for an inellipse in a triangle
+local function side_of_point_(pa, pb, pc, pt, eps)
+	eps = eps or tkz.epsilon
+
+	if line_on_(pa, pb, pt, eps) then return "ab" end
+	if line_on_(pb, pc, pt, eps) then return "bc" end
+	if line_on_(pc, pa, pt, eps) then return "ca" end
+
+	return nil
+end
+
+function triangle:cevian_point(p, q, eps)
+	eps = eps or tkz.epsilon
+
+	local sp = side_of_point_(self.pa, self.pb, self.pc, p, eps)
+	local sq = side_of_point_(self.pa, self.pb, self.pc, q, eps)
+
+	if not sp or not sq or sp == sq then
+		tex.error("cevian_point: points must lie on two distinct sides of the triangle.")
+		return nil
+	end
+
+	local br
+	if (sp == "ab" and sq == "ca") or (sp == "ca" and sq == "ab") then
+		br = intersection(line(self.pc, p), line(self.pb, q))
+	elseif (sp == "ab" and sq == "bc") or (sp == "bc" and sq == "ab") then
+		br = intersection(line(self.pc, p), line(self.pa, q))
+	else
+		br = intersection(line(self.pb, p), line(self.pa, q))
+	end
+
+	if br == nil then
+		tex.error("cevian_point: unable to construct the cevian point.")
+		return nil
+	end
+
+	local x, y, z = cevian_(self.pa, self.pb, self.pc, br)
+	return br, x, y, z
+end
+
+
+local function ellipse_from_brianchon_(T, br, eps)
+	eps = eps or tkz.epsilon
+
+	if br == nil then
+		tex.error("ellipse_inscribed: Brianchon's point is required.")
+		return nil
+	end
+
+	local a, b, c = cevian_(T.pa, T.pb, T.pc, br)
+	local k = T:isotomic(br)
+	local o = T:complement(k)
+	local u, v = o:symmetry(a, b)
+
+	return conic:new(EL_five_points(a, b, c, u, v))
+end
+
+
+function triangle:ellipse_inscribed(spec, eps)
+	eps = eps or tkz.epsilon
+
+	if type(spec) ~= "table" then
+		tex.error("ellipse_inscribed: a specification table is expected.")
+		return nil
+	end
+
+	if spec.brianchon ~= nil then
+		return ellipse_from_brianchon_(self, spec.brianchon, eps)
+	end
+
+	if spec.center ~= nil then
+		local o = spec.center
+		local k = self:anticomplement(o)
+		local br = self:isotomic(k)
+		return ellipse_from_brianchon_(self, br, eps)
+	end
+
+	if spec.focus ~= nil then
+		local f1 = spec.focus
+		local f2 = self:isogonal(f1)
+		local o = midpoint_(f1, f2)
+		local k = self:anticomplement(o)
+		local br = self:isotomic(k)
+		return ellipse_from_brianchon_(self, br, eps)
+	end
+
+	tex.error("ellipse_inscribed: expected brianchon, center, or focus.")
+	return nil
+end
 
 
 return triangle

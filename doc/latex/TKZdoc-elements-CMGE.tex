@@ -103,7 +103,7 @@ operations in a natural way.
     \tkzMeta{point}{sub(z1,z2)}    & \verb|z.a - z.b|        & affix \\
     \tkzMeta{point}{unm(z)}        & \verb|-z.a|             & affix \\
     \tkzMeta{point}{mul(z1,z2)}    & \verb|z.a * z.b|        & affix \\
-    \tkzMeta{point}{concat(z1,z2)} & \verb|z.a .. z.b|       & dot product (real number)\footnote{If \(O\) is the origin of the complex plane, then \(\,z_1 .. z_2\) corresponds to the dot product of the vectors \(\overrightarrow{Oz_1}\) and \(\overrightarrow{Oz_2}\).} \\
+    \tkzMeta{point}{concat(z1,z2)} & \verb|z.a .. z.b|       & dot product (real number) \\
     \tkzMeta{point}{pow(z1,z2)}    & \verb|z.a ^ z.b|        & determinant (real number) \\
     \tkzMeta{point}{div(z1,z2)}    & \verb|z.a / z.b|        & affix \\
     \tkzMeta{point}{tostring(z)}   & \verb|tostring(z.a)|    & TeX-friendly display \\
@@ -327,6 +327,8 @@ midpoints, affine combinations, and homotheties.
 
 
 \subsubsection{Dot Product}
+If \(O\) is the origin of the complex plane, then \(\,z_1 .. z_2\) corresponds to the dot product of the vectors \(\overrightarrow{Oz_1}\) and \(\overrightarrow{Oz_2}\).
+
 
 Given two vectors represented by complex numbers
 \(z_1 = a+ib\) and \(z_2 = c+id\),
