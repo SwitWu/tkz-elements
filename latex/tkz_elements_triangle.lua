@@ -378,9 +378,9 @@ function triangle:excenter(pt)
 end
 
 function triangle:projections(p)
-	local p1 = projection_(self.pa, self.pb, p)
-	local p2 = projection_(self.pb, self.pc, p)
-	local p3 = projection_(self.pc, self.pa, p)
+	local p1 = projection_(self.pb, self.pc, p)
+	local p2 = projection_(self.pa, self.pc, p)
+	local p3 = projection_(self.pa, self.pb, p)
 	return p1, p2, p3
 end
 
@@ -389,7 +389,7 @@ function triangle:reflections(p)
 	local p1 = symmetry_axial_(self.pa, self.pb, p)
 	local p2 = symmetry_axial_(self.pb, self.pc, p)
 	local p3 = symmetry_axial_(self.pc, self.pa, p)
-	return p1, p2, p3
+	return p2, p3, p1
 end
 
 function triangle:parallelogram()
@@ -431,6 +431,18 @@ end
 function triangle:euler_points()
 	local H = self.orthocenter
 	return midpoint_(H, self.pa), midpoint_(H, self.pb), midpoint_(H, self.pc)
+end
+
+function triangle:orthic_points()
+	return  orthic_tr_(self.pa, self.pb, self.pc)
+end
+
+function triangle:medial_points()
+	return medial_tr_(self.pa, self.pb, self.pc)
+end
+
+function triangle:tangential_points()
+	return tangential_tr_(self.pa, self.pb, self.pc)
 end
 
 function triangle:nine_points()
@@ -705,7 +717,7 @@ function triangle:apollonius_points(side, EPS)
 end
 
 -- Ancien nom si tu veux conserver la compatibilité :
-triangle.bisector_points = triangle.apollonius_points
+-- triangle.bisector_points = triangle.apollonius_points
 
 function triangle:the_apollonius_center()
 	local lbrocard = self:brocard_axis()

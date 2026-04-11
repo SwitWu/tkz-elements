@@ -568,7 +568,7 @@ Let’s take a closer look at the methods used to construct conics. The general 
 \subsubsection{Parabola construction}
 \label{ssub:parabola_construction}
 
-The construction method is based on the following geometric property: if a point $M$ lies on a parabola, then the bisector of the segment joining the focus $F$ and the projection $H$ of $M$ onto the directrix is also the angle bisector of $\widehat{HFT}$ and corresponds to the tangent to the parabola at $M$.
+The construction method is based on the following geometric property: if a point $M$ lies on a parabola, then the bisector of the segment joining the focus $F$ and the projection $H$ of $M$ onto the directrix is also the angle bisector of $\widehat{HMF}$ and corresponds to the tangent to the parabola at $M$.
 
 This principle is used to determine a discrete set of points forming the parabola.
 
@@ -1012,7 +1012,7 @@ $t$ is the abscissa of a point on the parabola, in an orthonormal frame of refer
  PA.curvered = CO.PA:points(-ta, tb, 20)}
 \begin{tikzpicture}
  \tkzGetNodes
- \tkzDrawCoordinates[smooth](PA.curvered)
+ \tkzDrawCoordinates[smooth](PA.curve)
  \tkzDrawCoordinates[smooth,red,
                       thick](PA.curvered)
  \tkzDrawLines(A,B K,F)

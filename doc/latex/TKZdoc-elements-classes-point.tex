@@ -336,7 +336,7 @@ For more advanced operations using complex numbers and operator overloading, see
 \midrule
 \texttt{Constructors} &\\
 \midrule
-\tkzMeth{point}{new(r,r)} &[\ref{ssub:method_point_new}; \ref{ssub:method_normalize}\\
+\tkzMeth{point}{new(r,r)} &[\ref{ssub:method_point_new}; \ref{ssub:method_normalize}]\\
 \tkzMeth{point}{polar(d,an)} &[\ref{ssub:method_point_polar}] \\
 \tkzMeth{point}{polar\_deg(d,an)} &[\ref{ssub:method_point_polar_deg}]   \\
 \midrule
@@ -371,7 +371,7 @@ For more advanced operations using complex numbers and operator overloading, see
 \texttt{Utilities} &\\
 \midrule
 \tkzMeth{point}{identity(pt)} & [\ref{ssub:identity}]\\
-\tkzMeth{point}{print()} & [\ref{ssub:object_symmetry}]\\
+\tkzMeth{point}{print()} & [\ref{ssub:print}]\\
 \bottomrule %
 \end{tabular}
 \egroup
@@ -628,8 +628,9 @@ Let $O$ be the origin of the plane, and let $A$ be a point distinct from $O$. Th
 \]
 
 \medskip
-
+\DeleteShortVerb{\|}
 By default, the point $B$ is chosen so that $|OB| = |OA|$. If the optional argument \code{d} is provided, then the point $B$ is constructed so that $|OB| = d$.
+\MakeShortVerb{\|}
 
 \medskip
 
@@ -702,74 +703,26 @@ This method is presented in the document \tkzname{Geometry Euclidean} [\href{htt
 \directlua{
   init_elements()
   z.A = point(0, 0)
-  z.B = point(6, 0)
-  z.M = point(1, 1)
-  z.N = point(2, 5)
-  L.AB = line(z.A, z.B)
-  PA.center,
-  PA.through, n = L.AB:LPP(z.M, z.N)
-  tkz.nodes_from_paths(PA.center,
-                       PA.through, "O", "T")
+  z.B = point(4, 0)
+  z.C = point(3, 4)
+  PA.center, PA.through, _ = z.A:PPP(z.B, z.C)
+  tkz.nodes_from_paths(PA.center, PA.through)
 }
 
-\begin{tikzpicture}[scale = .4]
-  \tkzGetNodes
-  \tkzDrawLines(A,B M,N)
-  \tkzDrawCircles(O1,T1 O2,T2)
-  \tkzDrawPoints(A,B,M,N)
-  \tkzLabelPoints(A,B,M,N)
-\end{tikzpicture}
-\end{tkzexample}
-
-
-\subsubsection{Method \tkzMeth{point}{rotation(obj)}} — First example
-\label{ssub:example_rotation_of_points}
-
-This method performs a rotation of one or more points around the current point, which serves as the center of rotation.
-
-\medskip
-\texttt{Arguments}
-
-The arguments are:
-\begin{itemize}
-  \item the angle of rotation, expressed in radians;
-  \item a point or a list of points to rotate.
-\end{itemize}
-
-\medskip
-\texttt{Return value}
-
-The result is a point (or a list of points) obtained by rotating each given point around the center by the specified angle.
-
-\medskip
-\texttt{Example usage}
-
-In the following example, a list of points is rotated about a given center.
-
-\vspace{1em}
-
-\begin{tkzexample}[latex=7cm]
-\directlua{
- init_elements()
- z.a = point(0, -1)
- z.b = point(4, 0)
- z.o = point(6, -2)
- z.ap,
- z.bp = z.o:rotation(math.pi / 2, z.a, z.b)}
 \begin{center}
-\begin{tikzpicture}[scale = .5]
- \tkzGetNodes
- \tkzDrawLines(o,a o,a' o,b o,b')
- \tkzDrawPoints(a,a',b,b',o)
- \tkzLabelPoints(b,b',o)
- \tkzLabelPoints[below left](a,a')
- \tkzDrawArc(o,a)(a')
- \tkzDrawArc(o,b)(b')
-\end{tikzpicture}
+  \begin{tikzpicture}
+    \tkzGetNodes
+    \tkzDrawPolygon(A,B,C)
+    \tkzDrawCircles(w1,t1)
+    \tkzDrawPoints(A,B,C)
+  \end{tikzpicture}
 \end{center}
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{point}{shift\_orthogonal\_to(pt, dist)}}\label{shift_orthogonal}
+
+
+\subsubsection{Method \tkzMeth{point}{shift\_orthogonal\_to(pt, dist)}}
+\label{shift_orthogonal}
 
 \medskip
 \texttt{Syntax: } \verb|z.P = z.A:shift_orthogonal_to(z.B, 2)|
@@ -820,6 +773,11 @@ A in the same direction  that line (AB), at a signed distance dist.
 \subsubsection{Method \tkzMeth{point}{rotation(an, obj)}}
 \label{ssub:object_rotation}
 
+Comme les méthodes suivantes, la rotation autour d'un point peut s'appliquer à un point, un groupe de points ou bien à un objet.
+
+This method performs a rotation of one or more points or an object around the current point, which serves as the center of rotation.
+
+
 \medskip
 \texttt{Purpose:}
 
@@ -832,18 +790,44 @@ In this example, the triangle is rotated by an angle of~$\pi/3$ around the point
 \texttt{Syntax: } \verb|new_obj = z.I:rotation(an, obj)|
 
 
-
 \medskip
-\texttt{Arguments:}
-
-The arguments are:
+\texttt{Returns:}
 \begin{itemize}
-  \item \code{an} —> the angle of rotation, in radians;
-  \item \code{obj} —> the geometric object to be rotated (e.g., a triangle).
+\item The result is a point (or a list of points) obtained by rotating each given point around the center by the specified angle.
+\item The method returns a new object of the same type, rotated accordingly.
 \end{itemize}
 
+
 \medskip
-\texttt{Returns:} The method returns a new object of the same type, rotated accordingly.
+\texttt{Example usage for a point or a list of points}
+
+In the following example, a list of points is rotated about a given center.
+
+\vspace{1em}
+
+\begin{tkzexample}[latex=7cm]
+\directlua{
+ init_elements()
+ z.a = point(0, -1)
+ z.b = point(4, 0)
+ z.o = point(6, -2)
+ z.ap,
+ z.bp = z.o:rotation(math.pi / 2, z.a, z.b)}
+\begin{center}
+\begin{tikzpicture}[scale = .5]
+ \tkzGetNodes
+ \tkzDrawLines(o,a o,a' o,b o,b')
+ \tkzDrawPoints(a,a',b,b',o)
+ \tkzLabelPoints(b,b',o)
+ \tkzLabelPoints[below left](a,a')
+ \tkzDrawArc(o,a)(a')
+ \tkzDrawArc(o,b)(b')
+\end{tikzpicture}
+\end{center}
+\end{tkzexample}
+
+\medskip
+\texttt{Example usage for an object}
 
 \vspace{1em}
 \begin{tkzexample}[latex=7cm]
@@ -877,41 +861,6 @@ The arguments are:
 \end{center}
 \end{tkzexample}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%  Utilities %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{\tkzMeth{point}{identity}(pt)}
-\label{ssub:identity}
-
-\medskip
-\texttt{Syntax: } \verb|z.A:identity(z.B)|
-
-\medskip
-\texttt{Purpose: }Check whether two points are identical within the numerical precision defined by \tkzVar{tkz}{tkz.epsilon}.
-
-\medskip
-\texttt{Parameters: } The point to be compared with \textbf{self}.\\
-
-\medskip
-\texttt{Return value: } True if the two points are numerically identical, false otherwise.\\
-
-
-\begin{tkzexample}[latex=.5\textwidth]
-\directlua{
- z.A = point(0, 0)
- z.B = point(0.0000000001, 0)
- tex.print(tostring(z.A:identity(z.B)))
- tex.print('\\\\')
- tex.print(tkz.epsilon)}
- %% true if tkz.epsilon > 1e-10
-\end{tkzexample}
-
-\medskip
-\texttt{Remark: }
-
-This method compares two points by computing the Euclidean distance between them
-and checking if it is smaller than the global tolerance \textbf{tkz.epsilon}.
-It is useful to test equality of points in floating-point computations.
 
 
 
@@ -1040,4 +989,76 @@ The respective affixes of points $A$ and $B$ being
    \tkzUseLua{z.A:print()} and \tkzUseLua{z.B:print()},
   their sum is \tkzUseLua{z.a:print()} and
   their product \tkzUseLua{z.m:print()}.
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%  Utilities %%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \subsubsection{\tkzMeth{point}{identity}(pt)}
+  \label{ssub:identity}
+
+  \medskip
+  \texttt{Syntax: } \verb|z.A:identity(z.B)|
+
+  \medskip
+  \texttt{Purpose: }Check whether two points are identical within the numerical precision defined by \tkzVar{tkz}{tkz.epsilon}.
+
+  \medskip
+  \texttt{Parameters: } The point to be compared with \textbf{self}.\\
+
+  \medskip
+  \texttt{Return value: } True if the two points are numerically identical, false otherwise.\\
+
+
+  \begin{tkzexample}[latex=.5\textwidth]
+  \directlua{
+   z.A = point(0, 0)
+   z.B = point(0.0000000001, 0)
+   tex.print(tostring(z.A:identity(z.B)))
+   tex.print('\\\\')
+   tex.print(tkz.epsilon)}
+   %% true if tkz.epsilon > 1e-10
+  \end{tkzexample}
+
+  \medskip
+  \texttt{Remark: }
+
+  This method compares two points by computing the Euclidean distance between them
+  and checking if it is smaller than the global tolerance \textbf{tkz.epsilon}.
+  It is useful to test equality of points in floating-point computations.
+
+
+
+  \subsubsection{\tkzMeth{point}{print}()}
+  \label{ssub:print}
+
+  \texttt{Usage:}
+  \begin{verbatim}
+  z.A:print()
+  \end{verbatim}
+
+  \medskip
+
+  This method prints the coordinates of the point in a format suitable for \LaTeX{}.
+
+  It internally converts the point into a string using \texttt{tostring(self)} and sends the result to the \TeX{} output using \texttt{tex.print}. The output is therefore directly usable in the document.
+
+  \medskip
+
+  \texttt{Returns:} None.
+
+  \medskip
+
+  \texttt{Example:}
+  \begin{verbatim}
+  \directlua{
+    z.A = point(1, 2)
+  }
+  Coordinates of A: \tkzUseLua{z.A:print()}
+  \end{verbatim}
+
+  \medskip
+
+  \texttt{Remark:}
+
+  The format of the output depends on the \texttt{\_\_tostring} method of the \texttt{point} class. Typically, it produces coordinates of the form \texttt{(x,y)}, which can be directly used in TikZ paths.
 \endinput

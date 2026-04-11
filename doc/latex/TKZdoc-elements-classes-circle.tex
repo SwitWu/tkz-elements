@@ -172,7 +172,7 @@ The circle class offers a wide range of methods, which can be grouped according 
 \tkzMeth{circle}{get(i)} &     [\ref{ssub:method_circle_get}]   \\
 \tkzMeth{circle}{antipode(pt)} & [\ref{ssub:method_circle_antipode}]   \\
 \tkzMeth{circle}{midarc(pt,pt)} &  [\ref{ssub:method_circle_midarc}]\\
-\tkzMeth{circle}{point(r)} & [\ref{ssub:method_circle_point}]\\
+\tkzMeth{circle}{point(r,<pt>)} & [\ref{ssub:method_circle_point}]\\
 \tkzMeth{circle}{random\_pt(<'inside'>)}  & [\ref{ssub:method_imeth_circle_random_inside}]\\
 \tkzMeth{circle}{inversion(obj)} & [\ref{ssub:inversion}; \ref{par:inversion_circle} \ref{par:inversion_line}]\\
 \tkzMeth{circle}{inversion\_neg(obj)} & [\ref{ssub:inversion_neg}]\\
@@ -1050,14 +1050,22 @@ This method is applicable to any pair of points on a circle, not just those asso
   \end{center}
 \end{tkzexample}
 
-\subsubsection{Method \tkzMeth{circle}{point(r)}}
+\subsubsection{Method \tkzMeth{circle}{point(r,<pt>)}}
 \label{ssub:method_circle_point}
 
-Let $C$ be a circle with centre $O$ and passing through $A$ such that |z.A = C.through|. This method defines a point $M$ on the circle from A such that the ratio of the length of $\widearc{AM}$ to the circumference of the circle is equal to $r$.
+Let $C$ be a circle with centre $O$ and passing through $A$ such that $z.A = C.through$.
 
-In the next example, $r=\dfrac{1}{6}$ corresponds to $\dfrac{\pi/3}{2\pi}$, so the angle $\widehat{AOE}$ has the measure $\pi/3$.
+This method defines a point $M$ on the circle such that the ratio of the length of the arc to the circumference of the circle is equal to $r$.
 
-If $r=.5$ the defined point is diametrically opposed to $A$, the angle $\widehat{AOD}$ has the measure $\pi$.
+By default, the arc is measured from the reference point $A$.
+An optional parameter \texttt{pt} allows the user to specify another starting point on the circle.
+
+Thus, if \texttt{pt} is provided, the point $M$ is defined such that
+the ratio of the length of the arc $\widearc{(\texttt{pt})M}$ to the circumference is equal to $r$.
+
+In the next example, $r=\dfrac{1}{6}$ corresponds to $\dfrac{\pi/3}{2\pi}$, so the angle $\widehat{AOB}$ has measure $\pi/3$.
+
+If $r=0.5$, the defined point is diametrically opposite to the reference point.
 
 \vspace{1em}
 \begin{tkzexample}[latex=.5\textwidth]
@@ -1065,19 +1073,26 @@ If $r=.5$ the defined point is diametrically opposed to $A$, the angle $\widehat
  init_elements()
  z.O = point(0, 0)
  z.A = point(1, 2)
+ z.E = point(-1, 2)
  C.OA = circle(z.O, z.A)
  z.B = C.OA:point(1 / 6)
+ % from A (default)
  z.C = C.OA:point(0.25)
- z.D = C.OA:point(0.5)}
+ z.D = C.OA:point(0.5)
+ z.F = C.OA:point(1 / 6, z.E)
+ % from E (custom origin)
+}
 \begin{center}
 \begin{tikzpicture}
 \tkzGetNodes
 \tkzDrawCircle(O,A)
-\tkzDrawPoints(A,...,D,O)
-\tkzLabelPoints(A,...,D,O)
+\tkzDrawPoints(A,...,F,O)
+\tkzLabelPoints(A,...,F,O)
 \end{tikzpicture}
 \end{center}
 \end{tkzexample}
+
+
 
 \subsubsection{Method \tkzMeth{circle}{random(<'inside'>)}}
 \label{ssub:method_imeth_circle_random_inside}

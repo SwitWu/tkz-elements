@@ -203,10 +203,25 @@ function circle:midarc(z1, z2)
   return rotation_(self.center, phi, z1)
 end
 
-function circle:point(t)
+-- function circle:point(t)
+--   local phi = 2 * t * math.pi
+--   return rotation_(self.center, phi, self.through)
+-- end
+
+function circle:point(t, P, EPS)
   local phi = 2 * t * math.pi
-  return rotation_(self.center, phi, self.through)
+  local A = P or self.through
+  EPS = EPS or tkz.epsilon
+
+  -- Vérification avec le modèle "position"
+  if self:position(A, EPS) ~= "ON" then
+    tex.error("Point not on circle in circle:point")
+    return nil
+  end
+
+  return rotation_(self.center, phi, A)
 end
+
 
 function circle:random(inside)
   inside = (inside == "inside")

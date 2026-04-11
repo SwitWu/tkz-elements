@@ -1,3 +1,24 @@
+## [2026/04/11 — version 5.06c]
+
+### Changed
+- **triangle**
+  - Changed the order of returned points for `reflections` and `projections`:
+    (1 → pa, 2 → pb, 3 → pc).
+  - Added methods returning directly the vertices of special triangles:
+    - `orthic_points()`
+    - `medial_points()`
+    - `tangential_points()`
+- **circle**
+  - Modification of the `point` method.  Added an optional point parameter to specify the reference point on the circle.
+
+### Documentation
+  - Reorganized the method descriptions in the **point** class, especially for utility   methods and the `rotation` method.
+  - Fixed an incorrect example of the `PPP` method in the **point** class.
+  - Section 16.4.1 (Parabola construction): corrected `bisector of angle HMF` (instead   of `angle HFT`).
+  - Section 7.3 (Use of Trilinear Coordinates): corrected `projection` → `projections`   in the code.
+    Thanks to :SwiftWu for these remarks.
+  - Added documentation for the `print` method.
+
 ## [2026/03/14 — version 5.05c]
 
 ### Added

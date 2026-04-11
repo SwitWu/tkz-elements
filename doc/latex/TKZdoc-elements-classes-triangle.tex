@@ -5585,8 +5585,8 @@ This triangle provides an elegant construction linked to the geometry of the Lem
    T.ABC = triangle(z.A, z.B, z.C)
    z.L = T.ABC:lemoine_point()
    z.G = T.ABC.centroid
-   EL = T.ABC:lemoine_inellipse()
-   curve = EL:points(0, 1, 100)
+   CO.EL = T.ABC:lemoine_inellipse()
+   curve = CO.EL:points(0, 1, 100)
    z.Xa, z.Xb,
   z.Xc = T.ABC:lemoine():get()}
   \begin{tikzpicture}
@@ -5940,23 +5940,23 @@ An example combining both the Euler circle and the Euler ellipse is provided in 
 \vspace{1em}
 
 
-  \begin{minipage}{.5\textwidth}
-    \directlua{
-   init_elements()
-   z.A = point(2, 3.8)
-   z.B = point(0, 0)
-   z.C = point(6.2, 0)
-   L.AB = line(z.A, z.B)
-   T.ABC = triangle(z.A, z.B, z.C)
-   z.K = tkz.midpoint(z.B, z.C)
-   EL.euler = T.ABC:euler_ellipse()
-   curve = EL.euler:points(0, 1, 50)
-   z.N = T.ABC.eulercenter
-   C.euler = circle(z.N, z.K)
-   z.O = T.ABC.circumcenter
-   z.G = T.ABC.centroid
-   z.H = T.ABC.orthocenter
-  }
+\begin{minipage}{.5\textwidth}
+\directlua{
+ init_elements()
+ z.A = point(2, 3.8)
+ z.B = point(0, 0)
+ z.C = point(6.2, 0)
+ L.AB = line(z.A, z.B)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.K = tkz.midpoint(z.B, z.C)
+ CO.euler = T.ABC:euler_ellipse()
+ curve = CO.euler:points(0, 1, 50)
+ z.N = T.ABC.eulercenter
+ C.euler = circle(z.N, z.K)
+ z.O = T.ABC.circumcenter
+ z.G = T.ABC.centroid
+ z.H = T.ABC.orthocenter
+}
   \begin{center}
     \begin{tikzpicture}
     \tkzGetNodes
@@ -5973,20 +5973,20 @@ An example combining both the Euler circle and the Euler ellipse is provided in 
  \begin{minipage}{.5\textwidth}
 \begin{tkzexample}[code only]
 \directlua{
-   init_elements()
-   z.A = point(2, 3.8)
-   z.B = point(0, 0)
-   z.C = point(6.2, 0)
-   L.AB = line(z.A, z.B)
-   T.ABC = triangle(z.A, z.B, z.C)
-   z.K = tkz.midpoint(z.B, z.C)
-   EL.euler = T.ABC:euler_ellipse()
-   curve = EL.euler:points(0, 1, 50)
-   z.N = T.ABC.eulercenter
-   C.euler = circle(z.N, z.K)
-   z.O = T.ABC.circumcenter
-   z.G = T.ABC.centroid
-   z.H = T.ABC.orthocenter}
+ init_elements()
+ z.A = point(2, 3.8)
+ z.B = point(0, 0)
+ z.C = point(6.2, 0)
+ L.AB = line(z.A, z.B)
+ T.ABC = triangle(z.A, z.B, z.C)
+ z.K = tkz.midpoint(z.B, z.C)
+ CO.euler = T.ABC:euler_ellipse()
+ curve = CO.euler:points(0, 1, 50)
+ z.N = T.ABC.eulercenter
+ C.euler = circle(z.N, z.K)
+ z.O = T.ABC.circumcenter
+ z.G = T.ABC.centroid
+ z.H = T.ABC.orthocenter}
 \end{tkzexample}
 \end{minipage}
 
